@@ -24,6 +24,8 @@ export function HeroVideo() {
   const [videoMuted, setVideoMuted] = useState(false)
   const [musicOff, setMusicOff] = useState(false)
   const clip = CLIPS[index]
+  const isOpeningClip = index === 0
+  const shouldMuteVideo = isOpeningClip || videoMuted
 
   useEffect(() => {
     const video = videoRef.current
@@ -31,8 +33,8 @@ export function HeroVideo() {
 
     const media = window.matchMedia("(prefers-reduced-motion: reduce)")
     const syncPlayback = () => {
-      video.muted = videoMuted
-      video.volume = videoMuted ? 0 : 1
+      video.muted = shouldMuteVideo
+      video.volume = shouldMuteVideo ? 0 : 1
       if (media.matches) {
         video.pause()
         return
@@ -43,7 +45,7 @@ export function HeroVideo() {
     syncPlayback()
     media.addEventListener("change", syncPlayback)
     return () => media.removeEventListener("change", syncPlayback)
-  }, [index, videoMuted])
+  }, [index, shouldMuteVideo])
 
   useEffect(() => {
     const audio = audioRef.current
@@ -92,7 +94,7 @@ export function HeroVideo() {
           ref={videoRef}
           className="absolute inset-0 h-full w-full object-cover"
           autoPlay
-          muted={videoMuted}
+          muted={shouldMuteVideo}
           loop
           playsInline
           preload="auto"
@@ -109,10 +111,16 @@ export function HeroVideo() {
           <button
             type="button"
             onClick={() => setVideoMuted((value) => !value)}
-            aria-label={videoMuted ? "Turn video audio on" : "Turn video audio off"}
+            aria-label={
+              isOpeningClip
+                ? "Opening video audio is off"
+                : videoMuted
+                  ? "Turn video audio on"
+                  : "Turn video audio off"
+            }
             className={controlClassName}
           >
-            {videoMuted ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
+            {shouldMuteVideo ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
           </button>
           <button
             type="button"

@@ -26,6 +26,29 @@ body {
   display: none;
 }
 
+.globe-control {
+  display: flex;
+  height: 40px;
+  width: 40px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(236, 232, 220, 0.2);
+  border-radius: 6px;
+  color: #aaa79e;
+  transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
+}
+
+.globe-control:hover {
+  border-color: rgba(236, 232, 220, 0.5);
+  background-color: rgba(236, 232, 220, 0.06);
+  color: #ece8dd;
+}
+
+.globe-control svg {
+  height: 15px;
+  width: 15px;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

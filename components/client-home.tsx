@@ -17,6 +17,7 @@ import { SiteFooter } from "@/components/site-footer"
 import KeyboardHint from "@/components/keyboard-hint"
 import HeroBanner from "@/components/hero-banner"
 import { HeroVideo } from "@/components/hero-video"
+import { VisitorGlobe } from "@/components/visitor-globe"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, User, Code, BookOpen, Heart, Bookmark, Search } from "lucide-react"
 
@@ -210,12 +211,14 @@ export default function ClientHome({
             </svg>
           </Button>
           <div className="w-px h-4 bg-border" />
+          <VisitorGlobe />
           <ModeToggle />
         </div>
       </div>
 
       {/* desktop theme toggle and command palette hint */}
-      <div className="hidden md:flex absolute top-4 right-4 items-center gap-3">
+      <div className="hidden md:flex absolute top-4 right-4 items-center gap-1">
+        <VisitorGlobe />
         <button
           onClick={() => {
             const event = new KeyboardEvent('keydown', {
