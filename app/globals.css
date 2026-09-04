@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Newsreader:opsz,wght@6..72,300..700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,6 +6,12 @@
 
 body {
   font-family: "Manrope", sans-serif;
+}
+
+p,
+li,
+blockquote {
+  font-family: "Newsreader", Georgia, serif;
 }
 
 /* Dotted background pattern */
@@ -57,57 +63,6 @@ body {
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 15%;
-    --muted-foreground: 0 0% 40%;
-    --highlight-bg: 210 100% 90%;
-
-    --highlight-blue: 220 100% 88%;
-    --highlight-blue-hover: 220 100% 78%;
-    --highlight-green: 130 60% 85%;
-    --highlight-green-hover: 130 60% 75%;
-    --highlight-purple: 280 60% 88%;
-    --highlight-purple-hover: 280 60% 78%;
-    --highlight-orange: 30 90% 85%;
-    --highlight-orange-hover: 30 90% 75%;
-    --highlight-pink: 330 60% 88%;
-    --highlight-pink-hover: 330 60% 78%;
-    --highlight-teal: 180 50% 85%;
-    --highlight-teal-hover: 180 50% 75%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 15%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 15%;
-    --primary: 0 0% 15%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 15%;
-    --muted: 0 0% 96.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 15%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 15%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 0 0% 15%;
-    --sidebar-primary: 0 0% 15%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 0 0% 96.1%;
-    --sidebar-accent-foreground: 0 0% 15%;
-    --sidebar-border: 0 0% 89.8%;
-    --sidebar-ring: 0 0% 15%;
-  }
-
-  .dark {
     --background: 0 0% 4%;
     --foreground: 0 0% 98%;
     --muted-foreground: 240 5% 65%;
@@ -137,16 +92,17 @@ body {
     --muted: 240 3.7% 15.9%;
     --accent: 240 3.7% 15.9%;
     --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 240 5% 65%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
     --sidebar-background: 240 10% 5%;
     --sidebar-foreground: 0 0% 98%;
     --sidebar-primary: 0 0% 98%;
@@ -154,6 +110,56 @@ body {
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 240 5% 65%;
+  }
+
+  .dark {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 98%;
+    --muted-foreground: 240 5% 65%;
+    --highlight-bg: 210 100% 20%;
+
+    --highlight-blue: 220 70% 25%;
+    --highlight-blue-hover: 220 70% 35%;
+    --highlight-green: 130 50% 25%;
+    --highlight-green-hover: 130 50% 35%;
+    --highlight-purple: 280 50% 25%;
+    --highlight-purple-hover: 280 50% 35%;
+    --highlight-orange: 30 70% 25%;
+    --highlight-orange-hover: 30 70% 35%;
+    --highlight-pink: 330 50% 25%;
+    --highlight-pink-hover: 330 50% 35%;
+    --highlight-teal: 180 40% 25%;
+    --highlight-teal-hover: 180 40% 35%;
+
+    --card: 0 0% 1%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 1%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 1%;
+    --secondary: 0 0% 5%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 5%;
+    --accent: 0 0% 5%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 240 5% 65%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --sidebar-background: 0 0% 1%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 0 0% 98%;
+    --sidebar-primary-foreground: 0 0% 1%;
+    --sidebar-accent: 0 0% 5%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 18%;
     --sidebar-ring: 240 5% 65%;
   }
 
