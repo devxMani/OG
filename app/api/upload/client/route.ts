@@ -1,7 +1,20 @@
 import { handleUpload, type HandleUploadBody } from '@vercel/blob/client'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function POST(request: Request): Promise<NextResponse> {
+function isAuthorized(request: Request): boolean {
+  const adminKey = process.env.BLOB_ADMIN_KEY
+  if (!adminKey) return false
+  const provided =
+    (request.headers.get('x-blob-admin-key') as string | null) ??
+    new URL(request.url).searchParams.get('admin_key')
+  return provided === adminKey
+}
+
+export async function POST(request: NextRequest): Promise<NextResponse> {
+  if (!isAuthorized(request)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const body = (await request.json()) as HandleUploadBody
 
   try {
@@ -9,18 +22,12 @@ export async function POST(request: Request): Promise<NextResponse> {
       body,
       request,
       onBeforeGenerateToken: async (pathname, clientPayload) => {
-        // ⚠️ Add authentication here in production
-        // const session = await getServerSession(authOptions)
-        // if (!session) {
-        //   throw new Error('Unauthorized')
-        // }
-
         const payload = clientPayload ? JSON.parse(clientPayload) : {}
-        
+
         return {
           allowedContentTypes: [
             'image/jpeg',
-            'image/png', 
+            'image/png',
             'image/webp',
             'image/gif',
             'application/pdf',
@@ -29,9 +36,8 @@ export async function POST(request: Request): Promise<NextResponse> {
             'application/json',
           ],
           addRandomSuffix: true,
-          maximumSizeInBytes: 100 * 1024 * 1024, // 100MB
+          maximumSizeInBytes: 10 * 1024 * 1024,
           tokenPayload: JSON.stringify({
-            userId: 'anonymous', // Replace with actual user ID
             fileName: payload.fileName,
             fileType: payload.fileType,
             fileSize: payload.fileSize,
@@ -40,26 +46,11 @@ export async function POST(request: Request): Promise<NextResponse> {
         }
       },
       onUploadCompleted: async ({ blob, tokenPayload }) => {
-        // This runs after successful upload
         console.log('Blob upload completed:', {
           url: blob.url,
           pathname: blob.pathname,
           tokenPayload,
         })
-
-        try {
-          // Here you could save to database, send notifications, etc.
-          // const { userId, fileName } = JSON.parse(tokenPayload)
-          // await db.files.create({
-          //   userId,
-          //   fileName,
-          //   url: blob.url,
-          //   size: blob.size,
-          // })
-        } catch (error) {
-          console.error('Post-upload processing error:', error)
-          // Don't throw here - the upload was successful
-        }
       },
     })
 

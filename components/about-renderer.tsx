@@ -77,8 +77,10 @@ export default function AboutRenderer({ content }: AboutRendererProps) {
 
       {sections["some cool things i've done in the past:"] && (
         <div className="mb-4">
-          <h2 className="mb-2 font-bold text-sm">some cool things i've done in the past:</h2>
-          <ul className="list-none space-y-1 text-sm">
+          <h2 className="mb-2 font-normal text-base" style={{ fontFamily: '"Newsreader", Georgia, serif' }}>
+            some cool things i've done in the past:
+          </h2>
+          <ul className="list-none space-y-1 text-base">
             {sections["some cool things i've done in the past:"]
               .split('\n- ')
               .filter(item => item.trim())

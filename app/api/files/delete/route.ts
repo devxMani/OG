@@ -1,7 +1,20 @@
 import { del } from '@vercel/blob'
 import { NextRequest, NextResponse } from 'next/server'
 
+function isAuthorized(request: NextRequest): boolean {
+  const adminKey = process.env.BLOB_ADMIN_KEY
+  if (!adminKey) return false
+  const provided =
+    (request.headers.get('x-blob-admin-key') as string | null) ??
+    request.nextUrl.searchParams.get('admin_key')
+  return provided === adminKey
+}
+
 export async function DELETE(request: NextRequest) {
+  if (!isAuthorized(request)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   try {
     const { pathname } = await request.json()
 
@@ -11,12 +24,6 @@ export async function DELETE(request: NextRequest) {
         { status: 400 }
       )
     }
-
-    // ⚠️ Add authentication and authorization here in production
-    // const session = await getServerSession(authOptions)
-    // if (!session) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    // }
 
     await del(pathname)
 
