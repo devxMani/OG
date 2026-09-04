@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALEX MORGAN — PORTFOLIO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#0c0c0c;
+  --fg:#edeae2;
+  --fg-mid:rgba(237,234,226,0.55);
+  --fg-low:rgba(237,234,226,0.22);
+  --mono:'IBM Plex Mono','Courier New',monospace;
+}
+
+html{scroll-behavior:smooth}
+
+body{
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--mono);
+  font-size:13px;
+  line-height:1.5;
+  overflow-x:hidden;
+  cursor:crosshair;
+}
+
+::selection{background:var(--fg);color:var(--bg)}
+::-webkit-scrollbar{width:2px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--fg-mid)}
+
+/* film grain canvas */
+#grain{
+  position:fixed;inset:0;
+  pointer-events:none;
+  z-index:9999;
+  opacity:.055;
+}
+
+/* === UTILITIES === */
+.pill{
+  display:inline-block;
+  border:1px solid var(--fg);
+  border-radius:100px;
+  padding:5px 20px;
+  font-size:11px;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+}
+.pill-dim{
+  display:inline-block;
+  border:1px solid var(--fg-mid);
+  border-radius:100px;
+  padding:4px 14px;
+  font-size:10px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--fg-mid);
+}
+
+/* === NAV DOTS === */
+.nav-dots{
+  position:fixed;right:28px;top:50%;
+  transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:14px;
+  z-index:1000;
+}
+.nav-dot{
+  width:4px;height:4px;
+  border-radius:50%;
+  background:var(--fg-mid);
+  cursor:pointer;
+  transition:all .35s cubic-bezier(.16,1,.3,1);
+}
+.nav-dot.active{
+  background:var(--fg);
+  height:18px;
+  border-radius:3px;
+}
+
+/* === ANIMATIONS === */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(22px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes fadeIn{
+  from{opacity:0}
+  to{opacity:1}
+}
+.anim{opacity:0;animation:fadeUp .9s cubic-bezier(.16,1,.3,1) forwards}
+.fi{opacity:0;animation:fadeIn .8s ease forwards}
+.d0{animation-delay:.05s}.d1{animation-delay:.15s}.d2{animation-delay:.28s}
+.d3{animation-delay:.42s}.d4{animation-delay:.58s}.d5{animation-delay:.74s}
+.d6{animation-delay:.92s}.d7{animation-delay:1.1s}
+
+/* ===============================
+   SECTION 1 — HERO
+=============================== */
+#hero{
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;padding:60px 80px;
+}
+
+.hero-left{
+  position:absolute;left:64px;top:50%;
+  transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:22px;align-items:center;
+}
+.hero-right{
+  position:absolute;right:64px;top:50%;
+  transform:translateY(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+}
+
+.hero-center{
+  display:flex;flex-direction:column;
+  align-items:center;text-align:center;
+  gap:0;
+}
+
+.hero-loc{
+  font-size:11px;letter-spacing:.45em;
+  text-transform:uppercase;color:var(--fg-mid);
+  margin-bottom:40px;
+}
+
+.hero-monogram{
+  display:flex;align-items:center;
+  justify-content:center;gap:20px;
+  margin-bottom:36px;
+}
+
+.dept-row{
+  font-size:13px;letter-spacing:.5em;
+  text-transform:uppercase;
+  display:flex;gap:28px;
+  margin-bottom:20px;
+}
+.tags-row{
+  font-size:11px;letter-spacing:.22em;
+  text-transform:uppercase;
+  display:flex;align-items:center;gap:18px;
+  color:var(--fg-mid);
+  margin-bottom:16px;
+}
+.pill-row{
+  display:flex;align-items:center;gap:16px;
+  font-size:11px;letter-spacing:.18em;
+  text-transform:uppercase;
+}
+
+/* ===============================
+   SECTION 2 — PROFILE
+=============================== */
+#profile{
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:80px 60px;
+}
+.profile-wrap{
+  max-width:720px;width:100%;
+  display:grid;grid-template-columns:2px 1fr;
+  gap:0 72px;align-items:stretch;
+}
+.v-track{
+  position:relative;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:space-between;
+}
+.v-track::before{
+  content:'';
+  position:absolute;top:28px;bottom:28px;
+  left:50%;width:1px;
+  background:var(--fg);
+  transform:translateX(-50%);
+}
+.v-arrow{font-size:20px;z-index:1;background:var(--bg);padding:4px 0;line-height:1}
+
+.profile-content{
+  display:flex;flex-direction:column;gap:36px;
+  padding:4px 0;
+}
+.num-tag{font-size:11px;letter-spacing:.35em;color:var(--fg-mid)}
+.tech-stack{display:flex;flex-direction:column;gap:3px;margin-top:10px}
+.tech-stack span{font-size:13px;letter-spacing:.18em;text-transform:uppercase}
+.big-label{font-size:14px;letter-spacing:.22em;text-transform:uppercase}
+.sub-label{font-size:12px;letter-spacing:.18em;text-transform:uppercase}
+.roman{font-size:40px;font-weight:300;font-style:italic;font-family:Georgia,serif;letter-spacing:-.01em}
+.ce-ring{
+  width:46px;height:46px;border-radius:50%;
+  border:1.5px solid var(--fg);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;letter-spacing:.04em;
+}
+.icon-row{display:flex;align-items:center;gap:20px}
+
+/* ===============================
+   SECTION 3 — INTERNSHIP
+=============================== */
+#internship{
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:80px 60px;
+}
+.intern-wrap{max-width:740px;width:100%}
+
+.intern-top{
+  display:grid;grid-template-columns:1fr auto;
+  gap:48px;align-items:start;
+  margin-bottom:56px;
+}
+.intern-icons{display:flex;gap:24px;align-items:flex-start;margin-bottom:28px}
+.tagline-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:0 32px;
+  font-size:14px;letter-spacing:.2em;text-transform:uppercase;
+  line-height:2;
+}
+
+.exp-divider{
+  border-top:1px solid var(--fg-low);
+  padding-top:40px;
+}
+.exp-meta{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  margin-bottom:40px;
+}
+.exp-company{font-size:13px;letter-spacing:.28em;text-transform:uppercase;margin-bottom:10px}
+.exp-role{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--fg-mid);margin-bottom:5px}
+.exp-date{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--fg-low)}
+.exp-ref{text-align:right}
+.exp-ref span{display:block;font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--fg-low)}
+
+.exp-body{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.exp-desc{
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--fg-mid);line-height:2.2;
+}
+.tools-label{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--fg-low);margin-bottom:16px}
+.tags-wrap{display:flex;flex-wrap:wrap;gap:8px}
+
+/* ===============================
+   SECTION 4 — CONTACT
+=============================== */
+#contact{
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;text-align:center;
+  padding:80px 60px;
+}
+.contact-name{
+  font-size:80px;font-weight:300;font-style:italic;
+  font-family:Georgia,serif;
+  letter-spacing:.15em;text-transform:uppercase;
+  margin-bottom:40px;line-height:1;
+}
+.contact-dept{
+  font-size:13px;letter-spacing:.5em;text-transform:uppercase;
+  display:flex;gap:36px;justify-content:center;margin-bottom:18px;
+}
+.contact-tags{
+  font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  display:flex;gap:24px;justify-content:center;
+  color:var(--fg-mid);margin-bottom:18px;
+}
+.contact-pill-row{
+  display:flex;align-items:center;gap:16px;justify-content:center;
+  font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  margin-bottom:36px;
+}
+.contact-copy{
+  font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--fg-mid);
+  display:flex;gap:28px;justify-content:center;margin-top:28px;
+}
+.contact-links{
+  display:flex;gap:28px;justify-content:center;margin-top:32px;
+}
+.contact-links a{
+  font-size:10px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--fg-mid);text-decoration:none;
+  transition:color .25s;
+}
+.contact-links a:hover{color:var(--fg)}
+</style>
+</head>
+<body>
+
+<!-- Film grain canvas -->
+<canvas id="grain"></canvas>
+
+<!-- Nav dots -->
+<nav class="nav-dots" aria-label="Page navigation">
+  <div class="nav-dot active" data-s="hero" title="Hero"></div>
+  <div class="nav-dot" data-s="profile" title="Profile"></div>
+  <div class="nav-dot" data-s="internship" title="Internship"></div>
+  <div class="nav-dot" data-s="contact" title="Contact"></div>
+</nav>
+
+<!-- ============================
+     SECTION 1 — HERO
+============================ -->
+<section id="hero">
+
+  <!-- Left: Globe + Cert mark -->
+  <div class="hero-left">
+    <!-- Globe -->
+    <svg width="42" height="42" viewBox="0 0 42 42" fill="none" class="anim d3">
+      <circle cx="21" cy="21" r="15" stroke="var(--fg)" stroke-width="1.2"/>
+      <ellipse cx="21" cy="21" rx="6.5" ry="15" stroke="var(--fg)" stroke-width="1.2"/>
+      <line x1="6" y1="21" x2="36" y2="21" stroke="var(--fg)" stroke-width="1.2"/>
+      <line x1="8.5" y1="14.5" x2="33.5" y2="14.5" stroke="var(--fg)" stroke-width="1.2"/>
+      <line x1="8.5" y1="27.5" x2="33.5" y2="27.5" stroke="var(--fg)" stroke-width="1.2"/>
+    </svg>
+    <!-- Triple-C cert mark -->
+    <svg width="48" height="30" viewBox="0 0 48 30" fill="none" class="anim d4">
+      <circle cx="9" cy="15" r="8" stroke="var(--fg)" stroke-width="1.2"/>
+      <circle cx="24" cy="15" r="8" stroke="var(--fg)" stroke-width="1.2"/>
+      <circle cx="39" cy="15" r="8" stroke="var(--fg)" stroke-width="1.2"/>
+    </svg>
+  </div>
+
+  <!-- Center content -->
+  <div class="hero-center">
+    <div class="hero-loc anim d0">NY_10018 &nbsp;—&nbsp; DESIGN_PORTFOLIO</div>
+
+    <!-- Monogram: stylized AM letterforms -->
+    <div class="hero-monogram">
+      <!-- A mark -->
+      <svg width="70" height="58" viewBox="0 0 70 58" fill="none" class="anim d1">
+        <path d="M6 54 L28 4 L50 54" stroke="var(--fg)" stroke-width="2" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+        <line x1="14" y1="36" x2="42" y2="36" stroke="var(--fg)" stroke-width="2"/>
+      </svg>
+      <!-- M mark -->
+      <svg width="62" height="58" viewBox="0 0 62 58" fill="none" class="anim d2">
+        <path d="M6 54 L6 4 L31 32 L56 4 L56 54" stroke="var(--fg)" stroke-width="2" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <div class="dept-row anim d3">
+      <span>THE</span><span>DESIGN</span><span>DEPARTMENT</span>
+    </div>
+    <div class="tags-row anim d4">
+      <span>LAYOUT/</span><span>CONCEPT/</span><span>PIXELS/</span>
+    </div>
+    <div class="pill-row anim d5">
+      <span>ALL</span>
+      <span class="pill">MADE BY HUMANS</span>
+    </div>
+  </div>
+
+  <!-- Right: DSGN DEPT badge -->
+  <div class="hero-right anim d4">
+    <svg width="40" height="50" viewBox="0 0 40 50" fill="none">
+      <rect x="1" y="1" width="38" height="48" rx="3" stroke="var(--fg-mid)" stroke-width="1"/>
+      <text x="20" y="20" text-anchor="middle" fill="var(--fg-mid)" font-size="8.5" font-family="'IBM Plex Mono',monospace" letter-spacing="1.5">DSGN</text>
+      <text x="20" y="31" text-anchor="middle" fill="var(--fg-mid)" font-size="8.5" font-family="'IBM Plex Mono',monospace" letter-spacing="1.5">DEPT</text>
+      <path d="M16 38 L20 45 L24 38" stroke="var(--fg-mid)" stroke-width="1" fill="none"/>
+    </svg>
+  </div>
+
+</section>
+
+<!-- ============================
+     SECTION 2 — PROFILE
+============================ -->
+<section id="profile">
+  <div class="profile-wrap">
+
+    <!-- Vertical track -->
+    <div class="v-track">
+      <span class="v-arrow">↑</span>
+      <span class="v-arrow">↓</span>
+    </div>
+
+    <!-- Content -->
+    <div class="profile-content">
+
+      <div>
+        <div class="num-tag">01</div>
+        <div class="tech-stack">
+          <span>TYPE</span>
+          <span>VECTOR</span>
+          <span>TRUE_NORTH</span>
+          <span>MINIMAL_FORM</span>
+        </div>
+      </div>
+
+      <div class="big-label">BEYOND_THE_EXPECTED</div>
+
+      <div>
+        <div class="icon-row" style="margin-bottom:14px">
+          <!-- ID badge icon -->
+          <svg width="38" height="30" viewBox="0 0 38 30" fill="none">
+            <rect x="1" y="1" width="36" height="28" rx="3" stroke="var(--fg)" stroke-width="1.2"/>
+            <rect x="5" y="5" width="10" height="10" rx="1" stroke="var(--fg)" stroke-width="1"/>
+            <line x1="19" y1="8" x2="32" y2="8" stroke="var(--fg)" stroke-width="1"/>
+            <line x1="19" y1="12" x2="28" y2="12" stroke="var(--fg)" stroke-width="1"/>
+            <line x1="5" y1="20" x2="32" y2="20" stroke="var(--fg)" stroke-width=".8" stroke-opacity=".45"/>
+            <line x1="5" y1="24" x2="22" y2="24" stroke="var(--fg)" stroke-width=".8" stroke-opacity=".45"/>
+          </svg>
+          <!-- Dot ring with number -->
+          <div style="position:relative;width:34px;height:34px">
+            <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+              <circle cx="17" cy="17" r="15" stroke="var(--fg)" stroke-width="1.2"/>
+            </svg>
+            <span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:9px;letter-spacing:0;font-family:var(--mono)">26</span>
+          </div>
+        </div>
+        <div class="sub-label">CURATED_VISUAL_INFRASTRUCTURE</div>
+      </div>
+
+      <div class="icon-row">
+        <span class="roman">XIV</span>
+        <div class="ce-ring">CE</div>
+      </div>
+
+      <div class="tech-stack">
+        <span>REFINED_DIGITAL_ARTIFACTS</span>
+        <span>KINETIC_IDENTITIES</span>
+        <span>MINIMAL_FORM</span>
+      </div>
+
+      <div>
+        <div class="tech-stack" style="color:var(--fg-mid)">
+          <span>RASTER</span>
+          <span>FONT</span>
+        </div>
+        <div class="num-tag" style="margin-top:8px">02</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================
+     SECTION 3 — INTERNSHIP
+============================ -->
+<section id="internship">
+  <div class="intern-wrap">
+
+    <div class="intern-top">
+      <div>
+        <!-- Dual heads + warning icon -->
+        <div class="intern-icons">
+          <svg width="86" height="72" viewBox="0 0 86 72" fill="none">
+            <!-- Left head -->
+            <circle cx="26" cy="22" r="16" stroke="var(--fg)" stroke-width="1.5"/>
+            <path d="M4 70 C4 52 14 44 26 44 C32 44 38 47 43 51" stroke="var(--fg)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <!-- Right head -->
+            <circle cx="60" cy="22" r="16" stroke="var(--fg)" stroke-width="1.5"/>
+            <path d="M82 70 C82 52 72 44 60 44 C54 44 48 47 43 51" stroke="var(--fg)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <!-- Venn centre -->
+            <path d="M34 30 C37 35 39 40 43 44 C47 40 49 35 52 30" stroke="var(--fg)" stroke-width="1" fill="none" stroke-opacity=".6"/>
+          </svg>
+          <!-- Info circle -->
+          <svg width="46" height="46" viewBox="0 0 46 46" fill="none">
+            <circle cx="23" cy="23" r="21" stroke="var(--fg)" stroke-width="1.5"/>
+            <circle cx="23" cy="14" r="2" fill="var(--fg)"/>
+            <line x1="23" y1="20" x2="23" y2="34" stroke="var(--fg)" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <!-- Tagline grid -->
+        <div class="tagline-grid">
+          <div>
+            <div>PIXELS</div>
+            <div>PUSHED</div>
+            <div>PERFECTION</div>
+          </div>
+          <div style="color:var(--fg-mid)">
+            <div>DESIGN&nbsp;DEPT.</div>
+            <div>TO</div>
+            <div class="roman" style="font-size:30px">XIV</div>
+          </div>
+        </div>
+
+        <div style="margin-top:22px"><span class="pill-dim">© 2024</span></div>
+      </div>
+
+      <!-- Right side decorative number -->
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;padding-top:8px">
+        <span style="font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:var(--fg-low)">INTERNSHIP</span>
+        <span style="font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:var(--fg-low)">RECORD_01</span>
+        <svg width="30" height="60" viewBox="0 0 30 60" fill="none" style="margin-top:8px">
+          <line x1="15" y1="4" x2="15" y2="56" stroke="var(--fg-low)" stroke-width="1"/>
+          <path d="M9 50 L15 57 L21 50" stroke="var(--fg-low)" stroke-width="1" fill="none"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Experience block -->
+    <div class="exp-divider">
+      <div class="exp-meta">
+        <div>
+          <div class="exp-company">KINETIC_STUDIO</div>
+          <div class="exp-role">UI / UX DESIGN INTERN</div>
+          <div class="exp-date">JUN 2024 — AUG 2024 &nbsp;/&nbsp; NEW_YORK</div>
+        </div>
+        <div class="exp-ref">
+          <span>REFERENCE</span>
+          <span style="margin-top:6px">01 / INTERN / 2024</span>
+        </div>
+      </div>
+
+      <div class="exp-body">
+        <div class="exp-desc">
+          CONTRIBUTED TO BRAND_IDENTITY<br>
+          SYSTEMS FOR THREE PRODUCT<br>
+          LAUNCHES — BUILT COMPONENT<br>
+          LIBRARIES IN FIGMA — DELIVERED<br>
+          POLISHED UI ACROSS WEB + MOBILE
+        </div>
+        <div>
+          <div class="tools-label">TOOLS_USED</div>
+          <div class="tags-wrap">
+            <span class="pill-dim">FIGMA</span>
+            <span class="pill-dim">AFTER_FX</span>
+            <span class="pill-dim">PRINCIPLE</span>
+            <span class="pill-dim">NOTION</span>
+            <span class="pill-dim">SLACK</span>
+            <span class="pill-dim">FRAMER</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================
+     SECTION 4 — CONTACT
+============================ -->
+<section id="contact">
+
+  <!-- Big name logotype -->
+  <div style="margin-bottom:36px">
+    <svg width="280" height="90" viewBox="0 0 280 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- A -->
+      <path d="M10 84 L40 6 L70 84" stroke="var(--fg)" stroke-width="2.5" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+      <line x1="20" y1="56" x2="60" y2="56" stroke="var(--fg)" stroke-width="2.5"/>
+      <!-- M -->
+      <path d="M90 84 L90 6 L140 54 L190 6 L190 84" stroke="var(--fg)" stroke-width="2.5" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+      <!-- small dot accent -->
+      <circle cx="218" cy="16" r="7" fill="var(--fg)"/>
+      <circle cx="218" cy="16" r="3.5" fill="var(--bg)"/>
+    </svg>
+  </div>
+
+  <div class="contact-dept">
+    <span>THE</span><span>DESIGN</span><span>DEPARTMENT</span>
+  </div>
+  <div class="contact-tags">
+    <span>LAYOUT,</span><span>CONCEPT,</span><span>PIXELS</span>
+  </div>
+  <div class="contact-pill-row">
+    <span style="font-size:11px;letter-spacing:.18em;text-transform:uppercase">ALL</span>
+    <span class="pill">MADE BY HUMANS</span>
+  </div>
+
+  <!-- Stylized icon mark -->
+  <div style="margin:8px 0 0">
+    <svg width="58" height="58" viewBox="0 0 58 58" fill="none">
+      <rect x="2" y="2" width="54" height="54" rx="5" stroke="var(--fg)" stroke-width="1.5"/>
+      <rect x="8" y="8" width="42" height="42" rx="3" stroke="var(--fg-mid)" stroke-width="1"/>
+      <!-- inner monogram tiny -->
+      <text x="29" y="37" text-anchor="middle" fill="var(--fg)" font-size="18" font-family="Georgia,serif" letter-spacing="1">AM</text>
+    </svg>
+  </div>
+
+  <div class="contact-copy">
+    <span>© 2024</span>
+    <span style="color:var(--fg-low)">—</span>
+    <span>PROPERTY OF ALEX MORGAN</span>
+  </div>
+
+  <div class="contact-links">
+    <a href="mailto:alex@morgan.design">EMAIL_</a>
+    <a href="#">LINKEDIN_</a>
+    <a href="#">BEHANCE_</a>
+    <a href="#">FIGMA_</a>
+  </div>
+
+</section>
+
+<script>
+// Smooth scroll
+document.querySelectorAll('.nav-dot').forEach(dot=>{
+  dot.addEventListener('click',()=>{
+    const id=dot.dataset.s;
+    document.getElementById(id).scrollIntoView({behavior:'smooth'});
+  });
+});
+
+// Active dot on scroll
+const sections=['hero','profile','internship','contact'];
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      document.querySelectorAll('.nav-dot').forEach(d=>d.classList.remove('active'));
+      const dot=document.querySelector(`[data-s="${e.target.id}"]`);
+      if(dot) dot.classList.add('active');
+    }
+  });
+},{threshold:0.5});
+sections.forEach(id=>{const el=document.getElementById(id);if(el)io.observe(el);});
+
+// === ANIMATED FILM GRAIN ===
+const grainCanvas = document.getElementById('grain');
+const gCtx = grainCanvas.getContext('2d');
+
+
+function resizeGrain(){
+  grainCanvas.width = window.innerWidth;
+  grainCanvas.height = window.innerHeight;
+}
+
+function drawGrain(){
+  const w = grainCanvas.width, h = grainCanvas.height;
+  const img = gCtx.createImageData(w, h);
+  const d = img.data;
+  for(let i = 0; i < d.length; i += 4){
+    const v = (Math.random() * 255) | 0;
+    d[i] = v; d[i+1] = v; d[i+2] = v; d[i+3] = 255;
+  }
+  gCtx.putImageData(img, 0, 0);
+}
+
+resizeGrain();
+drawGrain();
+window.addEventListener('resize', ()=>{ resizeGrain(); drawGrain(); });
+
+// === SCROLL-TRIGGERED REVEAL ===
+// Scroll-triggered reveal for profile/internship/contact sections
+const revealSections=['profile','internship','contact'];
+const revealObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.reveal-child').forEach((el,i)=>{
+        el.style.animationDelay=`${i*0.12}s`;
+        el.classList.add('anim');
+      });
+    }
+  });
+},{threshold:0.15});
+revealSections.forEach(id=>{const el=document.getElementById(id);if(el)revealObs.observe(el);});
+</script>
+
+</body>
+</html>

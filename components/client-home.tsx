@@ -16,6 +16,7 @@ import CommandPalette from "@/components/command-palette"
 import { SiteFooter } from "@/components/site-footer"
 import KeyboardHint from "@/components/keyboard-hint"
 import HeroBanner from "@/components/hero-banner"
+import { HeroVideo } from "@/components/hero-video"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, User, Code, BookOpen, Heart, Bookmark, Search } from "lucide-react"
 
@@ -126,7 +127,7 @@ export default function ClientHome({
      render
   ────────────────────────────────── */
     return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8 relative">
+    <div className="min-h-screen bg-background text-foreground flex flex-col items-center pt-16 pb-12 px-4 sm:px-6 md:pt-6 lg:px-8 relative">
       {/* Dotted pattern background */}
       
       <div className="w-full flex flex-col items-center relative z-10">
@@ -230,6 +231,10 @@ export default function ClientHome({
           <span>K</span>
         </button>
         <ModeToggle />
+      </div>
+
+      <div className="max-w-6xl w-full mb-8 md:mb-10">
+        <HeroVideo />
       </div>
 
       <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-[120px_1fr_120px] gap-8 md:gap-12">
