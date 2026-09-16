@@ -170,7 +170,7 @@ const Dash = ({
       title={section.label}
       data-cuelume-hover="tick"
       data-cuelume-press="tick"
-      className="group flex h-px w-[110px] items-center border-0 bg-transparent p-0 outline-none"
+      className="group flex h-4 w-[110px] items-center border-0 bg-transparent p-0 outline-none"
       onClick={() => onSelect(section.id)}
     >
       <motion.span
@@ -371,7 +371,7 @@ export function ProximitySidebar({
     >
       <div
         className={`mx-2 flex flex-col ${
-          side === "right" ? "items-end" : "items-start"
+          side === "right" ? "items-start" : "items-end"
         }`}
         style={{ gap: 8 }}
         onPointerMove={(event) => {

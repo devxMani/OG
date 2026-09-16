@@ -370,7 +370,7 @@ export default function ClientHome({
   )
 
 
-  /* ───────����────────────────────────
+  /* ───────�����────────────────────────
      render tensorforest content
   ────────────────────────────────── */
   function renderTensorForestContent() {
@@ -713,7 +713,7 @@ export default function ClientHome({
           <div>
             {/* Name and Social Icons */}
 <div className="flex justify-between items-start gap-4 mb-1">
-  <h1 className="flex items-baseline gap-2 whitespace-nowrap font-instrument text-[30px] sm:text-[36px] leading-none font-normal italic tracking-tight">
+  <h1 className="flex items-baseline gap-1 whitespace-nowrap font-instrument text-[32px] sm:text-[40px] leading-none font-normal italic tracking-tight">
                 <span className="inline-block transition-opacity duration-200" aria-live="polite">
                   {introGreeting}
                 </span>
@@ -1069,12 +1069,48 @@ export default function ClientHome({
     // Polaroid photos
     const polaroidPhotos = [
       {
-        id: "1",
-        title: "the start of something big",
-        location: "WeWork Toronto",
-        image: "/polaroids/the start of something big.png",
-        songUrl: "https://open.spotify.com/track/1zgHn1EqUyA0HqNYMdJ5ia?si=b10022a78daa4fa1"
+        id: "home-1",
+        title: "home, briefly",
+        location: "Toronto, ON",
+        image: "/cooked/homephotos/photo1.jpg",
       },
+      {
+        id: "home-2",
+        title: "a quiet afternoon",
+        location: "Toronto, ON",
+        image: "/cooked/homephotos/photo2.jpg",
+      },
+      {
+        id: "home-3",
+        title: "somewhere familiar",
+        location: "Toronto, ON",
+        image: "/cooked/homephotos/photo3.jpg",
+      },
+      {
+        id: "home-4",
+        title: "on the way",
+        location: "Toronto, ON",
+        image: "/cooked/homephotos/photo4.jpg",
+      },
+      {
+        id: "home-5",
+        title: "the view from here",
+        location: "Toronto, ON",
+        image: "/cooked/homephotos/photo5.jpg",
+      },
+      {
+        id: "home-6",
+        title: "late light",
+        location: "Toronto, ON",
+        image: "/cooked/homephotos/photo6.jpg",
+      },
+      {
+        id: "home-7",
+        title: "until next time",
+        location: "Toronto, ON",
+        image: "/cooked/homephotos/photo7.jpg",
+      },
+      /*
       {
         id: "2",
         title: "apocalypse w/ greg",
@@ -1194,6 +1230,7 @@ export default function ClientHome({
         image: "/polaroids/execsocial.PNG",
         songUrl: "https://open.spotify.com/track/1Ukxccao1BlWrPhYkcXbwZ?si=9fee189e2ea547bb"
       }
+      */
     ];
 
     // Film emulation photos
@@ -1365,9 +1402,9 @@ export default function ClientHome({
         case 'polaroids':
           return polaroidPhotos;
         case 'digital':
-          return filmPhotos;
-        case 'film':
           return disposablePhotos;
+        case 'film':
+          return filmPhotos;
         default:
           return polaroidPhotos;
       }
