@@ -370,7 +370,7 @@ export default function ClientHome({
   )
 
 
-  /* ───────�����────────────────────────
+  /* ───────������────────────────────────
      render tensorforest content
   ────────────────────────────────── */
   function renderTensorForestContent() {
@@ -712,8 +712,8 @@ export default function ClientHome({
         return (
           <div>
             {/* Name and Social Icons */}
-<div className="flex justify-between items-start gap-4 mb-1">
-  <h1 className="flex items-baseline gap-1 whitespace-nowrap font-instrument text-[32px] sm:text-[40px] leading-none font-normal italic tracking-tight">
+<div className="flex justify-between items-start gap-4 mb-5">
+  <h1 className="flex items-baseline gap-3 whitespace-nowrap font-instrument text-[32px] sm:text-[40px] leading-none font-normal italic tracking-tight">
                 <span className="inline-block transition-opacity duration-200" aria-live="polite">
                   {introGreeting}
                 </span>
