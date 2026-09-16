@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { ChevronRight, Volume2, VolumeX, Music } from "lucide-react"
 
 const CLIPS = [
+  { src: "/hero/one-of-those-evenings.mp4", label: "Sunset Drive" },
   { src: "/hero/one-last-check.mp4", label: "One Last Check" },
   { src: "/hero/everything-reacts.mp4", label: "Everything Reacts" },
   { src: "/hero/still-counts-as-indoors.mp4", label: "Still Counts as Indoors" },
@@ -17,8 +18,7 @@ export function HeroVideo() {
   const videoRef = useRef<HTMLVideoElement>(null)
   const videoRefs = useRef<Array<HTMLVideoElement | null>>([])
   const audioRef = useRef<HTMLAudioElement>(null)
-  const [activeClip, setActiveClip] = useState(1)
-  const [requestedClip, setRequestedClip] = useState(1)
+  const [activeClip, setActiveClip] = useState(0)
   const [videoMuted, setVideoMuted] = useState(false)
   const [musicOff, setMusicOff] = useState(false)
   const shouldMuteVideo = videoMuted
@@ -42,16 +42,8 @@ export function HeroVideo() {
   }, [activeClip, shouldMuteVideo])
 
   const nextClip = () => {
-    setRequestedClip((index) => (index + 1) % CLIPS.length)
+    setActiveClip((index) => (index + 1) % CLIPS.length)
   }
-
-  useEffect(() => {
-    if (requestedClip === activeClip) return
-    const pendingVideo = videoRefs.current[requestedClip]
-    if (!pendingVideo) return
-    pendingVideo.load()
-    void pendingVideo.play().catch(() => {})
-  }, [requestedClip, activeClip])
 
   useEffect(() => {
     const audio = audioRef.current
@@ -105,15 +97,8 @@ export function HeroVideo() {
             playsInline
             preload="auto"
             src={clip.src}
-            onCanPlay={() => {
-              if (index !== requestedClip || index === activeClip) return
-              setActiveClip(index)
-              void videoRefs.current[index]?.play().catch(() => {})
-            }}
-            onCanPlayThrough={() => {
-              if (index !== requestedClip || index === activeClip) return
-              setActiveClip(index)
-              void videoRefs.current[index]?.play().catch(() => {})
+            onLoadedData={() => {
+              if (index === activeClip) void videoRefs.current[index]?.play().catch(() => {})
             }}
             aria-hidden={index !== activeClip}
             aria-label={index === activeClip ? clip.label : undefined}

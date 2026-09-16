@@ -370,7 +370,7 @@ export default function ClientHome({
   )
 
 
-  /* ───────���────────────────────────
+  /* ───────����────────────────────────
      render tensorforest content
   ────────────────────────────────── */
   function renderTensorForestContent() {
@@ -713,11 +713,11 @@ export default function ClientHome({
           <div>
             {/* Name and Social Icons */}
 <div className="flex justify-between items-start gap-4 mb-1">
-  <h1 className="whitespace-nowrap font-instrument text-[30px] sm:text-[36px] leading-none font-normal italic tracking-tight">
-                <span className="inline-block min-w-[10ch] transition-opacity duration-200" aria-live="polite">
+  <h1 className="flex items-baseline gap-2 whitespace-nowrap font-instrument text-[30px] sm:text-[36px] leading-none font-normal italic tracking-tight">
+                <span className="inline-block transition-opacity duration-200" aria-live="polite">
                   {introGreeting}
-                </span>{" "}
-                Mani
+                </span>
+                <span>Mani</span>
               </h1>
               <div className="flex items-center gap-4">
                 <a href="https://x.com/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="X / Twitter">
