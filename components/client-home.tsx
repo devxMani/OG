@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { AccentControls } from "@/components/accent-controls"
 import { useAccentTheme } from "@/components/accent-theme-provider"
@@ -71,7 +71,36 @@ export default function ClientHome({
   const [activeApocalypseHacks, setActiveApocalypseHacks] = useState(initialProject === "apocalypse-hacks")
   const [activePhotoTab, setActivePhotoTab] = useState<'polaroids' | 'digital' | 'film'>('polaroids')
   const [projectFilter, setProjectFilter] = useState<'Everything' | 'Projects' | 'Communities'>('Everything')
+  const [introGreeting, setIntroGreeting] = useState("Hi, I’m")
   const { accentDark, accentVibrant, resolvedTheme, theme } = useAccentTheme()
+
+  useEffect(() => {
+    const greetings = [
+      "Hi, I’m",
+      "你好，我是",
+      "Bonjour, je suis",
+      "Ciao, sono",
+      "Hola, soy",
+      "שלום, אני",
+      "नमस्ते, मैं हूँ",
+      "Привет, я",
+      "Olá, eu sou",
+    ]
+    let index = 0
+    const interval = window.setInterval(() => {
+      index += 1
+      if (index >= greetings.length) index = 0
+      setIntroGreeting(greetings[index])
+    }, 330)
+    const stop = window.setTimeout(() => {
+      window.clearInterval(interval)
+      setIntroGreeting("Hi, I’m")
+    }, 3000)
+    return () => {
+      window.clearInterval(interval)
+      window.clearTimeout(stop)
+    }
+  }, [])
   const navAccent = (resolvedTheme || theme) === "dark" ? accentDark : accentVibrant
   const activeNavIndex = Math.max(0, NAV_ITEMS.findIndex((item) => item.key === activeSection))
 
@@ -289,7 +318,7 @@ export default function ClientHome({
         </div>
 
         {/* content + hook sidebar */}
-        <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-[220px_minmax(0,1fr)_72px] gap-10 md:gap-12">
+        <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-[220px_minmax(0,1fr)_72px] gap-10 md:gap-12 font-newsreader text-[16px]">
 
           {/* ───────────── desktop sidebar ───────────── */}
           <nav className="hidden md:block sticky top-12 self-start select-none">
@@ -301,12 +330,12 @@ export default function ClientHome({
                 if (next) selectSection(next.key)
               }}
               color={navAccent}
-              className="text-[13px]"
+              className="font-newsreader text-[15px] tracking-[0.01em]"
             />
           </nav>
 
           {/* ───────────── main content ───────────── */}
-          <div className="text-base leading-relaxed min-w-0">
+          <div className="portfolio-content text-base leading-relaxed min-w-0">
             {activeTensorForest ? renderTensorForestContent() : 
              activeApocalypseHacks ? renderApocalypseHacksContent() : 
              renderSectionContent(activeSection)}
@@ -341,7 +370,7 @@ export default function ClientHome({
   )
 
 
-  /* ────────────────────────────────
+  /* ───────�������────────────────────────
      render tensorforest content
   ────────────────────────────────── */
   function renderTensorForestContent() {
@@ -683,13 +712,12 @@ export default function ClientHome({
         return (
           <div>
             {/* Name and Social Icons */}
-            <div className="flex justify-between items-start gap-6 mb-10">
-              <h1 className="font-newsreader text-[40px] sm:text-[48px] leading-[1.05] font-normal tracking-tight">
-                Hi, I&apos;m{" "}
-                <span className="group cursor-default">
-                  <span className="group-hover:hidden">Mani</span>
-                  <span className="hidden group-hover:inline">Beyond</span>
+<div className="flex justify-between items-start gap-4 mb-5">
+  <h1 className="flex items-baseline gap-3 whitespace-nowrap font-instrument text-[30px] sm:text-[36px] leading-none font-normal italic tracking-tight">
+                <span className="inline-block transition-opacity duration-200" aria-live="polite">
+                  {introGreeting}
                 </span>
+                <span>Mani</span>
               </h1>
               <div className="flex items-center gap-4">
                 <a href="https://x.com/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="X / Twitter">
@@ -1041,12 +1069,48 @@ export default function ClientHome({
     // Polaroid photos
     const polaroidPhotos = [
       {
-        id: "1",
-        title: "the start of something big",
-        location: "WeWork Toronto",
-        image: "/polaroids/the start of something big.png",
-        songUrl: "https://open.spotify.com/track/1zgHn1EqUyA0HqNYMdJ5ia?si=b10022a78daa4fa1"
+        id: "home-1",
+        title: "home, briefly",
+        location: "Toronto, ON",
+        image: "/cooked/homephotos/photo1.jpg",
       },
+      {
+        id: "home-2",
+        title: "a quiet afternoon",
+        location: "Toronto, ON",
+        image: "/cooked/homephotos/photo2.jpg",
+      },
+      {
+        id: "home-3",
+        title: "somewhere familiar",
+        location: "Toronto, ON",
+        image: "/cooked/homephotos/photo3.jpg",
+      },
+      {
+        id: "home-4",
+        title: "on the way",
+        location: "Toronto, ON",
+        image: "/cooked/homephotos/photo4.jpg",
+      },
+      {
+        id: "home-5",
+        title: "the view from here",
+        location: "Toronto, ON",
+        image: "/cooked/homephotos/photo5.jpg",
+      },
+      {
+        id: "home-6",
+        title: "late light",
+        location: "Toronto, ON",
+        image: "/cooked/homephotos/photo6.jpg",
+      },
+      {
+        id: "home-7",
+        title: "until next time",
+        location: "Toronto, ON",
+        image: "/cooked/homephotos/photo7.jpg",
+      },
+      /*
       {
         id: "2",
         title: "apocalypse w/ greg",
@@ -1166,6 +1230,7 @@ export default function ClientHome({
         image: "/polaroids/execsocial.PNG",
         songUrl: "https://open.spotify.com/track/1Ukxccao1BlWrPhYkcXbwZ?si=9fee189e2ea547bb"
       }
+      */
     ];
 
     // Film emulation photos
@@ -1337,9 +1402,9 @@ export default function ClientHome({
         case 'polaroids':
           return polaroidPhotos;
         case 'digital':
-          return filmPhotos;
-        case 'film':
           return disposablePhotos;
+        case 'film':
+          return filmPhotos;
         default:
           return polaroidPhotos;
       }

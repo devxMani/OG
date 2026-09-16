@@ -51,6 +51,22 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+
+  .portfolio-content h1,
+  .portfolio-content h2,
+  .portfolio-content h3,
+  .portfolio-content h4 {
+    font-family: var(--font-instrument), Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  .portfolio-content p,
+  .portfolio-content li {
+    font-family: var(--font-newsreader), Georgia, serif;
+  }
 }
 
 @layer base {
