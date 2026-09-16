@@ -15,9 +15,10 @@ const controlClassName =
 
 export function HeroVideo() {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const videoRefs = useRef<Array<HTMLVideoElement | null>>([])
   const audioRef = useRef<HTMLAudioElement>(null)
-  const [activeClip, setActiveClip] = useState(0)
-  const [requestedClip, setRequestedClip] = useState(0)
+  const [activeClip, setActiveClip] = useState(1)
+  const [requestedClip, setRequestedClip] = useState(1)
   const [videoMuted, setVideoMuted] = useState(false)
   const [musicOff, setMusicOff] = useState(false)
   const shouldMuteVideo = videoMuted
@@ -43,6 +44,14 @@ export function HeroVideo() {
   const nextClip = () => {
     setRequestedClip((index) => (index + 1) % CLIPS.length)
   }
+
+  useEffect(() => {
+    if (requestedClip === activeClip) return
+    const pendingVideo = videoRefs.current[requestedClip]
+    if (!pendingVideo) return
+    pendingVideo.load()
+    void pendingVideo.play().catch(() => {})
+  }, [requestedClip, activeClip])
 
   useEffect(() => {
     const audio = audioRef.current
@@ -85,21 +94,26 @@ export function HeroVideo() {
         {CLIPS.map((clip, index) => (
           <video
             key={clip.src}
-            ref={index === activeClip ? videoRef : undefined}
-            className={`absolute inset-0 h-full w-full rounded-xl object-cover transition-opacity duration-300 ${index === activeClip ? "opacity-100" : "pointer-events-none opacity-0"}`}
-            autoPlay={index === activeClip || index === requestedClip}
+            ref={(element) => {
+              videoRefs.current[index] = element
+              if (index === activeClip) videoRef.current = element
+            }}
+            className={`absolute inset-0 h-full w-full rounded-xl object-cover transition-opacity duration-200 ${index === activeClip ? "opacity-100" : "pointer-events-none opacity-0"}`}
+            autoPlay={index === activeClip}
             muted={shouldMuteVideo}
             loop
             playsInline
-            preload={index === activeClip || index === requestedClip ? "auto" : "metadata"}
+            preload="auto"
             src={clip.src}
             onCanPlay={() => {
-              if (index !== requestedClip) return
+              if (index !== requestedClip || index === activeClip) return
               setActiveClip(index)
-              if (index === activeClip) void videoRef.current?.play().catch(() => {})
+              void videoRefs.current[index]?.play().catch(() => {})
             }}
-            onLoadedData={() => {
-              if (index === requestedClip) setActiveClip(index)
+            onCanPlayThrough={() => {
+              if (index !== requestedClip || index === activeClip) return
+              setActiveClip(index)
+              void videoRefs.current[index]?.play().catch(() => {})
             }}
             aria-hidden={index !== activeClip}
             aria-label={index === activeClip ? clip.label : undefined}
