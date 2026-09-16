@@ -43,6 +43,7 @@ export function HeroVideo() {
       void video.play().catch(() => {})
     }
 
+    video.load()
     syncPlayback()
     media.addEventListener("change", syncPlayback)
     return () => media.removeEventListener("change", syncPlayback)
@@ -91,7 +92,6 @@ export function HeroVideo() {
       <audio ref={audioRef} src="/hero/piano.mp3" preload="auto" loop />
       <div className="relative aspect-[16/7] min-h-[168px] w-full max-h-[340px] sm:max-h-[400px]">
         <video
-          key={clip.src}
           ref={videoRef}
           className="absolute inset-0 h-full w-full object-cover rounded-xl"
           autoPlay

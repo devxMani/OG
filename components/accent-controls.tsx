@@ -134,34 +134,33 @@ export function AccentControls({ embedded = false }: AccentControlsProps) {
             </div>
 
             {/* Theme Toggle */}
-            <div className="flex flex-col gap-1.5 pt-1 border-t border-foreground/10">
+            <div className="flex flex-col gap-1.5 border-t border-foreground/10 pt-3">
               <span className="text-[11px] font-normal text-foreground/50">Theme</span>
-              <div className="flex items-center gap-2.5">
+              <div className="grid grid-cols-2 gap-1 rounded-xl bg-foreground/[0.06] p-1">
                 <button
                   type="button"
                   aria-label="Light theme"
                   aria-pressed={!isDark}
                   onClick={() => setTheme("light")}
-                  className={`w-3.5 h-3.5 rounded-full cursor-pointer transition-all duration-150 ${
-                    !isDark
-                      ? "ring-1.5 ring-offset-1 ring-offset-background ring-foreground scale-105"
-                      : "opacity-40 hover:opacity-80"
+                  className={`flex items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] transition-all duration-150 ${
+                    !isDark ? "bg-background/80 text-foreground shadow-sm" : "text-foreground/45 hover:text-foreground/75"
                   }`}
-                  style={{ backgroundColor: "#f4f4f5" }}
-                />
-
+                >
+                  <span className="h-2 w-2 rounded-full bg-zinc-100 ring-1 ring-black/10" />
+                  Light
+                </button>
                 <button
                   type="button"
                   aria-label="Dark theme"
                   aria-pressed={isDark}
                   onClick={() => setTheme("dark")}
-                  className={`w-3.5 h-3.5 rounded-full cursor-pointer transition-all duration-150 ${
-                    isDark
-                      ? "ring-1.5 ring-offset-1 ring-offset-background ring-foreground scale-105"
-                      : "opacity-40 hover:opacity-80"
+                  className={`flex items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] transition-all duration-150 ${
+                    isDark ? "bg-background/80 text-foreground shadow-sm" : "text-foreground/45 hover:text-foreground/75"
                   }`}
-                  style={{ backgroundColor: "#27272a" }}
-                />
+                >
+                  <span className="h-2 w-2 rounded-full bg-zinc-800 ring-1 ring-white/15" />
+                  Dark
+                </button>
               </div>
             </div>
           </div>
