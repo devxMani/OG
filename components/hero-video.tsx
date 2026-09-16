@@ -16,8 +16,8 @@ const controlClassName =
 export function HeroVideo() {
   const videoRef = useRef<HTMLVideoElement>(null)
   const audioRef = useRef<HTMLAudioElement>(null)
-  const [activeClip, setActiveClip] = useState(1)
-  const [requestedClip, setRequestedClip] = useState(1)
+  const [activeClip, setActiveClip] = useState(0)
+  const [requestedClip, setRequestedClip] = useState(0)
   const [videoMuted, setVideoMuted] = useState(false)
   const [musicOff, setMusicOff] = useState(false)
   const shouldMuteVideo = videoMuted
@@ -94,6 +94,11 @@ export function HeroVideo() {
             preload={index === activeClip || index === requestedClip ? "auto" : "metadata"}
             src={clip.src}
             onCanPlay={() => {
+              if (index !== requestedClip) return
+              setActiveClip(index)
+              if (index === activeClip) void videoRef.current?.play().catch(() => {})
+            }}
+            onLoadedData={() => {
               if (index === requestedClip) setActiveClip(index)
             }}
             aria-hidden={index !== activeClip}
