@@ -75,13 +75,31 @@ export default function ClientHome({
   const { accentDark, accentVibrant, resolvedTheme, theme } = useAccentTheme()
 
   useEffect(() => {
-    const greetings = ["Hi, I’m", "Bonjour, je suis", "Hola, soy", "Ciao, sono", "Hallo, ich bin"]
+    const greetings = [
+      "Hi, I’m",
+      "你好，我是",
+      "Bonjour, je suis",
+      "Ciao, sono",
+      "Hola, soy",
+      "שלום, אני",
+      "नमस्ते, मैं हूँ",
+      "Привет, я",
+      "Olá, eu sou",
+    ]
     let index = 0
     const interval = window.setInterval(() => {
-      index = (index + 1) % greetings.length
+      index += 1
+      if (index >= greetings.length) index = 0
       setIntroGreeting(greetings[index])
-    }, 650)
-    return () => window.clearInterval(interval)
+    }, 330)
+    const stop = window.setTimeout(() => {
+      window.clearInterval(interval)
+      setIntroGreeting("Hi, I’m")
+    }, 3000)
+    return () => {
+      window.clearInterval(interval)
+      window.clearTimeout(stop)
+    }
   }, [])
   const navAccent = (resolvedTheme || theme) === "dark" ? accentDark : accentVibrant
   const activeNavIndex = Math.max(0, NAV_ITEMS.findIndex((item) => item.key === activeSection))
@@ -300,7 +318,7 @@ export default function ClientHome({
         </div>
 
         {/* content + hook sidebar */}
-        <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-[220px_minmax(0,1fr)_72px] gap-10 md:gap-12">
+        <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-[220px_minmax(0,1fr)_72px] gap-10 md:gap-12 font-newsreader text-[16px]">
 
           {/* ───────────── desktop sidebar ───────────── */}
           <nav className="hidden md:block sticky top-12 self-start select-none">
@@ -695,7 +713,7 @@ export default function ClientHome({
           <div>
             {/* Name and Social Icons */}
             <div className="flex justify-between items-start gap-6 mb-10">
-              <h1 className="font-newsreader text-[40px] sm:text-[48px] leading-[1.05] font-normal tracking-tight">
+              <h1 className="font-instrument text-[34px] sm:text-[40px] leading-[1.05] font-normal italic tracking-tight">
                 <span className="inline-block min-w-[10ch] transition-opacity duration-200" aria-live="polite">
                   {introGreeting}
                 </span>{" "}

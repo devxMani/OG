@@ -1,5 +1,5 @@
 import type React from "react"
-import { Inter, Newsreader } from "next/font/google"
+import { Instrument_Serif, Inter, Newsreader } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AccentThemeProvider } from "@/components/accent-theme-provider"
@@ -19,6 +19,14 @@ const newsreader = Newsreader({
   display: "swap",
 })
 
+const instrument = Instrument_Serif({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-instrument",
+  style: "italic",
+  display: "swap",
+})
+
 export const metadata = {
   title: "Mani",
   description: "Personal website of Mani"
@@ -26,7 +34,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={cn(inter.variable, newsreader.variable)}>
+    <html lang="en" suppressHydrationWarning className={cn(inter.variable, newsreader.variable, instrument.variable)}>
       <body suppressHydrationWarning className="min-h-screen bg-transparent text-foreground relative overflow-x-hidden font-sans selection:bg-white/20">
         <ThemeProvider 
           attribute="class" 

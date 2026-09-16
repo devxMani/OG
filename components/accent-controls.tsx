@@ -79,17 +79,17 @@ export function AccentControls({ embedded = false }: AccentControlsProps) {
           embedded ? "w-auto" : "hidden"
         }`}
       >
-        <div className="relative py-1 w-[196px]">
+        <div className="relative py-1 w-[168px]">
           {/* Resting State */}
           <div
-            className="controls-peek theme-orb ml-auto flex h-10 w-10 items-center justify-center rounded-full glass-control cursor-pointer transition-all duration-200 group-hover:opacity-0 group-hover:pointer-events-none group-focus-within:opacity-0 group-focus-within:pointer-events-none"
+            className="controls-peek theme-orb ml-auto flex h-8 w-8 items-center justify-center rounded-full glass-control cursor-pointer transition-all duration-200 group-hover:opacity-0 group-hover:pointer-events-none group-focus-within:opacity-0 group-focus-within:pointer-events-none"
             aria-hidden="true"
           >
             <span className="theme-orb-core h-5 w-5 rounded-full shadow-[inset_0_1px_1px_rgba(255,255,255,0.45)]" />
           </div>
 
           {/* Expanded State (Panel mode) */}
-          <div className="controls-panel glass-control absolute right-0 top-0 w-[210px] p-3.5 rounded-2xl flex flex-col gap-3.5 opacity-0 pointer-events-none translate-y-1 transition-all duration-200 ease-out group-hover:opacity-100 group-hover:pointer-events-auto group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:pointer-events-auto group-focus-within:translate-y-0 z-50">
+          <div className="controls-panel glass-control absolute right-0 top-0 w-[184px] p-2.5 rounded-xl flex flex-col gap-2.5 opacity-0 pointer-events-none translate-y-1 transition-all duration-200 ease-out group-hover:opacity-100 group-hover:pointer-events-auto group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:pointer-events-auto group-focus-within:translate-y-0 z-50">
             {/* Accent Colour Slider */}
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between text-[11px] font-normal text-foreground/50">
@@ -134,7 +134,7 @@ export function AccentControls({ embedded = false }: AccentControlsProps) {
             </div>
 
             {/* Theme Toggle */}
-            <div className="flex flex-col gap-1.5 border-t border-foreground/10 pt-3">
+            <div className="flex flex-col gap-1 border-t border-foreground/10 pt-2.5">
               <span className="text-[11px] font-normal text-foreground/50">Theme</span>
               <div className="grid grid-cols-2 gap-1 rounded-xl bg-foreground/[0.06] p-1">
                 <button

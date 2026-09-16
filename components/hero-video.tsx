@@ -16,7 +16,8 @@ const controlClassName =
 export function HeroVideo() {
   const videoRef = useRef<HTMLVideoElement>(null)
   const audioRef = useRef<HTMLAudioElement>(null)
-  const [activeClip, setActiveClip] = useState(0)
+  const [activeClip, setActiveClip] = useState(1)
+  const [requestedClip, setRequestedClip] = useState(1)
   const [videoMuted, setVideoMuted] = useState(false)
   const [musicOff, setMusicOff] = useState(false)
   const shouldMuteVideo = videoMuted
@@ -39,7 +40,9 @@ export function HeroVideo() {
     return () => media.removeEventListener("change", playVideo)
   }, [activeClip, shouldMuteVideo])
 
-  const nextClip = () => setActiveClip((index) => (index + 1) % CLIPS.length)
+  const nextClip = () => {
+    setRequestedClip((index) => (index + 1) % CLIPS.length)
+  }
 
   useEffect(() => {
     const audio = audioRef.current
@@ -83,13 +86,16 @@ export function HeroVideo() {
           <video
             key={clip.src}
             ref={index === activeClip ? videoRef : undefined}
-            className={`absolute inset-0 h-full w-full rounded-xl object-cover transition-opacity duration-150 ${index === activeClip ? "opacity-100" : "pointer-events-none opacity-0"}`}
-            autoPlay={index === activeClip}
+            className={`absolute inset-0 h-full w-full rounded-xl object-cover transition-opacity duration-300 ${index === activeClip ? "opacity-100" : "pointer-events-none opacity-0"}`}
+            autoPlay={index === activeClip || index === requestedClip}
             muted={shouldMuteVideo}
             loop
             playsInline
-            preload="auto"
+            preload={index === activeClip || index === requestedClip ? "auto" : "metadata"}
             src={clip.src}
+            onCanPlay={() => {
+              if (index === requestedClip) setActiveClip(index)
+            }}
             aria-hidden={index !== activeClip}
             aria-label={index === activeClip ? clip.label : undefined}
           />

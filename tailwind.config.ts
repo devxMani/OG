@@ -15,6 +15,7 @@ const config: Config = {
   		fontFamily: {
   			sans: ["var(--font-sans)", "Inter", "system-ui", "sans-serif"],
   			newsreader: ["var(--font-newsreader)", "Newsreader", "Georgia", "serif"],
+        instrument: ["var(--font-instrument)", "Instrument Serif", "Georgia", "serif"],
   		},
   		colors: {
   			background: 'hsl(var(--background))',
