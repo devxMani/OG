@@ -152,7 +152,7 @@ export function HookSidebar({
       {label && (
         <span
           data-slot="hook-sidebar-label"
-          className="pb-3 pl-0.5 pr-2 font-sans text-sm font-medium uppercase tracking-wide text-foreground"
+          className="pb-3 pl-0.5 pr-2 font-newsreader text-sm font-medium uppercase tracking-[0.08em] text-foreground"
         >
           {label}
         </span>
@@ -200,7 +200,7 @@ export function HookSidebar({
             onBlur: () => setFocusInside(false),
             onClick: () => select(index),
             className: cn(
-              "rounded-lg py-1.5 pl-5 pr-2 text-left text-sm transition-colors duration-200 motion-reduce:transition-none",
+              "rounded-lg py-2 pl-5 pr-2 font-newsreader text-[15px] leading-tight tracking-[0.01em] text-left transition-colors duration-200 motion-reduce:transition-none",
               isActive
                 ? "text-foreground"
                 : "text-foreground/55 hover:text-foreground/85",

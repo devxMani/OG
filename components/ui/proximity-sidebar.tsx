@@ -73,13 +73,13 @@ const DASH_PRESETS: Record<SectionKind, DashPreset> = {
     base: 30,
     bump: 56,
     thickness: 1,
-    className: "bg-muted-foreground/40",
+    className: "bg-muted-foreground/55",
   },
   body: {
     base: 24,
     bump: 50,
     thickness: 1,
-    className: "bg-muted-foreground/40",
+    className: "bg-muted-foreground/55",
   },
 }
 
@@ -170,7 +170,7 @@ const Dash = ({
       title={section.label}
       data-cuelume-hover="tick"
       data-cuelume-press="tick"
-      className="group flex h-4 w-[110px] items-center border-0 bg-transparent p-0 outline-none"
+      className="group flex h-5 w-[124px] items-center border-0 bg-transparent p-0 outline-none"
       onClick={() => onSelect(section.id)}
     >
       <motion.span

@@ -330,12 +330,12 @@ export default function ClientHome({
                 if (next) selectSection(next.key)
               }}
               color={navAccent}
-              className="text-[13px]"
+              className="font-newsreader text-[15px] tracking-[0.01em]"
             />
           </nav>
 
           {/* ───────────── main content ───────────── */}
-          <div className="text-base leading-relaxed min-w-0">
+          <div className="portfolio-content text-base leading-relaxed min-w-0">
             {activeTensorForest ? renderTensorForestContent() : 
              activeApocalypseHacks ? renderApocalypseHacksContent() : 
              renderSectionContent(activeSection)}
@@ -370,7 +370,7 @@ export default function ClientHome({
   )
 
 
-  /* ───────������────────────────────────
+  /* ───────�������────────────────────────
      render tensorforest content
   ────────────────────────────────── */
   function renderTensorForestContent() {
