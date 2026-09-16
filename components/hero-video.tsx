@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { ChevronRight, Volume2, VolumeX, Music } from "lucide-react"
 
 const CLIPS = [
+  { src: "/hero/one-last-check.mp4", label: "One Last Check" },
   { src: "/hero/everything-reacts.mp4", label: "Everything Reacts" },
   { src: "/hero/still-counts-as-indoors.mp4", label: "Still Counts as Indoors" },
   { src: "/hero/could-leave-anytime.mp4", label: "Could Leave Anytime" },
@@ -78,18 +79,21 @@ export function HeroVideo() {
     <div className="relative w-full overflow-hidden rounded-xl">
       <audio ref={audioRef} src="/hero/piano.mp3" preload="auto" loop />
       <div className="relative aspect-[16/7] min-h-[168px] w-full max-h-[340px] sm:max-h-[400px]">
-        <video
-          key={CLIPS[activeClip].src}
-          ref={videoRef}
-          className="absolute inset-0 h-full w-full rounded-xl object-cover"
-          autoPlay
-          muted={shouldMuteVideo}
-          loop
-          playsInline
-          preload="auto"
-          src={CLIPS[activeClip].src}
-          aria-label={CLIPS[activeClip].label}
-        />
+        {CLIPS.map((clip, index) => (
+          <video
+            key={clip.src}
+            ref={index === activeClip ? videoRef : undefined}
+            className={`absolute inset-0 h-full w-full rounded-xl object-cover transition-opacity duration-150 ${index === activeClip ? "opacity-100" : "pointer-events-none opacity-0"}`}
+            autoPlay={index === activeClip}
+            muted={shouldMuteVideo}
+            loop
+            playsInline
+            preload="auto"
+            src={clip.src}
+            aria-hidden={index !== activeClip}
+            aria-label={index === activeClip ? clip.label : undefined}
+          />
+        ))}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent rounded-xl" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-background/40 to-transparent rounded-b-xl" />
 

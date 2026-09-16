@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { AccentControls } from "@/components/accent-controls"
 import { useAccentTheme } from "@/components/accent-theme-provider"
@@ -71,7 +71,18 @@ export default function ClientHome({
   const [activeApocalypseHacks, setActiveApocalypseHacks] = useState(initialProject === "apocalypse-hacks")
   const [activePhotoTab, setActivePhotoTab] = useState<'polaroids' | 'digital' | 'film'>('polaroids')
   const [projectFilter, setProjectFilter] = useState<'Everything' | 'Projects' | 'Communities'>('Everything')
+  const [introGreeting, setIntroGreeting] = useState("Hi, I’m")
   const { accentDark, accentVibrant, resolvedTheme, theme } = useAccentTheme()
+
+  useEffect(() => {
+    const greetings = ["Hi, I’m", "Bonjour, je suis", "Hola, soy", "Ciao, sono", "Hallo, ich bin"]
+    let index = 0
+    const interval = window.setInterval(() => {
+      index = (index + 1) % greetings.length
+      setIntroGreeting(greetings[index])
+    }, 650)
+    return () => window.clearInterval(interval)
+  }, [])
   const navAccent = (resolvedTheme || theme) === "dark" ? accentDark : accentVibrant
   const activeNavIndex = Math.max(0, NAV_ITEMS.findIndex((item) => item.key === activeSection))
 
@@ -685,11 +696,10 @@ export default function ClientHome({
             {/* Name and Social Icons */}
             <div className="flex justify-between items-start gap-6 mb-10">
               <h1 className="font-newsreader text-[40px] sm:text-[48px] leading-[1.05] font-normal tracking-tight">
-                Hi, I&apos;m{" "}
-                <span className="group cursor-default">
-                  <span className="group-hover:hidden">Mani</span>
-                  <span className="hidden group-hover:inline">Beyond</span>
-                </span>
+                <span className="inline-block min-w-[10ch] transition-opacity duration-200" aria-live="polite">
+                  {introGreeting}
+                </span>{" "}
+                Mani
               </h1>
               <div className="flex items-center gap-4">
                 <a href="https://x.com/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="X / Twitter">
