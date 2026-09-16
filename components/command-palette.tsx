@@ -121,7 +121,7 @@ export default function CommandPalette({
       about: 'about',
       experience: 'experience', 
       projects: 'projects',
-      fieldnotes: 'fieldnotes',
+      fieldnotes: 'blogs & fieldnotes',
       inspirations: 'philosophy',
       content: 'content worth consuming',
       photos: 'photos'
@@ -197,28 +197,16 @@ export default function CommandPalette({
             
             {/* Navigation */}
             <Command.Group heading="navigation">
-              <Command.Item onSelect={() => handleNavigate('about')}>
+              <Command.Item onSelect={() => handleNavigate('about')} data-cuelume-press="tick">
                 <div className="flex items-center">
                   <User className="mr-3 h-4 w-4 text-muted-foreground" />
                   <span>go to about</span>
                 </div>
               </Command.Item>
-              <Command.Item onSelect={() => handleNavigate('experience')}>
-                <div className="flex items-center">
-                  <Briefcase className="mr-3 h-4 w-4 text-muted-foreground" />
-                  <span>go to experience</span>
-                </div>
-              </Command.Item>
-              <Command.Item onSelect={() => handleNavigate('projects')}>
-                <div className="flex items-center">
-                  <FolderOpen className="mr-3 h-4 w-4 text-muted-foreground" />
-                  <span>go to projects</span>
-                </div>
-              </Command.Item>
-              <Command.Item onSelect={() => handleNavigate('fieldnotes')}>
+              <Command.Item onSelect={() => handleNavigate('fieldnotes')} data-cuelume-press="tick">
                 <div className="flex items-center">
                   <BookOpen className="mr-3 h-4 w-4 text-muted-foreground" />
-                  <span>go to fieldnotes</span>
+                  <span>go to blogs & fieldnotes</span>
                 </div>
               </Command.Item>
               <Command.Item onSelect={() => handleNavigate('inspirations')}>
@@ -269,7 +257,7 @@ export default function CommandPalette({
 
             {/* Recent Fieldnotes */}
             {fieldnotes.length > 0 && (
-              <Command.Group heading="recent fieldnotes">
+              <Command.Group heading="recent blogs & fieldnotes">
                 {fieldnotes.slice(0, 3).map((item) => (
                   <Command.Item key={item.slug} onSelect={() => handleSelectFieldnote(item.slug)}>
                     <div className="flex items-center gap-3">

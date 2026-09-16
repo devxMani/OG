@@ -3,7 +3,10 @@
 import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
-import { ModeToggle } from "@/components/mode-toggle"
+import { AccentControls } from "@/components/accent-controls"
+import { useAccentTheme } from "@/components/accent-theme-provider"
+import { HookSidebar } from "@/components/ui/hook-sidebar"
+import { ProximitySidebar, type ProximitySection } from "@/components/ui/proximity-sidebar"
 import { cn } from "@/lib/utils"
 import type { SubstackArticle } from "@/lib/substack"
 import MDXRenderer from "@/components/mdx-renderer"
@@ -17,12 +20,20 @@ import { SiteFooter } from "@/components/site-footer"
 import KeyboardHint from "@/components/keyboard-hint"
 import HeroBanner from "@/components/hero-banner"
 import { HeroVideo } from "@/components/hero-video"
-import { VisitorGlobe } from "@/components/visitor-globe"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, User, Code, BookOpen, Heart, Bookmark, Search } from "lucide-react"
+import { ChevronLeft, ChevronRight, User, BookOpen, Heart, Bookmark, Search } from "lucide-react"
 
-const SECTIONS = ["about", "projects", "fieldnotes", "inspirations", "content", "bookshelf", "photos"] as const
+const SECTIONS = ["about", "fieldnotes", "inspirations", "content", "bookshelf", "photos"] as const
 type SectionKey = (typeof SECTIONS)[number]
+
+const NAV_ITEMS: { key: SectionKey; label: string }[] = [
+  { key: "about", label: "about" },
+  { key: "fieldnotes", label: "blogs & fieldnotes" },
+  { key: "inspirations", label: "my philosophy" },
+  { key: "content", label: "content worth consuming" },
+  { key: "bookshelf", label: "bookshelf" },
+  { key: "photos", label: "photos" },
+]
 
 type ProjectKey = "tensorforest" | "apocalypse-hacks"
 
@@ -33,7 +44,7 @@ interface ClientHomeProps {
   about: any
   books?: Book[]
   lastUpdated: string
-  initialSection?: SectionKey
+  initialSection?: SectionKey | "projects"
   initialProject?: ProjectKey
 }
 
@@ -50,13 +61,19 @@ export default function ClientHome({
   /* ────────────────────────────────
      section definitions
   ────────────────────────────────── */
-  const sections = SECTIONS
-  const [activeSection, setActiveSection] = useState<SectionKey>(initialSection)
+  const resolvedInitialSection: SectionKey =
+    initialSection && (SECTIONS as readonly string[]).includes(initialSection)
+      ? (initialSection as SectionKey)
+      : "about"
+  const [activeSection, setActiveSection] = useState<SectionKey>(resolvedInitialSection)
   const [showTensorForest, setShowTensorForest] = useState(false)
   const [activeTensorForest, setActiveTensorForest] = useState(initialProject === "tensorforest")
   const [activeApocalypseHacks, setActiveApocalypseHacks] = useState(initialProject === "apocalypse-hacks")
   const [activePhotoTab, setActivePhotoTab] = useState<'polaroids' | 'digital' | 'film'>('polaroids')
   const [projectFilter, setProjectFilter] = useState<'Everything' | 'Projects' | 'Communities'>('Everything')
+  const { accentDark, accentVibrant, resolvedTheme, theme } = useAccentTheme()
+  const navAccent = (resolvedTheme || theme) === "dark" ? accentDark : accentVibrant
+  const activeNavIndex = Math.max(0, NAV_ITEMS.findIndex((item) => item.key === activeSection))
 
   /* ────────────────────────────────
      helpers
@@ -72,13 +89,11 @@ export default function ClientHome({
   }
 
   const selectTensorForest = () => {
-    setActiveSection("projects")
     setActiveTensorForest(true)
     setActiveApocalypseHacks(false)
   }
 
   const selectApocalypseHacks = () => {
-    setActiveSection("projects")
     setActiveTensorForest(false)
     setActiveApocalypseHacks(true)
   }
@@ -86,8 +101,13 @@ export default function ClientHome({
 
   // Command palette handlers
   const handleCommandNavigation = (section: string) => {
-    const sectionKey = section as SectionKey
-    selectSection(sectionKey)
+    if (section === "projects" || section === "experience") {
+      selectSection("about")
+      return
+    }
+    if ((SECTIONS as readonly string[]).includes(section)) {
+      selectSection(section as SectionKey)
+    }
   }
 
 
@@ -123,198 +143,199 @@ export default function ClientHome({
     }
   }
 
+  const proximitySections: ProximitySection[] = (() => {
+    if (activeSection === "about" || activeTensorForest || activeApocalypseHacks) return []
+
+    if (activeSection === "fieldnotes") {
+      return [
+        { id: "section-blogs", label: "blogs & fieldnotes", kind: "title" },
+        ...fieldnotes.map((item) => ({
+          id: `note-${item.slug}`,
+          label: item.title,
+          kind: "section" as const,
+        })),
+      ]
+    }
+
+    if (activeSection === "inspirations") {
+      return [{ id: "section-philosophy", label: "my philosophy", kind: "title" }]
+    }
+
+    if (activeSection === "content") {
+      return [{ id: "section-content", label: "content worth consuming", kind: "title" }]
+    }
+
+    if (activeSection === "bookshelf") {
+      return [
+        { id: "section-bookshelf", label: "bookshelf", kind: "title" },
+        { id: "bookshelf-to-read", label: "to read", kind: "section" },
+        { id: "bookshelf-reading", label: "reading", kind: "section" },
+        { id: "bookshelf-read", label: "read", kind: "section" },
+      ]
+    }
+
+    if (activeSection === "photos") {
+      return [
+        { id: "section-photos", label: "photos", kind: "title" },
+        { id: "photo-polaroids", label: "polaroids", kind: "section" },
+        { id: "photo-film", label: "film", kind: "section" },
+        { id: "photo-digital", label: "digital", kind: "section" },
+      ]
+    }
+
+    return []
+  })()
+
+  const handleProximityNavigate = (id: string) => {
+    if (id === "photo-polaroids") setActivePhotoTab("polaroids")
+    if (id === "photo-film") setActivePhotoTab("film")
+    if (id === "photo-digital") setActivePhotoTab("digital")
+  }
+
 
   /* ────────────────────────────────
      render
   ────────────────────────────────── */
-    return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col items-center pt-16 pb-12 px-4 sm:px-6 md:pt-6 lg:px-8 relative">
-      {/* Dotted pattern background */}
-      
+  return (
+    <div className="min-h-screen bg-transparent text-foreground flex flex-col items-center pt-16 pb-12 px-4 sm:px-6 md:pt-6 lg:px-8 relative selection:bg-white/20">
       <div className="w-full flex flex-col items-center relative z-10">
-      {/* ───────────── mobile top bar ───────────── */}
-      <div className="md:hidden fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
-        <div className="flex items-center gap-1 bg-muted/50 rounded-full p-1 backdrop-blur-sm">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              // Trigger command palette by simulating Cmd+K
-              const event = new KeyboardEvent('keydown', {
-                key: 'k',
-                metaKey: true,
-                bubbles: true
-              })
-              document.dispatchEvent(event)
-            }}
-            className="h-8 w-8 p-0 rounded-full"
-          >
-            <Search className="h-4 w-4" />
-          </Button>
-          <div className="w-px h-4 bg-border" />
-          <Button
-            variant={activeSection === 'about' && !activeTensorForest && !activeApocalypseHacks ? "default" : "ghost"}
-            size="sm"
-            onClick={() => selectSection('about')}
-            className="h-8 w-8 p-0 rounded-full"
-          >
-            <User className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={activeSection === 'projects' && !activeTensorForest && !activeApocalypseHacks ? "default" : "ghost"}
-            size="sm"
-            onClick={() => selectSection('projects')}
-            className="h-8 w-8 p-0 rounded-full"
-          >
-            <Code className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={activeSection === 'fieldnotes' ? "default" : "ghost"}
-            size="sm"
-            onClick={() => selectSection('fieldnotes')}
-            className="h-8 w-8 p-0 rounded-full"
-          >
-            <BookOpen className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={activeSection === 'inspirations' && !activeTensorForest && !activeApocalypseHacks ? "default" : "ghost"}
-            size="sm"
-            onClick={() => selectSection('inspirations')}
-            className="h-8 w-8 p-0 rounded-full"
-          >
-            <Heart className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={activeSection === 'content' && !activeTensorForest && !activeApocalypseHacks ? "default" : "ghost"}
-            size="sm"
-            onClick={() => selectSection('content')}
-            className="h-8 w-8 p-0 rounded-full"
-          >
-            <Bookmark className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={activeSection === 'bookshelf' && !activeTensorForest && !activeApocalypseHacks ? "default" : "ghost"}
-            size="sm"
-            onClick={() => selectSection('bookshelf')}
-            className="h-8 w-8 p-0 rounded-full"
-          >
-            <BookOpen className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={activeSection === 'photos' && !activeTensorForest && !activeApocalypseHacks ? "default" : "ghost"}
-            size="sm"
-            onClick={() => selectSection('photos')}
-            className="h-8 w-8 p-0 rounded-full"
-          >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-          </Button>
-          <div className="w-px h-4 bg-border" />
-          <VisitorGlobe />
-          <ModeToggle />
-        </div>
-      </div>
-
-      {/* desktop theme toggle and command palette hint */}
-      <div className="hidden md:flex absolute top-4 right-4 items-center gap-1">
-        <VisitorGlobe />
-        <button
-          onClick={() => {
-            const event = new KeyboardEvent('keydown', {
-              key: 'k',
-              metaKey: true,
-              bubbles: true
-            })
-            document.dispatchEvent(event)
-          }}
-          className="flex items-center gap-1.5 px-2 py-1 text-xs text-muted-foreground hover:text-foreground border border-border rounded-md hover:bg-muted/50 transition-colors"
-        >
-          <span className="text-[10px]">⌘</span>
-          <span>K</span>
-        </button>
-        <ModeToggle />
-      </div>
-
-      <div className="max-w-6xl w-full mb-8 md:mb-10">
-        <HeroVideo />
-      </div>
-
-      <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-[120px_1fr_120px] gap-8 md:gap-12">
-
-        {/* ───────────── desktop sidebar ───────────── */}
-        <nav className="hidden md:block md:text-right space-y-8 md:space-y-12 text-sm text-muted-foreground sticky top-12 self-start">
-          {sections.map((section) => (
-            <div key={section}>
-              {/* Main section button */}
-              <button
-                onClick={() => selectSection(section)}
-                className={cn(
-                  "block w-full text-right transition-colors duration-200",
-                  activeSection === section && !(section === "projects" && (activeTensorForest || activeApocalypseHacks)) 
-                    ? "text-foreground font-medium" 
-                    : "text-muted-foreground/70 hover:text-muted-foreground",
-                )}
-              >
-                {section === "content" ? "content worth consuming" : 
-                 section === "inspirations" ? "my philosophy" : 
-                 section === "projects" ? "experiences" : 
-                 section === "bookshelf" ? "bookshelf" : 
-                 section}
-              </button>
-              
-              {/* Project sub-items */}
-              {section === "projects" && activeSection === "projects" && (
-                <div className="mt-4 space-y-2">
-                  <button
-                    onClick={selectTensorForest}
-                    className={cn(
-                      "block w-full text-right text-xs transition-colors duration-200 pl-4",
-                      activeTensorForest ? "text-foreground font-medium" : "text-muted-foreground/60 hover:text-muted-foreground/80 font-light",
-                    )}
-                  >
-                    tensorforest
-                  </button>
-                  <button
-                    onClick={selectApocalypseHacks}
-                    className={cn(
-                      "block w-full text-right text-xs transition-colors duration-200 pl-4",
-                      activeApocalypseHacks ? "text-foreground font-medium" : "text-muted-foreground/60 hover:text-muted-foreground/80 font-light",
-                    )}
-                  >
-                    apocalypse hacks
-                  </button>
-                </div>
-              )}
-              
-            </div>
-          ))}
-        </nav>
-
-        {/* ───────────── main content ───────────── */}
-        <div className="text-base leading-relaxed">
-          {activeTensorForest ? renderTensorForestContent() : 
-           activeApocalypseHacks ? renderApocalypseHacksContent() : 
-           renderSectionContent(activeSection)}
-
-          <SiteFooter lastUpdated={lastUpdated} />
+        {/* ───────────── mobile top bar ───────────── */}
+        <div className="md:hidden fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
+          <div className="flex items-center gap-1 bg-white/[0.06] dark:bg-black/40 backdrop-blur-xl rounded-full p-1 shadow-lg">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                const event = new KeyboardEvent('keydown', {
+                  key: 'k',
+                  metaKey: true,
+                  bubbles: true
+                })
+                document.dispatchEvent(event)
+              }}
+              className="h-8 w-8 p-0 rounded-full"
+            >
+              <Search className="h-4 w-4" />
+            </Button>
+            <div className="w-px h-4 bg-foreground/15" />
+            <Button
+              variant={activeSection === 'about' && !activeTensorForest && !activeApocalypseHacks ? "default" : "ghost"}
+              size="sm"
+              onClick={() => selectSection('about')}
+              className="h-8 w-8 p-0 rounded-full"
+              data-cuelume-press="tick"
+            >
+              <User className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={activeSection === 'fieldnotes' ? "default" : "ghost"}
+              size="sm"
+              onClick={() => selectSection('fieldnotes')}
+              className="h-8 w-8 p-0 rounded-full"
+              data-cuelume-press="tick"
+            >
+              <BookOpen className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={activeSection === 'inspirations' && !activeTensorForest && !activeApocalypseHacks ? "default" : "ghost"}
+              size="sm"
+              onClick={() => selectSection('inspirations')}
+              className="h-8 w-8 p-0 rounded-full"
+              data-cuelume-press="tick"
+            >
+              <Heart className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={activeSection === 'content' && !activeTensorForest && !activeApocalypseHacks ? "default" : "ghost"}
+              size="sm"
+              onClick={() => selectSection('content')}
+              className="h-8 w-8 p-0 rounded-full"
+              data-cuelume-press="tick"
+            >
+              <Bookmark className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={activeSection === 'bookshelf' && !activeTensorForest && !activeApocalypseHacks ? "default" : "ghost"}
+              size="sm"
+              onClick={() => selectSection('bookshelf')}
+              className="h-8 w-8 p-0 rounded-full"
+              data-cuelume-press="tick"
+            >
+              <BookOpen className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={activeSection === 'photos' && !activeTensorForest && !activeApocalypseHacks ? "default" : "ghost"}
+              size="sm"
+              onClick={() => selectSection('photos')}
+              className="h-8 w-8 p-0 rounded-full"
+              data-cuelume-press="tick"
+            >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </Button>
+          </div>
         </div>
 
-        {/* ───────────── right spacer (balances sidebar) ───────────── */}
-        <div className="hidden md:block" />
-      </div>
+        {/* desktop theme control in top right */}
+        <div className="hidden md:block absolute top-4 right-4 z-50">
+          <AccentControls embedded />
+        </div>
+        <AccentControls />
 
-      {/* Command Palette */}
-      <CommandPalette
-        fieldnotes={fieldnotes}
-        experiences={experiencesForCommandPalette}
-        onNavigate={handleCommandNavigation}
-        onSelectProject={handleCommandProject}
-        onSelectExperience={handleSelectExperience}
-        currentSection={activeSection}
-        currentPage="Home"
-      />
+        {/* Hero Video */}
+        <div className="max-w-6xl w-full mb-8 md:mb-10">
+          <HeroVideo />
+        </div>
 
+        {/* content + hook sidebar */}
+        <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-[220px_minmax(0,1fr)_72px] gap-10 md:gap-12">
+
+          {/* ───────────── desktop sidebar ───────────── */}
+          <nav className="hidden md:block sticky top-12 self-start select-none">
+            <HookSidebar
+              items={NAV_ITEMS.map((item) => item.label)}
+              value={activeNavIndex}
+              onChange={(index) => {
+                const next = NAV_ITEMS[index]
+                if (next) selectSection(next.key)
+              }}
+              color={navAccent}
+              className="text-[13px]"
+            />
+          </nav>
+
+          {/* ───────────── main content ───────────── */}
+          <div className="text-base leading-relaxed min-w-0">
+            {activeTensorForest ? renderTensorForestContent() : 
+             activeApocalypseHacks ? renderApocalypseHacksContent() : 
+             renderSectionContent(activeSection)}
+
+            <SiteFooter lastUpdated={lastUpdated} />
+          </div>
+
+          <div className="hidden md:block sticky top-24 self-start h-[60vh]">
+            {proximitySections.length > 0 && (
+              <ProximitySidebar
+                sections={proximitySections}
+                side="right"
+                onNavigate={handleProximityNavigate}
+              />
+            )}
+          </div>
+
+        </div>
+
+        {/* Command Palette */}
+        <CommandPalette
+          fieldnotes={fieldnotes}
+          experiences={experiencesForCommandPalette}
+          onNavigate={handleCommandNavigation}
+          onSelectProject={handleCommandProject}
+          onSelectExperience={handleSelectExperience}
+          currentSection={activeSection}
+          currentPage="Home"
+        />
       </div>
     </div>
   )
@@ -662,10 +683,13 @@ export default function ClientHome({
         return (
           <div>
             {/* Name and Social Icons */}
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-3xl font-normal group cursor-default" style={{ fontFamily: '"Newsreader", Georgia, serif' }}>
-                <span className="group-hover:hidden">Mani</span>
-                <span className="hidden group-hover:inline">Beyond</span>
+            <div className="flex justify-between items-start gap-6 mb-10">
+              <h1 className="font-newsreader text-[40px] sm:text-[48px] leading-[1.05] font-normal tracking-tight">
+                Hi, I&apos;m{" "}
+                <span className="group cursor-default">
+                  <span className="group-hover:hidden">Mani</span>
+                  <span className="hidden group-hover:inline">Beyond</span>
+                </span>
               </h1>
               <div className="flex items-center gap-4">
                 <a href="https://x.com/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="X / Twitter">
@@ -697,18 +721,13 @@ export default function ClientHome({
             ) : (
               <p className="text-muted-foreground">No about content available.</p>
             )}
-
-            {/* Projects Section Below */}
-            <div className="mt-8">
-              {renderProjectsSection()}
-            </div>
           </div>
         )
 
       case "fieldnotes":
         return (
-          <div className="pt-2">
-            <h2 className="text-4xl font-bold mb-4">fieldnotes</h2>
+          <div className="pt-2" id="section-blogs">
+            <h2 className="text-4xl font-bold mb-4">blogs & fieldnotes</h2>
             <p className="text-lg text-muted-foreground mb-8">
               thoughts, observations, and learnings from my journey
             </p>
@@ -722,10 +741,11 @@ export default function ClientHome({
                 {fieldnotes.map((item) => (
                   <a
                     key={item.slug}
+                    id={`note-${item.slug}`}
                     href={item.substackUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block w-full text-left transition-all duration-200 cursor-pointer group "
+                    className="block w-full text-left transition-all duration-200 cursor-pointer group scroll-mt-24"
                   >
                     <div className="relative h-48 overflow-hidden transition-all duration-300 group-hover:h-56">
                       {/* Background Image */}
@@ -769,12 +789,9 @@ export default function ClientHome({
           </div>
         )
 
-      case "projects":
-        return renderProjectsSection()
-
       case "inspirations":
         return (
-          <div className="pt-2">
+          <div className="pt-2" id="section-philosophy">
             {philosophy ? (
               <div className="text-justify">
               <MDXRenderer item={philosophy} />
@@ -789,7 +806,7 @@ export default function ClientHome({
         )
       case "content":
         return (
-          <div className="pt-2">
+          <div className="pt-2" id="section-content">
             {contentWorthConsuming ? (
               <div className="mb-16">
                 <h2 className="text-4xl font-bold mb-8">{contentWorthConsuming.title}</h2>
@@ -806,7 +823,7 @@ export default function ClientHome({
 
       case "bookshelf":
         return (
-          <div className="pt-2">
+          <div className="pt-2" id="section-bookshelf">
             <Bookshelf books={books} />
           </div>
         )
@@ -933,21 +950,21 @@ export default function ClientHome({
       <div>
         {/* Filter Buttons and Search */}
         <div className="hidden md:flex justify-between items-center mb-6">
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-2.5">
             {['Everything', 'Projects', 'Communities'].map((filter) => (
               <button
                 key={filter}
                 onClick={() => setProjectFilter(filter as any)}
                 className={cn(
-                  "px-4 py-1 text-sm transition-colors duration-200 rounded",
+                  "px-4 py-1.5 text-xs font-medium transition-all duration-200 rounded-full",
                   projectFilter === filter 
-                    ? "bg-foreground text-background" 
-                    : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {filter}
-            </button>
-          ))}
+                    ? "glass-pill is-active text-foreground font-semibold" 
+                    : "glass-pill text-muted-foreground/70 hover:text-foreground"
+                )}
+              >
+                {filter}
+              </button>
+            ))}
           </div>
           <button
             onClick={() => {
@@ -965,12 +982,15 @@ export default function ClientHome({
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {filteredProjects.map((project, index) => (
-            <div key={index} className="flex flex-col group transition-colors">
+            <div 
+              key={index} 
+              className="glass-card p-3.5 rounded-2xl flex flex-col group transition-all duration-300 hover:translate-y-[-2px]"
+            >
               {/* Image Container */}
               <div 
-                className="relative mb-4 overflow-hidden aspect-[16/10] cursor-pointer bg-muted"
+                className="relative mb-3.5 overflow-hidden aspect-[16/10] cursor-pointer rounded-xl bg-muted/20"
                 onClick={() => {
                   if (project.action) project.action();
                   else if (project.link) window.open(project.link, '_blank');
@@ -979,21 +999,21 @@ export default function ClientHome({
                 <img 
                   src={project.image} 
                   alt={project.title}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
 
               {/* Content */}
-              <div className="flex flex-col">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-lg font-medium leading-tight">{project.title}</h3>
+              <div className="flex flex-col px-1 pb-1">
+                <div className="flex justify-between items-start mb-1.5">
+                  <h3 className="text-base font-medium leading-tight group-hover:text-foreground transition-colors">{project.title}</h3>
                   {project.badge && (
-                    <span className={cn("text-[10px] font-medium ml-2 shrink-0 px-2 py-0.5", project.badge.className)}>
+                    <span className={cn("text-[10px] font-medium ml-2 shrink-0 px-2 py-0.5 rounded-full glass-pill", project.badge.className)}>
                       {project.badge.text}
                     </span>
                   )}
                   {!project.badge && (
-                    <span className="text-sm text-muted-foreground ml-2 shrink-0">
+                    <span className="text-xs text-muted-foreground/70 ml-2 shrink-0">
                       {project.type === 'Community' ? 'community' : project.type.toLowerCase()}
                     </span>
                   )}
@@ -1328,7 +1348,7 @@ export default function ClientHome({
     const displayPhotos = getDisplayPhotos();
 
     return (
-      <div className="pt-2">
+      <div className="pt-2" id="section-photos">
         <h2 className="text-4xl font-bold mb-8">photos</h2>
         <p className="text-lg text-muted-foreground mb-8">
           a collection of polaroids, film emulation, and disposable camera shots
@@ -1337,20 +1357,26 @@ export default function ClientHome({
         {/* Tabs */}
         <div className="flex justify-center mb-12 space-x-2">
           <button 
+            id="photo-polaroids"
             onClick={() => setActivePhotoTab('polaroids')} 
-            className={`px-4 py-1 rounded-full text-sm ${activePhotoTab === 'polaroids' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}
+            data-cuelume-press="tick"
+            className={`px-4 py-1 rounded-full text-sm scroll-mt-24 ${activePhotoTab === 'polaroids' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}
           >
             polaroids
           </button>
           <button 
+            id="photo-film"
             onClick={() => setActivePhotoTab('film')} 
-            className={`px-4 py-1 rounded-full text-sm ${activePhotoTab === 'film' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}
+            data-cuelume-press="tick"
+            className={`px-4 py-1 rounded-full text-sm scroll-mt-24 ${activePhotoTab === 'film' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}
           >
             film
           </button>
           <button 
+            id="photo-digital"
             onClick={() => setActivePhotoTab('digital')} 
-            className={`px-4 py-1 rounded-full text-sm ${activePhotoTab === 'digital' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}
+            data-cuelume-press="tick"
+            className={`px-4 py-1 rounded-full text-sm scroll-mt-24 ${activePhotoTab === 'digital' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}
           >
             digital
           </button>

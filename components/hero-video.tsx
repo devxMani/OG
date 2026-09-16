@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { Volume2, VolumeX, SkipForward, Music } from "lucide-react"
 
 const CLIPS = [
+  { src: "/videeoo.mp4", label: "Bus" },
   { src: "/hero/x.mp4", label: "X" },
   { src: "/hero/one-last-check.mp4", label: "One last check before heading home" },
   { src: "/hero/everything-reacts.mp4", label: "Everything reacts" },
@@ -15,7 +16,7 @@ const CLIPS = [
 ] as const
 
 const controlClassName =
-  "flex h-8 w-8 items-center justify-center rounded-full border border-border/50 bg-background/55 text-foreground/80 backdrop-blur-sm transition-colors hover:bg-background/80 hover:text-foreground"
+  "flex h-7 w-7 items-center justify-center rounded-full bg-white/[0.06] text-foreground/50 backdrop-blur-xl border border-white/[0.08] transition-all hover:bg-white/[0.12] hover:text-foreground/80"
 
 export function HeroVideo() {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -86,13 +87,13 @@ export function HeroVideo() {
   }
 
   return (
-    <div className="relative w-full overflow-hidden rounded-2xl border border-border/40 bg-muted">
+    <div className="relative w-full overflow-hidden rounded-xl">
       <audio ref={audioRef} src="/hero/piano.mp3" preload="auto" loop />
       <div className="relative aspect-[16/7] min-h-[168px] w-full max-h-[340px] sm:max-h-[400px]">
         <video
           key={clip.src}
           ref={videoRef}
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover rounded-xl"
           autoPlay
           muted={shouldMuteVideo}
           loop
@@ -101,11 +102,11 @@ export function HeroVideo() {
           src={clip.src}
           aria-label={clip.label}
         />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent rounded-xl" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-background/40 to-transparent rounded-b-xl" />
 
         <div className="absolute right-3 top-1/2 z-10 flex -translate-y-1/2 flex-col gap-1.5">
-          <button type="button" onClick={nextClip} aria-label="Next video" className={controlClassName}>
+          <button type="button" onClick={nextClip} aria-label="Next video" data-cuelume-press="page" className={controlClassName}>
             <SkipForward className="h-3.5 w-3.5" />
           </button>
           <button
@@ -119,6 +120,7 @@ export function HeroVideo() {
                   : "Turn video audio off"
             }
             className={controlClassName}
+            data-cuelume-toggle="tick"
           >
             {shouldMuteVideo ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
           </button>
@@ -127,6 +129,7 @@ export function HeroVideo() {
             onClick={() => setMusicOff((value) => !value)}
             aria-label={musicOff ? "Turn music on" : "Turn music off"}
             className={controlClassName}
+            data-cuelume-toggle="tick"
           >
             <Music className={`h-3.5 w-3.5 ${musicOff ? "opacity-40" : ""}`} />
           </button>

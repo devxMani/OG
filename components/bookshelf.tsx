@@ -65,7 +65,7 @@ export function Bookshelf({ books }: BookshelfProps) {
       </svg>
 
       <div className="mb-10">
-        <h2 className="flex items-center gap-2 text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+        <h2 id="section-bookshelf" className="flex items-center gap-2 text-3xl font-bold tracking-tight text-foreground md:text-4xl">
           <span className="size-2 shrink-0 rounded-full bg-foreground" aria-hidden />
           bookshelf
         </h2>
@@ -87,8 +87,10 @@ export function Bookshelf({ books }: BookshelfProps) {
           {statusOrder.map((s) => (
             <button
               key={s}
+              id={`bookshelf-${s.replace(" ", "-")}`}
               type="button"
               onClick={() => setFilter(s)}
+              data-cuelume-press="tick"
               className={cn("flex items-center gap-2 transition-colors", statusRowClass(s, filter))}
             >
               <span className={cn("size-2 shrink-0 rounded-full", statusDotClass(s))} />

@@ -7,7 +7,7 @@ export default async function ProjectsPage() {
   return (
     <ClientHome
       {...data}
-      initialSection="projects"
+      initialSection="about"
     />
   )
 }

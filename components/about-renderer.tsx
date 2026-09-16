@@ -64,11 +64,11 @@ export default function AboutRenderer({ content }: AboutRendererProps) {
   const sections = parseAboutContent(content)
 
   return (
-    <div className="text-sm">
+    <div className="font-newsreader text-[16px] leading-[1.75] text-foreground/90">
       {sections.intro && (
-        <div className="mb-4">
+        <div className="mb-8 space-y-5">
           {sections.intro.split('\n\n').map((paragraph, index) => (
-            <p key={index} className={index > 0 ? "mt-2" : ""}>
+            <p key={index}>
               {parseBulletPoints(paragraph)}
             </p>
           ))}
@@ -76,11 +76,11 @@ export default function AboutRenderer({ content }: AboutRendererProps) {
       )}
 
       {sections["some cool things i've done in the past:"] && (
-        <div className="mb-4">
-          <h2 className="mb-2 font-normal text-base" style={{ fontFamily: '"Newsreader", Georgia, serif' }}>
-            some cool things i've done in the past:
+        <div className="mb-6">
+          <h2 className="mb-3 font-newsreader text-[16px] font-normal italic text-foreground/70">
+            some cool things i’ve done in the past:
           </h2>
-          <ul className="list-none space-y-1 text-base">
+          <ul className="list-none space-y-2 text-[16px] leading-[1.75]">
             {sections["some cool things i've done in the past:"]
               .split('\n- ')
               .filter(item => item.trim())
@@ -92,22 +92,43 @@ export default function AboutRenderer({ content }: AboutRendererProps) {
         </div>
       )}
 
+      {sections.experiences && (
+        <div className="mb-6">
+          <h2 className="mb-3 font-newsreader text-[16px] font-normal italic text-foreground/70">
+            experiences
+          </h2>
+          {sections.experiences.split('\n\n').map((block, index) => {
+            if (block.includes('\n- ') || block.startsWith('- ')) {
+              return (
+                <ul key={index} className="list-none space-y-2 text-[16px] leading-[1.75]">
+                  {block
+                    .split('\n- ')
+                    .filter(item => item.trim())
+                    .map((item) => parseBulletPoints(item.replace(/^- /, '').trim(), true))}
+                </ul>
+              )
+            }
+            return <p key={index} className="mb-3">{parseBulletPoints(block)}</p>
+          })}
+        </div>
+      )}
+
       {(sections["how i started:"] || sections["where do i see myself in 10 years:"]) && (
         <button
           onClick={() => setShowMore(!showMore)}
-          className="text-sm underline hover:no-underline mb-4"
+          className="mb-4 text-[16px] underline decoration-foreground/30 underline-offset-4 hover:no-underline"
         >
           {showMore ? 'Show Less' : 'Read More'}
         </button>
       )}
 
       {showMore && (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {sections["how i started:"] && (
             <div>
-              <h2 className="mb-2 font-bold text-sm">how i started:</h2>
-              <p className="mb-2">{parseBulletPoints(sections["how i started:"].split('\n\n')[0])}</p>
-              <ul className="list-none space-y-1 text-sm">
+              <h2 className="mb-3 font-newsreader text-[16px] italic text-foreground/70">how i started:</h2>
+              <p className="mb-3">{parseBulletPoints(sections["how i started:"].split('\n\n')[0])}</p>
+              <ul className="list-none space-y-2 text-[16px]">
                 {sections["how i started:"]
                   .split('\n- ')
                   .slice(1)
@@ -119,7 +140,7 @@ export default function AboutRenderer({ content }: AboutRendererProps) {
 
           {sections["where do i see myself in 10 years:"] && (
             <div>
-              <h2 className="mb-2 font-bold text-sm">where do i see myself in 10 years:</h2>
+              <h2 className="mb-3 font-newsreader text-[16px] italic text-foreground/70">where do i see myself in 10 years:</h2>
               <p>{parseBulletPoints(sections["where do i see myself in 10 years:"])}</p>
             </div>
           )}

@@ -12,6 +12,10 @@ const config: Config = {
   ],
   theme: {
   	extend: {
+  		fontFamily: {
+  			sans: ["var(--font-sans)", "Inter", "system-ui", "sans-serif"],
+  			newsreader: ["var(--font-newsreader)", "Newsreader", "Georgia", "serif"],
+  		},
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',

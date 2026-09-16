@@ -7,7 +7,7 @@ export default async function ExperiencePage() {
   return (
     <ClientHome
       {...data}
-      initialSection="projects"
+      initialSection="about"
     />
   )
 }

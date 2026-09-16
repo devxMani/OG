@@ -444,7 +444,7 @@ function getVisitorId() {
   return identifier
 }
 
-export function VisitorGlobe() {
+export function VisitorGlobe({ minimal = false }: { minimal?: boolean }) {
   const [data, setData] = useState<VisitorResponse>({ count: 0, visitors: [] })
   const [isOpen, setIsOpen] = useState(false)
   const [autoRotate, setAutoRotate] = useState(true)
@@ -537,15 +537,25 @@ export function VisitorGlobe() {
       <button
         type="button"
         onClick={openGlobe}
-        className="group flex h-7 items-center gap-2 rounded-md border border-transparent px-2 text-xs text-muted-foreground transition-all hover:border-border/60 hover:bg-muted/50 hover:text-foreground"
+        className={
+          minimal
+            ? "inline-flex items-center gap-2 py-1 px-2 text-[11px] font-normal tracking-wide text-foreground/40 hover:text-foreground/80 transition-colors cursor-pointer"
+            : "group flex h-7 items-center gap-2 rounded-md border border-transparent px-2 text-xs text-muted-foreground transition-all hover:border-border/60 hover:bg-muted/50 hover:text-foreground"
+        }
         aria-label="Open live visitor globe"
       >
-        <span className="relative flex h-2 w-2 items-center justify-center">
+        <span className="relative flex h-1.5 w-1.5 items-center justify-center">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.7)]" />
+          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
         </span>
-        <Globe2 className="h-3.5 w-3.5 opacity-70 transition-opacity group-hover:opacity-100" />
-        <span className="font-medium tabular-nums">{data.count}</span>
+        {minimal ? (
+          <span>{data.count} online</span>
+        ) : (
+          <>
+            <Globe2 className="h-3.5 w-3.5 opacity-70 transition-opacity group-hover:opacity-100" />
+            <span className="font-medium tabular-nums">{data.count}</span>
+          </>
+        )}
       </button>
 
       {isOpen && (
