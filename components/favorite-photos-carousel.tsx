@@ -7,7 +7,6 @@ type FavoriteArtwork = { title: string; maker: string; image: string }
 
 const providedArtworks: FavoriteArtwork[] = [
   { title: "Bulls in the Sea", maker: "Joaquín Sorolla, 1903", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-AEOBAhPjo9sqwALrnbiJlTPXykWVAi.png" },
-  { title: "The Dream City", maker: "Thomas Moran", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-E0pMVy0EeUtl7Q5Qiys9fgCjKOt4Xo.png" },
   { title: "Monks in a monastery courtyard", maker: "Franz Ludwig Catel", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-2e29Do9yHyFR5htg2wh1BatKt8BdDE.png" },
   { title: "Grazing in the upper valley", maker: "Tommaso Cascella", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-1MrUdq13746fjevelJSiCHGdPPWcQw.png" },
   { title: "The Fleeting Hour", maker: "Jim Buckels", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-H9PdXCRY8vRVNqpgdPs1KulKV9rm9s.png" },
