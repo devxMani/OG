@@ -49,7 +49,6 @@ export default function FavoritePhotosCarousel({ artworks = [] }: { artworks?: F
                 key={key}
                 className="group relative h-56 w-20 shrink-0 cursor-pointer overflow-hidden rounded-xl sm:h-64"
                 animate={{ width: isSelected ? "21rem" : "5rem" }}
-                whileHover={{ width: isSelected ? "21rem" : "21rem" }}
                 transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                 onClick={() => {
                   setSelected(isSelected ? null : key)
