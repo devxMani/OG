@@ -548,16 +548,18 @@ export function GridReveal({
       const paced = progressRef.current === undefined;
       let target: number;
 
-      // the image landing is what finishes the run, not the number
+      // Keep the reveal paced even when the image is already cached. This is
+      // what makes replaying the effect feel intentional instead of flashing.
       if (ready) {
-        target = 1;
+        const duration = Math.max(durationRef.current, 1000);
+        target = smoothstep(0, duration, elapsed * 1000);
       } else if (paced) {
         target = selfPaced(elapsed * 1000, durationRef.current);
       } else {
         target = Math.min(clamp01(progressRef.current as number), HOLD);
       }
 
-      eased += (target - eased) * (1 - Math.exp(-dt * 5.5));
+      eased += (target - eased) * (1 - Math.exp(-dt * 7));
       const wanted = Math.min(eased, ready ? 1 : WAIT_CAP);
       split += (wanted - split) * (1 - Math.exp(-dt * 4));
       render(split, now);
