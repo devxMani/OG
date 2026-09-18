@@ -204,12 +204,7 @@ export default function ClientHome({
     }
 
     if (activeSection === "photos") {
-      return [
-        { id: "section-photos", label: "photos", kind: "title" },
-        { id: "photo-polaroids", label: "polaroids", kind: "section" },
-        { id: "photo-film", label: "film", kind: "section" },
-        { id: "photo-digital", label: "digital", kind: "section" },
-      ]
+      return [{ id: "section-photos", label: "photos", kind: "title" }]
     }
 
     return []
@@ -1412,99 +1407,36 @@ export default function ClientHome({
 
     const displayPhotos = getDisplayPhotos();
 
+    const artworks = [
+      { title: "The Fleeting Hour", maker: "Jim Buckels", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-H9PdXCRY8vRVNqpgdPs1KulKV9rm9s.png" },
+      { title: "Architect's Afternoon", maker: "Iwo Zaniewski", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-ZW4L1fssw6yQozIRc5rdNeYcGHnGqU.png" },
+      { title: "Two on a Bridge", maker: "Igor Shcherbakov", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-fLW9jE5c4GwVCghT0XniyUDyJcbmWO.png" },
+      { title: "Paris of the Future — Moebius 2000", maker: "Jean Giraud (Moebius)", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-fUmc5kVWXYqbAl2K1zeCPJEdDvPyWT.png" },
+    ]
+
     return (
       <div className="pt-2" id="section-photos">
-        <h2 className="text-4xl font-bold mb-8">photos</h2>
-        <p className="text-lg text-muted-foreground mb-8">
-          a collection of polaroids, film emulation, and disposable camera shots
-        </p>
-        
-        {/* Tabs */}
-        <div className="flex justify-center mb-12 space-x-2">
-          <button 
-            id="photo-polaroids"
-            onClick={() => setActivePhotoTab('polaroids')} 
-            data-cuelume-press="tick"
-            className={`px-4 py-1 rounded-full text-sm scroll-mt-24 ${activePhotoTab === 'polaroids' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}
-          >
-            polaroids
-          </button>
-          <button 
-            id="photo-film"
-            onClick={() => setActivePhotoTab('film')} 
-            data-cuelume-press="tick"
-            className={`px-4 py-1 rounded-full text-sm scroll-mt-24 ${activePhotoTab === 'film' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}
-          >
-            film
-          </button>
-          <button 
-            id="photo-digital"
-            onClick={() => setActivePhotoTab('digital')} 
-            data-cuelume-press="tick"
-            className={`px-4 py-1 rounded-full text-sm scroll-mt-24 ${activePhotoTab === 'digital' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}
-          >
-            digital
-          </button>
+        <h2 className="text-4xl font-bold mb-4">photos</h2>
+        <p className="text-lg text-muted-foreground mb-10">images I keep returning to.</p>
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
+          {artworks.map((artwork) => (
+            <figure key={artwork.title} className="group">
+              <div className="overflow-hidden bg-muted/20">
+                <img
+                  src={artwork.image}
+                  alt={`${artwork.title} by ${artwork.maker}`}
+                  loading="lazy"
+                  className="aspect-[4/3] h-full w-full object-cover grayscale transition duration-500 group-hover:grayscale-0"
+                />
+              </div>
+              <figcaption className="mt-3 flex items-baseline justify-between gap-4 border-b border-foreground/10 pb-3">
+                <span className="font-newsreader text-base italic text-foreground">{artwork.title}</span>
+                <span className="shrink-0 text-xs text-muted-foreground">{artwork.maker}</span>
+              </figcaption>
+            </figure>
+          ))}
         </div>
-        
-        {/* Photo grid with different layouts based on tab */}
-        {activePhotoTab === 'digital' ? (
-          // Digital layout - larger images in a 2-column grid
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl mx-auto">
-            {displayPhotos.map((photo) => (
-              <div key={photo.id} className="flex flex-col group mb-6">
-                <div className="relative overflow-hidden shadow-lg transition-transform duration-300 group-hover:scale-105">
-                  <img 
-                    src={photo.image} 
-                    alt={photo.location} 
-                    className="w-full h-auto object-cover filter grayscale group-hover:grayscale-0 transition-all duration-300"
-                  />
-                </div>
-                <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <p className="text-sm text-muted-foreground">{photo.location}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : activePhotoTab === 'film' ? (
-          // Film layout - structured grid like the experience page
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {displayPhotos.map((photo) => (
-                <div key={photo.id} className="group aspect-[4/3]">
-                  <div className="relative h-full overflow-hidden dark:shadow-lg transition-transform duration-300 group-hover:scale-105">
-                    <img 
-                      src={photo.image} 
-                      alt={photo.location} 
-                      className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-300"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          // Polaroids layout - smaller images in a 3-column grid
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {displayPhotos.map((photo: any) => (
-              <div key={photo.id} className="flex flex-col items-center group">
-                <a href={photo.songUrl || "#"} target="_blank" rel="noopener noreferrer" className="relative overflow-hidden dark:shadow-lg transition-transform duration-300 group-hover:scale-105">
-                  <img 
-                    src={photo.image} 
-                    alt={photo.title || photo.location || "Photo"} 
-                    className="w-full max-w-[240px] object-cover filter grayscale group-hover:grayscale-0 transition-all duration-300"
-                  />
-                </a>
-                <div className="text-center mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  {photo.title && <p className="text-sm text-foreground">{photo.title}</p>}
-                  <p className="text-xs text-muted-foreground">{photo.location}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
       </div>
-    );
+    )
   }
 } 
