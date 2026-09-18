@@ -267,8 +267,8 @@ export default function ClientHome({
           <HeroVideo />
         </div>
 
-        <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-[220px_minmax(0,1fr)] gap-10 md:gap-12 font-newsreader text-[16px]">
-          <nav className="hidden md:block sticky top-12 self-start select-none">
+        <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-[180px_minmax(0,1fr)] gap-10 md:gap-12 font-newsreader text-[16px] items-start">
+          <nav className="hidden md:block self-start select-none pt-1">
             <HookSidebar
               items={NAV_ITEMS.map((item) => item.label)}
               value={activeNavIndex}
