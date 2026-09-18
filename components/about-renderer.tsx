@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import FavoritePhotosCarousel from '@/components/favorite-photos-carousel'
 
 interface AboutRendererProps {
   content: string
@@ -93,6 +94,7 @@ export default function AboutRenderer({ content }: AboutRendererProps) {
       )}
 
       {sections.experiences && (
+        <>
         <div className="mb-6">
           <h2 className="mb-3 font-newsreader text-[20px] leading-tight font-normal italic text-foreground/75">
             experiences
@@ -111,6 +113,8 @@ export default function AboutRenderer({ content }: AboutRendererProps) {
             return <p key={index} className="mb-3">{parseBulletPoints(block)}</p>
           })}
         </div>
+        <FavoritePhotosCarousel />
+        </>
       )}
 
       {(sections["how i started:"] || sections["where do i see myself in 10 years:"]) && (

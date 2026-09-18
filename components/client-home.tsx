@@ -2,12 +2,10 @@
 
 import type React from "react"
 import { useEffect, useState } from "react"
-import { motion } from "framer-motion"
+import FavoritePhotosCarousel from "@/components/favorite-photos-carousel"
 import Link from "next/link"
 import { AccentControls } from "@/components/accent-controls"
 import { useAccentTheme } from "@/components/accent-theme-provider"
-import { HookSidebar } from "@/components/ui/hook-sidebar"
-import { ProximitySidebar, type ProximitySection } from "@/components/ui/proximity-sidebar"
 import { cn } from "@/lib/utils"
 import GridReveal from "@/components/ui/grid-reveal"
 import type { SubstackArticle } from "@/lib/substack"
@@ -103,9 +101,6 @@ export default function ClientHome({
       window.clearTimeout(stop)
     }
   }, [])
-  const navAccent = (resolvedTheme || theme) === "dark" ? accentDark : accentVibrant
-  const activeNavIndex = Math.max(0, NAV_ITEMS.findIndex((item) => item.key === activeSection))
-
   /* ────────────────────────────────
      helpers
   ────────────────────────────────── */
@@ -173,51 +168,6 @@ export default function ClientHome({
       window.open(experience.link, '_blank', 'noopener,noreferrer')
     }
   }
-
-  const proximitySections: ProximitySection[] = (() => {
-    if (activeSection === "about" || activeTensorForest || activeApocalypseHacks) return []
-
-    if (activeSection === "fieldnotes") {
-      return [
-        { id: "section-blogs", label: "blogs & fieldnotes", kind: "title" },
-        ...fieldnotes.map((item) => ({
-          id: `note-${item.slug}`,
-          label: item.title,
-          kind: "section" as const,
-        })),
-      ]
-    }
-
-    if (activeSection === "inspirations") {
-      return [{ id: "section-philosophy", label: "my philosophy", kind: "title" }]
-    }
-
-    if (activeSection === "content") {
-      return [{ id: "section-content", label: "content worth consuming", kind: "title" }]
-    }
-
-    if (activeSection === "bookshelf") {
-      return [
-        { id: "section-bookshelf", label: "bookshelf", kind: "title" },
-        { id: "bookshelf-to-read", label: "to read", kind: "section" },
-        { id: "bookshelf-reading", label: "reading", kind: "section" },
-        { id: "bookshelf-read", label: "read", kind: "section" },
-      ]
-    }
-
-    if (activeSection === "photos") {
-      return [{ id: "section-photos", label: "photos", kind: "title" }]
-    }
-
-    return []
-  })()
-
-  const handleProximityNavigate = (id: string) => {
-    if (id === "photo-polaroids") setActivePhotoTab("polaroids")
-    if (id === "photo-film") setActivePhotoTab("film")
-    if (id === "photo-digital") setActivePhotoTab("digital")
-  }
-
 
   /* ────────────────────────────────
      render
@@ -314,24 +264,7 @@ export default function ClientHome({
           <HeroVideo />
         </div>
 
-        {/* content + hook sidebar */}
-        <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-[220px_minmax(0,1fr)_72px] gap-10 md:gap-12 font-newsreader text-[16px]">
-
-          {/* ───────────── desktop sidebar ───────────── */}
-          <nav className="hidden md:block sticky top-12 self-start select-none">
-            <HookSidebar
-              items={NAV_ITEMS.map((item) => item.label)}
-              value={activeNavIndex}
-              onChange={(index) => {
-                const next = NAV_ITEMS[index]
-                if (next) selectSection(next.key)
-              }}
-              color={navAccent}
-              className="font-newsreader text-[15px] tracking-[0.01em]"
-            />
-          </nav>
-
-          {/* ───────────── main content ───────────── */}
+        <div className="max-w-6xl w-full font-newsreader text-[16px]">
           <div className="portfolio-content text-base leading-relaxed min-w-0">
             {activeTensorForest ? renderTensorForestContent() : 
              activeApocalypseHacks ? renderApocalypseHacksContent() : 
@@ -340,15 +273,6 @@ export default function ClientHome({
             <SiteFooter lastUpdated={lastUpdated} />
           </div>
 
-          <div className="hidden md:block sticky top-24 self-start h-[60vh]">
-            {proximitySections.length > 0 && (
-              <ProximitySidebar
-                sections={proximitySections}
-                side="right"
-                onNavigate={handleProximityNavigate}
-              />
-            )}
-          </div>
 
         </div>
 
@@ -1421,8 +1345,7 @@ export default function ClientHome({
       <div className="pt-2" id="section-photos">
         <h2 className="text-4xl font-bold mb-4">photos</h2>
         <p className="text-lg text-muted-foreground mb-10">images I keep returning to.</p>
-        <FavoritePhotosCarousel artworks={artworks} />
-        <div className="mt-16 grid grid-cols-1 gap-12 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
           {artworks.map((artwork) => (
             <figure key={artwork.title} className="group">
               <div className="overflow-hidden bg-muted/20">
@@ -1440,55 +1363,9 @@ export default function ClientHome({
             </figure>
           ))}
         </div>
+        <FavoritePhotosCarousel artworks={artworks} />
       </div>
     )
   }
 }
 
-type FavoriteArtwork = { title: string; maker: string; image: string }
-
-function FavoritePhotosCarousel({ artworks }: { artworks: FavoriteArtwork[] }) {
-  const favorites: FavoriteArtwork[] = [
-    ...artworks,
-    { title: "Bulls in the Sea", maker: "Joaquín Sorolla, 1903", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-AEOBAhPjo9sqwALrnbiJlTPXykWVAi.png" },
-    { title: "The Dream City", maker: "Thomas Moran", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-E0pMVy0EeUtl7Q5Qiys9fgCjKOt4Xo.png" },
-    { title: "Monks in a monastery courtyard", maker: "Franz Ludwig Catel", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-2e29Do9yHyFR5htg2wh1BatKt8BdDE.png" },
-    { title: "Grazing in the upper valley", maker: "Tommaso Cascella", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-1MrUdq13746fjevelJSiCHGdPPWcQw.png" },
-  ]
-  const loop = [...favorites, ...favorites]
-  const cycleDistance = favorites.length * 13
-
-  return (
-    <section aria-labelledby="photos-i-love" className="mb-4 overflow-hidden">
-      <div className="mb-5 flex items-end justify-between gap-4">
-        <div>
-          <p className="mb-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">a moving collection</p>
-          <h3 id="photos-i-love" className="font-newsreader text-3xl italic text-foreground">photos i love</h3>
-        </div>
-        <span className="hidden text-xs text-muted-foreground sm:block">hover to linger</span>
-      </div>
-      <div className="relative -mx-4 overflow-hidden px-4 sm:-mx-8 sm:px-8">
-        <motion.div
-          className="flex w-max items-center gap-2"
-          animate={{ x: [0, `-${cycleDistance}rem`] }}
-          transition={{ duration: 38, ease: "linear", repeat: Infinity }}
-        >
-          {loop.map((artwork, index) => (
-            <motion.figure
-              key={`${artwork.title}-${index}`}
-              className="group relative h-56 w-20 shrink-0 cursor-pointer overflow-hidden rounded-xl sm:h-64"
-              whileHover={{ width: "21rem" }}
-              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <img src={artwork.image} alt={`${artwork.title} by ${artwork.maker}`} className="h-full w-full object-cover" loading="lazy" />
-              <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-4 pt-12 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                <span className="block text-sm">{artwork.title}</span>
-                <span className="block text-xs text-white/65">{artwork.maker}</span>
-              </figcaption>
-            </motion.figure>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  )
-}
