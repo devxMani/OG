@@ -368,7 +368,7 @@ export default function ClientHome({
 
   /* ───────�������────────────────────────
      render tensorforest content
-  ─���──────────────────���───────────── */
+  ─����──────────────────���───────────── */
   function renderTensorForestContent() {
     return (
       <div>
@@ -720,7 +720,7 @@ export default function ClientHome({
                   src="/mani-profile.jpeg"
                   alt="Portrait of Mani"
                   aspect={1}
-                  estimatedDuration={4500}
+                  estimatedDuration={2600}
                   className="rounded-sm"
                 />
                 <nav aria-label="Social links" className="mt-3 flex items-center justify-end gap-3">

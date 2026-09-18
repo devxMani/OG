@@ -16,20 +16,19 @@ export type GridRevealProps = Omit<ComponentProps<"div">, "children"> & {
   onError?: () => void;
 };
 
-const CELLS = 180;
+const CELLS = 64;
 const OPENING_CELLS = 4;
-// hold short of the end so the run can never finish before the image does
-const HOLD = 0.9;
-// the grid stops splitting here while waiting, leaving arrival somewhere to go
-const WAIT_CAP = 0.72;
-const LAST_SPLIT = 0.92;
-// how long one cell takes to separate, in progress units
-const MORPH = 0.055;
+// Leave a calm, readable grid before the image resolves.
+const HOLD = 0.92;
+const WAIT_CAP = 0.78;
+const LAST_SPLIT = 0.94;
+// Give each tile enough time to glide into place instead of snapping.
+const MORPH = 0.09;
 const SAMPLE = 128;
 const COLOR_MS = 420;
 const GUTTER_FROM = 0.35;
 const GUTTER_TO = 0.75;
-const PHOTO_FROM = 0.93;
+const PHOTO_FROM = 0.78;
 
 const SHIMMER = {
   backgroundImage:
@@ -559,12 +558,12 @@ export function GridReveal({
         target = Math.min(clamp01(progressRef.current as number), HOLD);
       }
 
-      eased += (target - eased) * (1 - Math.exp(-dt * 7));
+      eased += (target - eased) * (1 - Math.exp(-dt * 5.5));
       const wanted = Math.min(eased, ready ? 1 : WAIT_CAP);
-      split += (wanted - split) * (1 - Math.exp(-dt * 4));
+      split += (wanted - split) * (1 - Math.exp(-dt * 2.8));
       render(split, now);
 
-      if (!fired && ready && eased > 0.995 && now - loadedAt > COLOR_MS) {
+      if (!fired && ready && eased > 0.985 && now - loadedAt > COLOR_MS) {
         fired = true;
         setRevealed(true);
         doneRef.current?.();
