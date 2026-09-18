@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import FavoritePhotosCarousel from '@/components/favorite-photos-carousel'
 
 interface AboutRendererProps {
   content: string
@@ -35,7 +36,12 @@ export default function AboutRenderer({ content }: AboutRendererProps) {
   }
 
   const parseHoverLinks = (text: string) => {
-    let processedText = text.replace(/\[hover-rank\]([^[]+)\[\/hover-rank\]/g, (_match, rankContent) => {
+    let processedText = text
+      .replace(/^###\s*/gm, '')
+      .replace(/^>\s*/gm, '')
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/\[hover-rank\]([^[]+)\[\/hover-rank\]/g, (_match, rankContent) => {
       return `<span class="hover-rank-toggle group/rank cursor-default"><span class="group-hover/rank:hidden">${rankContent}</span><span class="hidden group-hover/rank:inline">2.5%</span></span>`
     })
 
@@ -66,18 +72,30 @@ export default function AboutRenderer({ content }: AboutRendererProps) {
   return (
     <div className="font-newsreader text-[16px] leading-[1.75] text-foreground/90">
       {sections.intro && (
-        <div className="mb-8 space-y-5">
-          {sections.intro.split('\n\n').map((paragraph, index) => (
-            <p key={index}>
-              {parseBulletPoints(paragraph)}
-            </p>
-          ))}
+        <div className="mb-5 space-y-4">
+          {sections.intro.split('\n\n').map((paragraph, index) => {
+            if (index === 0) {
+              return (
+                <h2 key={index} className="mb-2 font-newsreader text-[22px] font-normal italic leading-tight text-foreground/80">
+                  {parseBulletPoints(paragraph)}
+                </h2>
+              )
+            }
+            if (index === 1) {
+              return (
+                <p key={index} className="border-l border-foreground/25 pl-4 text-foreground/75">
+                  {parseBulletPoints(paragraph)}
+                </p>
+              )
+            }
+            return <p key={index}>{parseBulletPoints(paragraph)}</p>
+          })}
         </div>
       )}
 
       {sections["some cool things i've done in the past:"] && (
         <div className="mb-6">
-          <h2 className="mb-3 font-newsreader text-[20px] leading-tight font-normal italic text-foreground/75">
+          <h2 className="mb-3 border-l border-foreground/35 pl-3 font-newsreader text-[20px] leading-tight font-normal italic text-foreground">
             some cool things i’ve done in the past:
           </h2>
           <ul className="list-none space-y-2 text-[16px] leading-[1.75]">
@@ -93,8 +111,9 @@ export default function AboutRenderer({ content }: AboutRendererProps) {
       )}
 
       {sections.experiences && (
+        <>
         <div className="mb-6">
-          <h2 className="mb-3 font-newsreader text-[20px] leading-tight font-normal italic text-foreground/75">
+          <h2 className="mb-3 border-l border-foreground/35 pl-3 font-newsreader text-[20px] leading-tight font-normal italic text-foreground">
             experiences
           </h2>
           {sections.experiences.split('\n\n').map((block, index) => {
@@ -111,6 +130,8 @@ export default function AboutRenderer({ content }: AboutRendererProps) {
             return <p key={index} className="mb-3">{parseBulletPoints(block)}</p>
           })}
         </div>
+        <FavoritePhotosCarousel />
+        </>
       )}
 
       {(sections["how i started:"] || sections["where do i see myself in 10 years:"]) && (

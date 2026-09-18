@@ -1,0 +1,17 @@
+.favorite-photos-track {
+  animation: favorite-photos-marquee 42s linear infinite;
+  will-change: transform;
+}
+
+.favorite-photos-track.is-paused {
+  animation-play-state: paused;
+}
+
+@keyframes favorite-photos-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-33.333333%, 0, 0);
+  }
+}

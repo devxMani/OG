@@ -2,12 +2,13 @@
 
 import type React from "react"
 import { useEffect, useState } from "react"
+import FavoritePhotosCarousel from "@/components/favorite-photos-carousel"
+import { HookSidebar } from "@/components/ui/hook-sidebar"
 import Link from "next/link"
 import { AccentControls } from "@/components/accent-controls"
 import { useAccentTheme } from "@/components/accent-theme-provider"
-import { HookSidebar } from "@/components/ui/hook-sidebar"
-import { ProximitySidebar, type ProximitySection } from "@/components/ui/proximity-sidebar"
 import { cn } from "@/lib/utils"
+import GridReveal from "@/components/ui/grid-reveal"
 import type { SubstackArticle } from "@/lib/substack"
 import MDXRenderer from "@/components/mdx-renderer"
 import ContentRenderer from "@/components/content-renderer"
@@ -32,7 +33,6 @@ const NAV_ITEMS: { key: SectionKey; label: string }[] = [
   { key: "inspirations", label: "my philosophy" },
   { key: "content", label: "content worth consuming" },
   { key: "bookshelf", label: "bookshelf" },
-  { key: "photos", label: "photos" },
 ]
 
 type ProjectKey = "tensorforest" | "apocalypse-hacks"
@@ -73,6 +73,8 @@ export default function ClientHome({
   const [projectFilter, setProjectFilter] = useState<'Everything' | 'Projects' | 'Communities'>('Everything')
   const [introGreeting, setIntroGreeting] = useState("Hi, I’m")
   const { accentDark, accentVibrant, resolvedTheme, theme } = useAccentTheme()
+  const navAccent = (resolvedTheme || theme) === "dark" ? accentDark : accentVibrant
+  const activeNavIndex = Math.max(0, NAV_ITEMS.findIndex((item) => item.key === activeSection))
 
   useEffect(() => {
     const greetings = [
@@ -101,9 +103,6 @@ export default function ClientHome({
       window.clearTimeout(stop)
     }
   }, [])
-  const navAccent = (resolvedTheme || theme) === "dark" ? accentDark : accentVibrant
-  const activeNavIndex = Math.max(0, NAV_ITEMS.findIndex((item) => item.key === activeSection))
-
   /* ────────────────────────────────
      helpers
   ────────────────────────────────── */
@@ -171,56 +170,6 @@ export default function ClientHome({
       window.open(experience.link, '_blank', 'noopener,noreferrer')
     }
   }
-
-  const proximitySections: ProximitySection[] = (() => {
-    if (activeSection === "about" || activeTensorForest || activeApocalypseHacks) return []
-
-    if (activeSection === "fieldnotes") {
-      return [
-        { id: "section-blogs", label: "blogs & fieldnotes", kind: "title" },
-        ...fieldnotes.map((item) => ({
-          id: `note-${item.slug}`,
-          label: item.title,
-          kind: "section" as const,
-        })),
-      ]
-    }
-
-    if (activeSection === "inspirations") {
-      return [{ id: "section-philosophy", label: "my philosophy", kind: "title" }]
-    }
-
-    if (activeSection === "content") {
-      return [{ id: "section-content", label: "content worth consuming", kind: "title" }]
-    }
-
-    if (activeSection === "bookshelf") {
-      return [
-        { id: "section-bookshelf", label: "bookshelf", kind: "title" },
-        { id: "bookshelf-to-read", label: "to read", kind: "section" },
-        { id: "bookshelf-reading", label: "reading", kind: "section" },
-        { id: "bookshelf-read", label: "read", kind: "section" },
-      ]
-    }
-
-    if (activeSection === "photos") {
-      return [
-        { id: "section-photos", label: "photos", kind: "title" },
-        { id: "photo-polaroids", label: "polaroids", kind: "section" },
-        { id: "photo-film", label: "film", kind: "section" },
-        { id: "photo-digital", label: "digital", kind: "section" },
-      ]
-    }
-
-    return []
-  })()
-
-  const handleProximityNavigate = (id: string) => {
-    if (id === "photo-polaroids") setActivePhotoTab("polaroids")
-    if (id === "photo-film") setActivePhotoTab("film")
-    if (id === "photo-digital") setActivePhotoTab("digital")
-  }
-
 
   /* ────────────────────────────────
      render
@@ -317,11 +266,8 @@ export default function ClientHome({
           <HeroVideo />
         </div>
 
-        {/* content + hook sidebar */}
-        <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-[220px_minmax(0,1fr)_72px] gap-10 md:gap-12 font-newsreader text-[16px]">
-
-          {/* ───────────── desktop sidebar ───────────── */}
-          <nav className="hidden md:block sticky top-12 self-start select-none">
+        <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-[180px_minmax(0,1fr)] gap-10 md:gap-12 font-newsreader text-[16px] items-start">
+          <nav className="hidden md:block self-start select-none pt-1">
             <HookSidebar
               items={NAV_ITEMS.map((item) => item.label)}
               value={activeNavIndex}
@@ -332,9 +278,16 @@ export default function ClientHome({
               color={navAccent}
               className="font-newsreader text-[15px] tracking-[0.01em]"
             />
+            <div className="mt-8 border-t border-foreground/10 pt-4 font-newsreader text-xs text-muted-foreground">
+              <p className="mb-3 uppercase tracking-[0.18em] text-foreground/45">elsewhere</p>
+              <div className="flex flex-wrap gap-x-3 gap-y-2">
+                <a href="https://x.com/" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground">x</a>
+                <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground">github</a>
+                <a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground">linkedin</a>
+                <a href="mailto:your@email.com" className="transition-colors hover:text-foreground">email</a>
+              </div>
+            </div>
           </nav>
-
-          {/* ───────────── main content ───────────── */}
           <div className="portfolio-content text-base leading-relaxed min-w-0">
             {activeTensorForest ? renderTensorForestContent() : 
              activeApocalypseHacks ? renderApocalypseHacksContent() : 
@@ -343,15 +296,6 @@ export default function ClientHome({
             <SiteFooter lastUpdated={lastUpdated} />
           </div>
 
-          <div className="hidden md:block sticky top-24 self-start h-[60vh]">
-            {proximitySections.length > 0 && (
-              <ProximitySidebar
-                sections={proximitySections}
-                side="right"
-                onNavigate={handleProximityNavigate}
-              />
-            )}
-          </div>
 
         </div>
 
@@ -372,7 +316,7 @@ export default function ClientHome({
 
   /* ───────�������────────────────────────
      render tensorforest content
-  ────────────────────────────────── */
+  ─�����──────────────────���───────────── */
   function renderTensorForestContent() {
     return (
       <div>
@@ -712,34 +656,35 @@ export default function ClientHome({
         return (
           <div>
             {/* Name and Social Icons */}
-<div className="flex justify-between items-start gap-4 mb-5">
-  <h1 className="flex items-baseline gap-3 whitespace-nowrap font-instrument text-[30px] sm:text-[36px] leading-none font-normal italic tracking-tight">
+            <div className="relative mb-2 min-h-[3.25rem]">
+              <h1 className="flex items-baseline gap-3 whitespace-nowrap font-instrument text-[30px] leading-none font-normal italic tracking-tight sm:text-[36px]">
                 <span className="inline-block transition-opacity duration-200" aria-live="polite">
                   {introGreeting}
                 </span>
                 <span>Mani</span>
               </h1>
-              <div className="flex items-center gap-4">
-                <a href="https://x.com/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="X / Twitter">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                  </svg>
-                </a>
-                <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="GitHub">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
-                  </svg>
-                </a>
-                <a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="LinkedIn">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                  </svg>
-                </a>
-                <a href="mailto:your@email.com" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Email">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                </a>
+              <div className="absolute right-0 top-0 w-20 sm:w-24">
+                <GridReveal
+                  src="/mani-profile.jpeg"
+                  alt="Portrait of Mani"
+                  aspect={1}
+                  estimatedDuration={2600}
+                  className="rounded-sm"
+                />
+                <nav aria-label="Social links" className="mt-2 flex items-center justify-end gap-2">
+                  <a href="https://x.com/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-foreground" aria-label="X / Twitter">
+                    <svg className="size-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+                  </a>
+                  <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-foreground" aria-label="GitHub">
+                    <svg className="size-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" /></svg>
+                  </a>
+                  <a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-foreground" aria-label="LinkedIn">
+                    <svg className="size-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 22.222 0h.003z" /></svg>
+                  </a>
+                  <a href="mailto:your@email.com" className="text-muted-foreground transition-colors hover:text-foreground" aria-label="Email">
+                    <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                  </a>
+                </nav>
               </div>
             </div>
             
@@ -1412,99 +1357,38 @@ export default function ClientHome({
 
     const displayPhotos = getDisplayPhotos();
 
+    const artworks = [
+      { title: "The Fleeting Hour", maker: "Jim Buckels", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-H9PdXCRY8vRVNqpgdPs1KulKV9rm9s.png" },
+      { title: "Architect's Afternoon", maker: "Iwo Zaniewski", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-ZW4L1fssw6yQozIRc5rdNeYcGHnGqU.png" },
+      { title: "Two on a Bridge", maker: "Igor Shcherbakov", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-fLW9jE5c4GwVCghT0XniyUDyJcbmWO.png" },
+      { title: "Paris of the Future — Moebius 2000", maker: "Jean Giraud (Moebius)", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-fUmc5kVWXYqbAl2K1zeCPJEdDvPyWT.png" },
+    ]
+
     return (
       <div className="pt-2" id="section-photos">
-        <h2 className="text-4xl font-bold mb-8">photos</h2>
-        <p className="text-lg text-muted-foreground mb-8">
-          a collection of polaroids, film emulation, and disposable camera shots
-        </p>
-        
-        {/* Tabs */}
-        <div className="flex justify-center mb-12 space-x-2">
-          <button 
-            id="photo-polaroids"
-            onClick={() => setActivePhotoTab('polaroids')} 
-            data-cuelume-press="tick"
-            className={`px-4 py-1 rounded-full text-sm scroll-mt-24 ${activePhotoTab === 'polaroids' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}
-          >
-            polaroids
-          </button>
-          <button 
-            id="photo-film"
-            onClick={() => setActivePhotoTab('film')} 
-            data-cuelume-press="tick"
-            className={`px-4 py-1 rounded-full text-sm scroll-mt-24 ${activePhotoTab === 'film' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}
-          >
-            film
-          </button>
-          <button 
-            id="photo-digital"
-            onClick={() => setActivePhotoTab('digital')} 
-            data-cuelume-press="tick"
-            className={`px-4 py-1 rounded-full text-sm scroll-mt-24 ${activePhotoTab === 'digital' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}
-          >
-            digital
-          </button>
+        <h2 className="text-4xl font-bold mb-4">photos</h2>
+        <p className="text-lg text-muted-foreground mb-10">images I keep returning to.</p>
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
+          {artworks.map((artwork) => (
+            <figure key={artwork.title} className="group">
+              <div className="overflow-hidden bg-muted/20">
+                <img
+                  src={artwork.image}
+                  alt={`${artwork.title} by ${artwork.maker}`}
+                  loading="lazy"
+                  className="aspect-[4/3] h-full w-full object-cover grayscale transition duration-500 group-hover:grayscale-0"
+                />
+              </div>
+              <figcaption className="mt-3 flex items-baseline justify-between gap-4 border-b border-foreground/10 pb-3">
+                <span className="font-newsreader text-base italic text-foreground">{artwork.title}</span>
+                <span className="shrink-0 text-xs text-muted-foreground">{artwork.maker}</span>
+              </figcaption>
+            </figure>
+          ))}
         </div>
-        
-        {/* Photo grid with different layouts based on tab */}
-        {activePhotoTab === 'digital' ? (
-          // Digital layout - larger images in a 2-column grid
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl mx-auto">
-            {displayPhotos.map((photo) => (
-              <div key={photo.id} className="flex flex-col group mb-6">
-                <div className="relative overflow-hidden shadow-lg transition-transform duration-300 group-hover:scale-105">
-                  <img 
-                    src={photo.image} 
-                    alt={photo.location} 
-                    className="w-full h-auto object-cover filter grayscale group-hover:grayscale-0 transition-all duration-300"
-                  />
-                </div>
-                <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <p className="text-sm text-muted-foreground">{photo.location}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : activePhotoTab === 'film' ? (
-          // Film layout - structured grid like the experience page
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {displayPhotos.map((photo) => (
-                <div key={photo.id} className="group aspect-[4/3]">
-                  <div className="relative h-full overflow-hidden dark:shadow-lg transition-transform duration-300 group-hover:scale-105">
-                    <img 
-                      src={photo.image} 
-                      alt={photo.location} 
-                      className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-300"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          // Polaroids layout - smaller images in a 3-column grid
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {displayPhotos.map((photo: any) => (
-              <div key={photo.id} className="flex flex-col items-center group">
-                <a href={photo.songUrl || "#"} target="_blank" rel="noopener noreferrer" className="relative overflow-hidden dark:shadow-lg transition-transform duration-300 group-hover:scale-105">
-                  <img 
-                    src={photo.image} 
-                    alt={photo.title || photo.location || "Photo"} 
-                    className="w-full max-w-[240px] object-cover filter grayscale group-hover:grayscale-0 transition-all duration-300"
-                  />
-                </a>
-                <div className="text-center mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  {photo.title && <p className="text-sm text-foreground">{photo.title}</p>}
-                  <p className="text-xs text-muted-foreground">{photo.location}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
+        <FavoritePhotosCarousel artworks={artworks} />
       </div>
-    );
+    )
   }
-} 
+}
+

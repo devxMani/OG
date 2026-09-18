@@ -3,6 +3,7 @@
 import { MDXRemote } from 'next-mdx-remote'
 import { serialize } from 'next-mdx-remote/serialize'
 import { useEffect, useState } from 'react'
+import { Atom } from 'loading-dev'
 import type { ContentItem } from '@/lib/content'
 import HeroBanner from '@/components/hero-banner'
 
@@ -48,11 +49,8 @@ export default function MDXRenderer({ item }: MDXRendererProps) {
   if (isLoading) {
     return (
       <article className="prose prose-gray dark:prose-invert max-w-none">
-        <div className="animate-pulse">
-                  <div className="h-8 bg-gray-100 dark:bg-secondary rounded mb-4"></div>
-        <div className="h-4 bg-gray-100 dark:bg-secondary rounded mb-2"></div>
-        <div className="h-4 bg-gray-100 dark:bg-secondary rounded mb-2"></div>
-        <div className="h-4 bg-gray-100 dark:bg-secondary rounded w-3/4"></div>
+        <div className="flex min-h-40 items-center justify-center" aria-label="Loading content">
+          <Atom duration={890} size={24} />
         </div>
       </article>
     )
