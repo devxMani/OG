@@ -36,7 +36,12 @@ export default function AboutRenderer({ content }: AboutRendererProps) {
   }
 
   const parseHoverLinks = (text: string) => {
-    let processedText = text.replace(/\[hover-rank\]([^[]+)\[\/hover-rank\]/g, (_match, rankContent) => {
+    let processedText = text
+      .replace(/^###\s*/gm, '')
+      .replace(/^>\s*/gm, '')
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/\[hover-rank\]([^[]+)\[\/hover-rank\]/g, (_match, rankContent) => {
       return `<span class="hover-rank-toggle group/rank cursor-default"><span class="group-hover/rank:hidden">${rankContent}</span><span class="hidden group-hover/rank:inline">2.5%</span></span>`
     })
 
@@ -68,11 +73,23 @@ export default function AboutRenderer({ content }: AboutRendererProps) {
     <div className="font-newsreader text-[16px] leading-[1.75] text-foreground/90">
       {sections.intro && (
         <div className="mb-5 space-y-4">
-          {sections.intro.split('\n\n').map((paragraph, index) => (
-            <p key={index}>
-              {parseBulletPoints(paragraph)}
-            </p>
-          ))}
+          {sections.intro.split('\n\n').map((paragraph, index) => {
+            if (index === 0) {
+              return (
+                <h2 key={index} className="mb-2 font-newsreader text-[22px] font-normal italic leading-tight text-foreground/80">
+                  {parseBulletPoints(paragraph)}
+                </h2>
+              )
+            }
+            if (index === 1) {
+              return (
+                <p key={index} className="border-l border-foreground/25 pl-4 text-foreground/75">
+                  {parseBulletPoints(paragraph)}
+                </p>
+              )
+            }
+            return <p key={index}>{parseBulletPoints(paragraph)}</p>
+          })}
         </div>
       )}
 

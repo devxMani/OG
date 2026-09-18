@@ -8,9 +8,9 @@ draft: false
 
 ## intro
 
-### Research · Systems · Taste
+Research · Systems · Taste
 
-> **Taste is the last craft worth keeping**
+Taste is the last craft worth keeping
 
 I've always been drawn to work that's both technically hard and a little bit beautiful — the kind that sits at the intersection of research and systems. Chasing that has left me with a mix of interests, and an obsession with getting better at every one of them.
 
