@@ -3,6 +3,7 @@
 import type React from "react"
 import { useEffect, useState } from "react"
 import FavoritePhotosCarousel from "@/components/favorite-photos-carousel"
+import { HookSidebar } from "@/components/ui/hook-sidebar"
 import Link from "next/link"
 import { AccentControls } from "@/components/accent-controls"
 import { useAccentTheme } from "@/components/accent-theme-provider"
@@ -73,6 +74,8 @@ export default function ClientHome({
   const [projectFilter, setProjectFilter] = useState<'Everything' | 'Projects' | 'Communities'>('Everything')
   const [introGreeting, setIntroGreeting] = useState("Hi, I’m")
   const { accentDark, accentVibrant, resolvedTheme, theme } = useAccentTheme()
+  const navAccent = (resolvedTheme || theme) === "dark" ? accentDark : accentVibrant
+  const activeNavIndex = Math.max(0, NAV_ITEMS.findIndex((item) => item.key === activeSection))
 
   useEffect(() => {
     const greetings = [
@@ -264,7 +267,19 @@ export default function ClientHome({
           <HeroVideo />
         </div>
 
-        <div className="max-w-6xl w-full font-newsreader text-[16px]">
+        <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-[220px_minmax(0,1fr)] gap-10 md:gap-12 font-newsreader text-[16px]">
+          <nav className="hidden md:block sticky top-12 self-start select-none">
+            <HookSidebar
+              items={NAV_ITEMS.map((item) => item.label)}
+              value={activeNavIndex}
+              onChange={(index) => {
+                const next = NAV_ITEMS[index]
+                if (next) selectSection(next.key)
+              }}
+              color={navAccent}
+              className="font-newsreader text-[15px] tracking-[0.01em]"
+            />
+          </nav>
           <div className="portfolio-content text-base leading-relaxed min-w-0">
             {activeTensorForest ? renderTensorForestContent() : 
              activeApocalypseHacks ? renderApocalypseHacksContent() : 

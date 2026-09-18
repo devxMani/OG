@@ -13,11 +13,13 @@ const providedArtworks: FavoriteArtwork[] = [
 ]
 
 export default function FavoritePhotosCarousel({ artworks = [] }: { artworks?: FavoriteArtwork[] }) {
-  const favorites = [...artworks, ...providedArtworks]
+  const favorites = Array.from(
+    new Map([...artworks, ...providedArtworks].map((artwork) => [artwork.image, artwork])).values(),
+  )
   const loop = [...favorites, ...favorites]
   const [paused, setPaused] = useState(false)
   const [selected, setSelected] = useState<string | null>(null)
-  const cycleDistance = favorites.length * 13
+  const cycleDistance = favorites.length * 5 + (favorites.length - 1) * 0.5
 
   return (
     <section aria-labelledby="photos-i-love" className="mt-16 mb-4 overflow-hidden">
