@@ -1,12 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, type CSSProperties } from "react"
 import { motion } from "framer-motion"
+import "./favorite-photos-carousel.css"
 
 type FavoriteArtwork = { title: string; maker: string; image: string }
 
 const providedArtworks: FavoriteArtwork[] = [
-  { title: "Bulls in the Sea", maker: "Joaquín Sorolla, 1903", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-AEOBAhPjo9sqwALrnbiJlTPXykWVAi.png" },
   { title: "Monks in a monastery courtyard", maker: "Franz Ludwig Catel", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-2e29Do9yHyFR5htg2wh1BatKt8BdDE.png" },
   { title: "Grazing in the upper valley", maker: "Tommaso Cascella", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-1MrUdq13746fjevelJSiCHGdPPWcQw.png" },
   { title: "The Fleeting Hour", maker: "Jim Buckels", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-H9PdXCRY8vRVNqpgdPs1KulKV9rm9s.png" },
@@ -25,7 +25,6 @@ export default function FavoritePhotosCarousel({ artworks = [] }: { artworks?: F
   const [paused, setPaused] = useState(false)
   const [selected, setSelected] = useState<string | null>(null)
   const [lightboxArtwork, setLightboxArtwork] = useState<FavoriteArtwork | null>(null)
-  const cycleDistance = favorites.length * 5.5
 
   return (
     <section aria-labelledby="photos-i-love" className="mt-16 mb-4 overflow-hidden">
@@ -38,9 +37,8 @@ export default function FavoritePhotosCarousel({ artworks = [] }: { artworks?: F
       </div>
       <div className="relative -mx-4 overflow-hidden px-4 sm:-mx-8 sm:px-8">
         <motion.div
-          className="flex w-max items-center gap-2"
-          animate={paused ? undefined : { x: [0, `-${cycleDistance}rem`] }}
-          transition={paused ? undefined : { duration: 38, ease: "linear", repeat: Infinity }}
+          className={`favorite-photos-track flex w-max items-center gap-2${paused ? " is-paused" : ""}`}
+          style={{ "--favorite-count": favorites.length } as CSSProperties}
         >
           {loop.map((artwork, index) => {
             const key = `${artwork.title}-${index}`
