@@ -10,12 +10,16 @@ const providedArtworks: FavoriteArtwork[] = [
   { title: "The Dream City", maker: "Thomas Moran", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-E0pMVy0EeUtl7Q5Qiys9fgCjKOt4Xo.png" },
   { title: "Monks in a monastery courtyard", maker: "Franz Ludwig Catel", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-2e29Do9yHyFR5htg2wh1BatKt8BdDE.png" },
   { title: "Grazing in the upper valley", maker: "Tommaso Cascella", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-1MrUdq13746fjevelJSiCHGdPPWcQw.png" },
+  { title: "The Fleeting Hour", maker: "Jim Buckels", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-H9PdXCRY8vRVNqpgdPs1KulKV9rm9s.png" },
+  { title: "Architect's Afternoon", maker: "Iwo Zaniewski", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-ZW4L1fssw6yQozIRc5rdNeYcGHnGqU.png" },
+  { title: "Two on a Bridge", maker: "Igor Shcherbakov", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-fLW9jE5c4GwVCghT0XniyUDyJcbmWO.png" },
+  { title: "Paris of the Future", maker: "Jean Giraud (Moebius)", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-fUmc5kVWXYqbAl2K1zeCPJEdDvPyWT.png" },
 ]
 
 export default function FavoritePhotosCarousel({ artworks = [] }: { artworks?: FavoriteArtwork[] }) {
   const favorites = Array.from(
     new Map([...artworks, ...providedArtworks]
-      .filter((artwork) => !artwork.image.includes("image-dJN6tgJXQwm37VfKPQ0O0ZEYuf2dqb"))
+      .filter((artwork) => !["image-dJN6tgJXQwm37VfKPQ0O0ZEYuf2dqb", "image-37pN1ee8fFaWhKhSguCiEFpP86ab3k"].some((asset) => artwork.image.includes(asset)))
       .map((artwork) => [artwork.image, artwork])).values(),
   )
   const loop = [...favorites, ...favorites]

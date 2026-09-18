@@ -33,7 +33,6 @@ const NAV_ITEMS: { key: SectionKey; label: string }[] = [
   { key: "inspirations", label: "my philosophy" },
   { key: "content", label: "content worth consuming" },
   { key: "bookshelf", label: "bookshelf" },
-  { key: "photos", label: "photos" },
 ]
 
 type ProjectKey = "tensorforest" | "apocalypse-hacks"
