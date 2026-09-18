@@ -278,6 +278,15 @@ export default function ClientHome({
               color={navAccent}
               className="font-newsreader text-[15px] tracking-[0.01em]"
             />
+            <div className="mt-8 border-t border-foreground/10 pt-4 font-newsreader text-xs text-muted-foreground">
+              <p className="mb-3 uppercase tracking-[0.18em] text-foreground/45">elsewhere</p>
+              <div className="flex flex-wrap gap-x-3 gap-y-2">
+                <a href="https://x.com/" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground">x</a>
+                <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground">github</a>
+                <a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground">linkedin</a>
+                <a href="mailto:your@email.com" className="transition-colors hover:text-foreground">email</a>
+              </div>
+            </div>
           </nav>
           <div className="portfolio-content text-base leading-relaxed min-w-0">
             {activeTensorForest ? renderTensorForestContent() : 
@@ -647,14 +656,14 @@ export default function ClientHome({
         return (
           <div>
             {/* Name and Social Icons */}
-            <div className="relative mb-5 min-h-[3.25rem]">
+            <div className="relative mb-2 min-h-[3.25rem]">
               <h1 className="flex items-baseline gap-3 whitespace-nowrap font-instrument text-[30px] leading-none font-normal italic tracking-tight sm:text-[36px]">
                 <span className="inline-block transition-opacity duration-200" aria-live="polite">
                   {introGreeting}
                 </span>
                 <span>Mani</span>
               </h1>
-              <div className="absolute right-0 top-0 w-16 sm:w-20">
+              <div className="absolute right-0 top-0 w-20 sm:w-24">
                 <GridReveal
                   src="/mani-profile.jpeg"
                   alt="Portrait of Mani"

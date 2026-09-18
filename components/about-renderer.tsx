@@ -95,7 +95,7 @@ export default function AboutRenderer({ content }: AboutRendererProps) {
 
       {sections["some cool things i've done in the past:"] && (
         <div className="mb-6">
-          <h2 className="mb-3 font-newsreader text-[20px] leading-tight font-normal italic text-foreground/75">
+          <h2 className="mb-3 border-l border-foreground/35 pl-3 font-newsreader text-[20px] leading-tight font-normal italic text-foreground">
             some cool things i’ve done in the past:
           </h2>
           <ul className="list-none space-y-2 text-[16px] leading-[1.75]">
@@ -113,7 +113,7 @@ export default function AboutRenderer({ content }: AboutRendererProps) {
       {sections.experiences && (
         <>
         <div className="mb-6">
-          <h2 className="mb-3 font-newsreader text-[20px] leading-tight font-normal italic text-foreground/75">
+          <h2 className="mb-3 border-l border-foreground/35 pl-3 font-newsreader text-[20px] leading-tight font-normal italic text-foreground">
             experiences
           </h2>
           {sections.experiences.split('\n\n').map((block, index) => {

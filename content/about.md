@@ -31,6 +31,6 @@ The work so far:
 - I'm currently researching voice AI systems and LLM evaluations alongside a Harvard graduate and professors from UC Berkeley.
 - I worked with the Google AI team as part of a team of around seven people for eight months on multilingual evaluations and regional-bias trade-offs. I worked on evaluation workflows and project tooling, gathered data across states, and looked at how regional and linguistic biases showed up across AI systems.
 
-We received $20K USD in funding and support, and the last I heard, the work was being considered for a product that could reach 500K–1M users. I mostly did it because I wanted to see if I could actually build something like this.
+- We received $20K USD in funding and support, and the last I heard, the work was being considered for a product that could reach 500K–1M users. I mostly did it because I wanted to see if I could actually build something like this.
 
 If you want to hack around on any of this, hit me up.
