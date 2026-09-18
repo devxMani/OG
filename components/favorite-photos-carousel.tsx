@@ -18,12 +18,13 @@ const providedArtworks: FavoriteArtwork[] = [
 export default function FavoritePhotosCarousel({ artworks = [] }: { artworks?: FavoriteArtwork[] }) {
   const favorites = Array.from(
     new Map([...artworks, ...providedArtworks]
-      .filter((artwork) => !["image-dJN6tgJXQwm37VfKPQ0O0ZEYuf2dqb", "image-37pN1ee8fFaWhKhSguCiEFpP86ab3k"].some((asset) => artwork.image.includes(asset)))
+      .filter((artwork) => !["image-dJN6tgJXQwm37VfKPQ0O0ZEYuf2dqb", "image-37pN1ee8fFaWhKhSguCiEFpP86ab3k", "image-rcPyH46EKMi15hGa3oskv5jGDkK2Ba"].some((asset) => artwork.image.includes(asset)))
       .map((artwork) => [artwork.image, artwork])).values(),
   )
   const loop = [...favorites, ...favorites]
   const [paused, setPaused] = useState(false)
   const [selected, setSelected] = useState<string | null>(null)
+  const [lightboxArtwork, setLightboxArtwork] = useState<FavoriteArtwork | null>(null)
   const cycleDistance = favorites.length * 5.5
 
   return (
@@ -51,8 +52,14 @@ export default function FavoritePhotosCarousel({ artworks = [] }: { artworks?: F
                 animate={{ width: isSelected ? "21rem" : "5rem" }}
                 transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                 onClick={() => {
-                  setSelected(isSelected ? null : key)
-                  setPaused(!isSelected)
+                  if (isSelected) {
+                    setSelected(null)
+                    setPaused(false)
+                    return
+                  }
+                  setSelected(key)
+                  setPaused(true)
+                  setLightboxArtwork(artwork)
                 }}
               >
                 <img src={artwork.image} alt={`${artwork.title} by ${artwork.maker}`} className="h-full w-full object-cover" loading="lazy" />
@@ -65,6 +72,28 @@ export default function FavoritePhotosCarousel({ artworks = [] }: { artworks?: F
           })}
         </motion.div>
       </div>
+      {lightboxArtwork && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-6 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${lightboxArtwork.title} by ${lightboxArtwork.maker}`}
+          onClick={() => {
+            setLightboxArtwork(null)
+            setSelected(null)
+            setPaused(false)
+          }}
+        >
+          <figure className="relative max-h-[90vh] max-w-[92vw] overflow-hidden rounded-2xl bg-black shadow-2xl" onClick={(event) => event.stopPropagation()}>
+            <img src={lightboxArtwork.image} alt={`${lightboxArtwork.title} by ${lightboxArtwork.maker}`} className="max-h-[78vh] max-w-[88vw] object-contain" />
+            <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent px-5 pb-5 pt-16 text-white">
+              <p className="text-base">{lightboxArtwork.title}</p>
+              <p className="text-sm text-white/65">{lightboxArtwork.maker}</p>
+            </figcaption>
+            <button type="button" className="absolute right-3 top-3 rounded-full bg-black/60 px-3 py-1 text-lg text-white" aria-label="Close photo" onClick={() => { setLightboxArtwork(null); setSelected(null); setPaused(false) }}>×</button>
+          </figure>
+        </div>
+      )}
     </section>
   )
 }
