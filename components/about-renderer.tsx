@@ -66,7 +66,7 @@ export default function AboutRenderer({ content }: AboutRendererProps) {
   return (
     <div className="font-newsreader text-[16px] leading-[1.75] text-foreground/90">
       {sections.intro && (
-        <div className="mb-8 space-y-5">
+        <div className="mb-5 space-y-4">
           {sections.intro.split('\n\n').map((paragraph, index) => (
             <p key={index}>
               {parseBulletPoints(paragraph)}

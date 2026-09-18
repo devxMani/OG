@@ -368,7 +368,7 @@ export default function ClientHome({
 
   /* ───────�������────────────────────────
      render tensorforest content
-  ────────────────────���───────────── */
+  ─��──────────────────���───────────── */
   function renderTensorForestContent() {
     return (
       <div>
@@ -708,14 +708,14 @@ export default function ClientHome({
         return (
           <div>
             {/* Name and Social Icons */}
-            <div className="mb-6 grid grid-cols-[1fr_auto] items-start gap-6">
+            <div className="mb-3 grid grid-cols-[1fr_auto] items-start gap-4">
               <h1 className="flex items-baseline gap-3 whitespace-nowrap font-instrument text-[30px] leading-none font-normal italic tracking-tight sm:text-[36px]">
                 <span className="inline-block transition-opacity duration-200" aria-live="polite">
                   {introGreeting}
                 </span>
                 <span>Mani</span>
               </h1>
-              <div className="w-24 sm:w-28">
+              <div className="w-20 sm:w-24">
                 <GridReveal
                   src="/mani-profile.jpeg"
                   alt="Portrait of Mani"
@@ -724,7 +724,7 @@ export default function ClientHome({
                   className="rounded-sm"
                   caption="mani"
                 />
-                <nav aria-label="Social links" className="mt-2 flex items-center justify-end gap-3">
+                <nav aria-label="Social links" className="mt-3 flex items-center justify-end gap-3">
                   <a href="https://x.com/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-foreground" aria-label="X / Twitter">
                     <svg className="size-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
                   </a>
