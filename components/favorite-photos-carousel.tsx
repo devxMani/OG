@@ -40,7 +40,7 @@ export default function FavoritePhotosCarousel({ artworks = [] }: { artworks?: F
           className={`favorite-photos-track flex w-max items-center gap-2${paused ? " is-paused" : ""}`}
           style={{ "--favorite-count": favorites.length } as CSSProperties}
         >
-          {loop.map((artwork, index) => {
+          {[0, 1, 2].flatMap((setIndex) => loop.map((artwork, index) => ({ artwork, index: setIndex * loop.length + index }))).map(({ artwork, index }) => {
             const key = `${artwork.title}-${index}`
             const isSelected = selected === key
             return (

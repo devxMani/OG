@@ -1,5 +1,5 @@
 .favorite-photos-track {
-  animation: favorite-photos-marquee 38s linear infinite;
+  animation: favorite-photos-marquee 42s linear infinite;
   will-change: transform;
 }
 
@@ -12,6 +12,6 @@
     transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translate3d(calc(-5.5rem * var(--favorite-count)), 0, 0);
+    transform: translate3d(-33.333333%, 0, 0);
   }
 }
