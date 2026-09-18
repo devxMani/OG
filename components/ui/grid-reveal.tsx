@@ -409,6 +409,7 @@ export function GridReveal({
 
   const [loaded, setLoaded] = useState(false);
   const [revealed, setRevealed] = useState(false);
+  const [replayKey, setReplayKey] = useState(0);
 
   const [lastSrc, setLastSrc] = useState(src);
   if (src !== lastSrc) {
@@ -605,7 +606,7 @@ export function GridReveal({
       observer?.disconnect();
       visibility?.disconnect();
     };
-  }, [reduce, src, ratio]);
+  }, [reduce, src, ratio, replayKey]);
 
   useEffect(() => {
     if (reduce && loaded) doneRef.current?.();
@@ -622,6 +623,9 @@ export function GridReveal({
         className,
       )}
       style={{ aspectRatio: ratio, ...style }}
+      onMouseEnter={() => {
+        if (!reduce) setReplayKey((key) => key + 1)
+      }}
       {...props}
     >
       <canvas

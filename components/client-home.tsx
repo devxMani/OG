@@ -368,7 +368,7 @@ export default function ClientHome({
 
   /* ───────�������────────────────────────
      render tensorforest content
-  ─��──────────────────���───────────── */
+  ─���──────────────────���───────────── */
   function renderTensorForestContent() {
     return (
       <div>
@@ -720,9 +720,8 @@ export default function ClientHome({
                   src="/mani-profile.jpeg"
                   alt="Portrait of Mani"
                   aspect={1}
-                  estimatedDuration={1400}
+                  estimatedDuration={4500}
                   className="rounded-sm"
-                  caption="mani"
                 />
                 <nav aria-label="Social links" className="mt-3 flex items-center justify-end gap-3">
                   <a href="https://x.com/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-foreground" aria-label="X / Twitter">
