@@ -9,6 +9,7 @@ const CLIPS = [
   { src: "/hero/everything-reacts.mp4", label: "Everything Reacts" },
   { src: "/hero/still-counts-as-indoors.mp4", label: "Still Counts as Indoors" },
   { src: "/hero/could-leave-anytime.mp4", label: "Could Leave Anytime" },
+  { src: "/hero/breeze-tomatoes.mp4", label: "The Tomatoes Still Need Water" },
 ] as const
 
 const controlClassName =
