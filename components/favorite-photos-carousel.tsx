@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, type CSSProperties } from "react"
+import { useState } from "react"
 import { motion } from "framer-motion"
 import "./favorite-photos-carousel.css"
 
@@ -21,9 +21,8 @@ export default function FavoritePhotosCarousel({ artworks = [] }: { artworks?: F
       .filter((artwork) => !["image-dJN6tgJXQwm37VfKPQ0O0ZEYuf2dqb", "image-37pN1ee8fFaWhKhSguCiEFpP86ab3k", "image-rcPyH46EKMi15hGa3oskv5jGDkK2Ba"].some((asset) => artwork.image.includes(asset)))
       .map((artwork) => [artwork.image, artwork])).values(),
   )
-  const loop = [...favorites, ...favorites]
-  const [paused, setPaused] = useState(false)
-  const [selected, setSelected] = useState<string | null>(null)
+  const [, setPaused] = useState(false)
+  const [activeIndex, setActiveIndex] = useState<number | null>(1)
   const [lightboxArtwork, setLightboxArtwork] = useState<FavoriteArtwork | null>(null)
 
   return (
@@ -36,26 +35,20 @@ export default function FavoritePhotosCarousel({ artworks = [] }: { artworks?: F
         <span className="hidden text-xs text-muted-foreground sm:block">hover to linger</span>
       </div>
       <div className="relative -mx-4 overflow-hidden px-4 sm:-mx-8 sm:px-8">
-        <motion.div
-          className={`favorite-photos-track flex w-max items-center gap-2${paused ? " is-paused" : ""}`}
-          style={{ "--favorite-count": favorites.length } as CSSProperties}
-        >
-          {[0, 1, 2].flatMap((setIndex) => loop.map((artwork, index) => ({ artwork, index: setIndex * loop.length + index }))).map(({ artwork, index }) => {
-            const key = `${artwork.title}-${index}`
-            const isSelected = selected === key
+        <motion.div className="flex w-full items-center justify-center gap-1 overflow-hidden px-1">
+          {favorites.map((artwork, index) => {
+            const isActive = activeIndex === index
             return (
               <motion.figure
-                key={key}
-                className="group relative h-56 w-20 shrink-0 cursor-pointer overflow-hidden rounded-xl sm:h-64"
-                animate={{ width: isSelected ? "21rem" : "5rem" }}
-                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                key={artwork.image}
+                className="group relative h-56 min-w-0 cursor-pointer overflow-hidden rounded-2xl sm:h-64"
+                initial={false}
+                animate={{ width: isActive ? "24rem" : "5rem", flex: isActive ? "1 1 24rem" : "0 1 5rem" }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                onHoverStart={() => { setActiveIndex(index); setPaused(true) }}
+                onHoverEnd={() => { setActiveIndex(null); setPaused(false) }}
                 onClick={() => {
-                  if (isSelected) {
-                    setSelected(null)
-                    setPaused(false)
-                    return
-                  }
-                  setSelected(key)
+                  setActiveIndex(index)
                   setPaused(true)
                   setLightboxArtwork(artwork)
                 }}
