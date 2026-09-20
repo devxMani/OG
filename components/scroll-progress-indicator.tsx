@@ -6,9 +6,38 @@ import { cn } from "@/lib/utils"
 
 export type ScrollProgressSection = { id: string; label: string }
 
+type ProgressiveBlurProps = {
+  position: "top" | "bottom"
+  className?: string
+}
+
 type ScrollProgressIndicatorProps = {
   sections: ScrollProgressSection[]
   className?: string
+}
+
+function ProgressiveBlur({ position, className }: ProgressiveBlurProps) {
+  const isTop = position === "top"
+  return (
+    <div
+      aria-hidden="true"
+      className={cn(
+        "pointer-events-none fixed inset-x-0 z-30 h-24 select-none sm:h-28",
+        isTop ? "top-0" : "bottom-0",
+        className,
+      )}
+      style={{
+        backdropFilter: "blur(14px)",
+        WebkitBackdropFilter: "blur(14px)",
+        maskImage: isTop
+          ? "linear-gradient(to bottom, black 0%, transparent 100%)"
+          : "linear-gradient(to top, black 0%, transparent 100%)",
+        WebkitMaskImage: isTop
+          ? "linear-gradient(to bottom, black 0%, transparent 100%)"
+          : "linear-gradient(to top, black 0%, transparent 100%)",
+      }}
+    />
+  )
 }
 
 export function ScrollProgressIndicator({ sections, className }: ScrollProgressIndicatorProps) {
@@ -58,7 +87,10 @@ export function ScrollProgressIndicator({ sections, className }: ScrollProgressI
   }
 
   return (
-    <div data-scroll-progress className={cn("fixed bottom-5 left-1/2 z-40 -translate-x-1/2", className)}>
+    <>
+      <ProgressiveBlur position="top" />
+      <ProgressiveBlur position="bottom" />
+      <div data-scroll-progress className={cn("fixed bottom-5 left-1/2 z-40 -translate-x-1/2", className)}>
       <motion.div
         layout
         transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 180, damping: 24 }}
@@ -84,6 +116,7 @@ export function ScrollProgressIndicator({ sections, className }: ScrollProgressI
           )}
         </AnimatePresence>
       </motion.div>
-    </div>
+      </div>
+    </>
   )
 }
