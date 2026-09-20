@@ -279,6 +279,12 @@ export default function ClientHome({
               color={navAccent}
               className="font-newsreader text-[15px] tracking-[0.01em]"
             />
+            <nav aria-label="Social links" className="mt-8 flex items-center gap-3 border-t border-foreground/10 pt-4 text-muted-foreground">
+              <a href="https://x.com/" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground" aria-label="X / Twitter">x</a>
+              <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground" aria-label="GitHub">github</a>
+              <a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground" aria-label="LinkedIn">linkedin</a>
+              <a href="mailto:your@email.com" className="transition-colors hover:text-foreground" aria-label="Email">email</a>
+            </nav>
           </nav>
           <div className="portfolio-content text-base leading-relaxed min-w-0">
             {activeTensorForest ? renderTensorForestContent() : 
