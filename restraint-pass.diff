@@ -1,0 +1,993 @@
+--- a/app/globals.css	2026-09-20 07:55:25.000000000 +0000
++++ b/app/globals.css	2026-09-20 15:10:29.700205319 +0000
+@@ -52,6 +52,33 @@
+     text-wrap: balance;
+   }
+ 
++  /* ── editorial type system ─────────────────────────────────────────
++     One measure, one scale, one rhythm. Restraint comes from the
++     spacing, not from the size of the headings.
++  ─────────────────────────────────────────────────────────────────── */
++  :root {
++    --measure: 64ch;
++    --rhythm: clamp(3.5rem, 9vw, 6.5rem);
++  }
++
++  .portfolio-content {
++    font-family: var(--font-newsreader), Georgia, serif;
++    font-size: 17px;
++    line-height: 1.78;
++    color: hsl(var(--foreground) / 0.86);
++  }
++
++  .portfolio-content p,
++  .portfolio-content li,
++  .portfolio-content blockquote {
++    font-family: var(--font-newsreader), Georgia, serif;
++    max-width: var(--measure);
++  }
++
++  .portfolio-content p + p {
++    margin-top: 1.1em;
++  }
++
+   .portfolio-content h1,
+   .portfolio-content h2,
+   .portfolio-content h3,
+@@ -59,13 +86,49 @@
+     font-family: var(--font-instrument), Georgia, serif;
+     font-style: italic;
+     font-weight: 400;
+-    letter-spacing: -0.025em;
++    letter-spacing: -0.02em;
+     text-wrap: balance;
++    color: hsl(var(--foreground));
+   }
+ 
+-  .portfolio-content p,
+-  .portfolio-content li {
+-    font-family: var(--font-newsreader), Georgia, serif;
++  /* quiet eyebrow label — the shwn move. Replaces every text-4xl bold. */
++  .section-label {
++    font-family: var(--font-sans), Inter, system-ui, sans-serif;
++    font-size: 10px;
++    font-style: normal;
++    font-weight: 500;
++    letter-spacing: 0.22em;
++    text-transform: uppercase;
++    color: hsl(var(--foreground) / 0.42);
++    display: block;
++    margin-bottom: 1.25rem;
++  }
++
++  .section-title {
++    font-family: var(--font-instrument), Georgia, serif;
++    font-style: italic;
++    font-weight: 400;
++    font-size: clamp(1.5rem, 3.4vw, 1.9rem);
++    line-height: 1.15;
++    letter-spacing: -0.02em;
++    margin-bottom: 1.5rem;
++  }
++
++  .section-lede {
++    max-width: var(--measure);
++    color: hsl(var(--foreground) / 0.6);
++    margin-bottom: 2.5rem;
++  }
++
++  /* vertical rhythm: space is the design */
++  .section-block + .section-block {
++    margin-top: var(--rhythm);
++    padding-top: var(--rhythm);
++    border-top: 1px solid hsl(var(--foreground) / 0.08);
++  }
++
++  .hairline {
++    border-top: 1px solid hsl(var(--foreground) / 0.08);
+   }
+ }
+ 
+@@ -511,3 +574,78 @@
+     radial-gradient(circle at 50% 50%, var(--accent-color, #7ee0c5), color-mix(in oklab, var(--accent-color, #7ee0c5) 18%, #0b0c0e) 72%);
+ }
+ 
++
++/* ==========================================================================
++   Restraint pass — links, focus, nav, motion
++   ========================================================================== */
++
++/* Links: hairline underline that firms up on hover. No colour needed. */
++.portfolio-content a:not(.no-underline) {
++  color: hsl(var(--foreground));
++  text-decoration: underline;
++  text-decoration-thickness: 1px;
++  text-underline-offset: 3px;
++  text-decoration-color: hsl(var(--foreground) / 0.28);
++  transition: text-decoration-color 180ms ease, color 180ms ease;
++}
++
++.portfolio-content a:not(.no-underline):hover {
++  text-decoration-color: hsl(var(--foreground) / 0.85);
++}
++
++/* Lists sit closer to the text they belong to */
++.portfolio-content ul {
++  max-width: var(--measure);
++}
++
++.portfolio-content .tight-list-item {
++  margin-block: 0.55em;
++}
++
++.portfolio-content .tight-list-item::before {
++  content: "—";
++  color: hsl(var(--foreground) / 0.3);
++  font-size: 0.85em;
++}
++
++/* Pull-quote / lede rule, quieter than the old solid border */
++.rule-left {
++  border-left: 1px solid hsl(var(--foreground) / 0.18);
++  padding-left: 1.1rem;
++}
++
++/* Visible keyboard focus everywhere */
++:where(a, button, [role="button"], input, select, textarea):focus-visible {
++  outline: 1px solid hsl(var(--foreground) / 0.7);
++  outline-offset: 3px;
++  border-radius: 2px;
++}
++
++/* Sidebar nav: small, calm, active state is weight not colour */
++.nav-link {
++  font-size: 14px;
++  line-height: 1.9;
++  letter-spacing: 0.005em;
++  color: hsl(var(--foreground) / 0.45);
++  transition: color 180ms ease;
++}
++
++.nav-link:hover {
++  color: hsl(var(--foreground) / 0.8);
++}
++
++.nav-link[data-active="true"] {
++  color: hsl(var(--foreground));
++}
++
++/* Respect the user's motion preference across the whole site */
++@media (prefers-reduced-motion: reduce) {
++  *,
++  *::before,
++  *::after {
++    animation-duration: 0.001ms !important;
++    animation-iteration-count: 1 !important;
++    transition-duration: 0.001ms !important;
++    scroll-behavior: auto !important;
++  }
++}
+--- a/app/layout.tsx	2026-09-20 07:55:25.000000000 +0000
++++ b/app/layout.tsx	2026-09-20 15:14:43.249181776 +0000
+@@ -27,9 +27,33 @@
+   display: "swap",
+ })
+ 
++const SITE_URL = "https://mani-gg.vercel.app"
++const DESCRIPTION =
++  "Mani — research, systems, taste. Voice AI, LLM evaluations, and interpretability-driven evals synthesis."
++
+ export const metadata = {
+-  title: "Mani",
+-  description: "Personal website of Mani"
++  metadataBase: new URL(SITE_URL),
++  title: {
++    default: "Mani — Research, Systems, Taste",
++    template: "%s — Mani",
++  },
++  description: DESCRIPTION,
++  keywords: ["Mani", "voice AI", "LLM evaluations", "interpretability", "machine learning", "portfolio"],
++  authors: [{ name: "Mani", url: SITE_URL }],
++  alternates: { canonical: "/" },
++  openGraph: {
++    type: "website",
++    url: SITE_URL,
++    siteName: "Mani",
++    title: "Mani — Research, Systems, Taste",
++    description: DESCRIPTION,
++  },
++  twitter: {
++    card: "summary_large_image",
++    title: "Mani — Research, Systems, Taste",
++    description: DESCRIPTION,
++    creator: "@devxmani",
++  },
+ }
+ 
+ export default function RootLayout({ children }: { children: React.ReactNode }) {
+--- a/components/client-home.tsx	2026-09-20 07:55:25.000000000 +0000
++++ b/components/client-home.tsx	2026-09-20 15:13:50.079384739 +0000
+@@ -176,7 +176,7 @@
+      render
+   ────────────────────────────────── */
+   return (
+-    <div className="min-h-screen bg-transparent text-foreground flex flex-col items-center pt-16 pb-12 px-4 sm:px-6 md:pt-6 lg:px-8 relative selection:bg-white/20">
++    <div className="min-h-screen bg-transparent text-foreground flex flex-col items-center pt-20 pb-40 px-5 sm:px-8 md:pt-16 lg:px-8 relative selection:bg-white/20">
+       <div className="w-full flex flex-col items-center relative z-10">
+         {/* ───────────── mobile top bar ───────────── */}
+         <div className="md:hidden fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
+@@ -263,30 +263,49 @@
+         <AccentControls />
+ 
+         {/* Hero Video */}
+-        <div className="max-w-6xl w-full mb-8 md:mb-10">
++        <div className="w-full max-w-[56rem] mb-16 md:mb-24">
+           <HeroVideo />
+         </div>
+ 
+-        <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-[180px_minmax(0,1fr)] gap-10 md:gap-12 font-newsreader text-[16px] items-start">
+-          <nav className="hidden md:block self-start select-none pt-1">
+-            <HookSidebar
+-              items={NAV_ITEMS.map((item) => item.label)}
+-              value={activeNavIndex}
+-              onChange={(index) => {
+-                const next = NAV_ITEMS[index]
+-                if (next) selectSection(next.key)
+-              }}
+-              color={navAccent}
+-              className="font-newsreader text-[15px] tracking-[0.01em]"
+-            />
+-            <nav aria-label="Social links" className="mt-8 flex items-center gap-3 border-t border-foreground/10 pt-4 text-muted-foreground">
+-              <a href="https://x.com/" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground" aria-label="X / Twitter">x</a>
+-              <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground" aria-label="GitHub">github</a>
+-              <a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground" aria-label="LinkedIn">linkedin</a>
+-              <a href="mailto:your@email.com" className="transition-colors hover:text-foreground" aria-label="Email">email</a>
++        <div className="w-full max-w-[56rem] grid grid-cols-1 md:grid-cols-[152px_minmax(0,1fr)] gap-12 md:gap-20 items-start">
++          <nav className="hidden md:block self-start select-none md:sticky md:top-16">
++            <ul className="font-newsreader">
++              {NAV_ITEMS.map((item) => {
++                const isActive = item.key === activeSection && !activeTensorForest && !activeApocalypseHacks
++                return (
++                  <li key={item.key}>
++                    <button
++                      type="button"
++                      onClick={() => selectSection(item.key)}
++                      data-active={isActive}
++                      data-cuelume-press="tick"
++                      aria-current={isActive ? "page" : undefined}
++                      className="nav-link block w-full text-left"
++                    >
++                      <span
++                        className="inline-block transition-transform duration-200"
++                        style={isActive ? { transform: "translateX(6px)" } : undefined}
++                      >
++                        {item.label}
++                      </span>
++                    </button>
++                  </li>
++                )
++              })}
++            </ul>
++
++            {/* TODO(mani): swap these four for your real handles */}
++            <nav
++              aria-label="Social links"
++              className="mt-10 flex flex-col gap-1.5 border-t border-foreground/10 pt-5 text-[13px] text-foreground/40"
++            >
++              <a href="https://x.com/devxmani" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground">x</a>
++              <a href="https://github.com/devxmani" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground">github</a>
++              <a href="https://www.linkedin.com/in/devxmani" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground">linkedin</a>
++              <a href="mailto:hello@devxmani.tech" className="transition-colors hover:text-foreground">email</a>
+             </nav>
+           </nav>
+-          <div className="portfolio-content text-base leading-relaxed min-w-0">
++          <div className="portfolio-content min-w-0">
+             {activeTensorForest ? renderTensorForestContent() : 
+              activeApocalypseHacks ? renderApocalypseHacksContent() : 
+              renderSectionContent(activeSection)}
+@@ -646,7 +665,7 @@
+ 
+     const renderWithHeading = (title: string, content: React.ReactNode) => (
+       <div className="pt-2">
+-        <h2 className={cn("text-4xl font-bold mb-8", boldHeadings.includes(title) && "font-bold")}>
++        <h2 className={cn("section-title", boldHeadings.includes(title) && "section-title")}>
+           {title}
+         </h2>
+         {content}
+@@ -657,15 +676,15 @@
+       case "about":
+         return (
+           <div id="section-about" className="scroll-mt-8">
+-            {/* Name and Social Icons */}
+-            <div className="relative mb-2 min-h-[3.25rem]">
+-              <h1 className="flex items-baseline gap-3 whitespace-nowrap font-instrument text-[30px] leading-none font-normal italic tracking-tight sm:text-[36px]">
++            {/* Name + portrait */}
++            <div className="mb-10 flex items-start justify-between gap-8">
++              <h1 className="font-instrument text-[34px] leading-none font-normal italic tracking-tight sm:text-[40px]">
+                 <span className="inline-block transition-opacity duration-200" aria-live="polite">
+                   {introGreeting}
+-                </span>
++                </span>{" "}
+                 <span>Mani</span>
+               </h1>
+-              <div className="absolute right-4 top-0 w-20 sm:w-24">
++              <div className="w-16 shrink-0 sm:w-20">
+                 <GridReveal
+                   src="/mani-profile.jpeg"
+                   alt="Portrait of Mani"
+@@ -673,7 +692,6 @@
+                   estimatedDuration={2600}
+                   className="rounded-sm"
+                 />
+-
+               </div>
+             </div>
+             
+@@ -689,8 +707,9 @@
+       case "fieldnotes":
+         return (
+           <div className="pt-2" id="section-blogs">
+-            <h2 className="text-4xl font-bold mb-4">blogs & fieldnotes</h2>
+-            <p className="text-lg text-muted-foreground mb-8">
++            <span className="section-label">Writing</span>
++            <h2 className="section-title">blogs &amp; fieldnotes</h2>
++            <p className="section-lede">
+               thoughts, observations, and learnings from my journey
+             </p>
+             
+@@ -771,12 +790,14 @@
+           <div className="pt-2" id="section-content">
+             {contentWorthConsuming ? (
+               <div className="mb-16">
+-                <h2 className="text-4xl font-bold mb-8">{contentWorthConsuming.title}</h2>
++                <span className="section-label">Recommendations</span>
++                <h2 className="section-title">{contentWorthConsuming.title}</h2>
+                 <ContentWorthConsumingRenderer content={contentWorthConsuming.content} />
+               </div>
+             ) : (
+               <div className="mb-16">
+-                <h2 className="text-4xl font-bold mb-8">Content Worth Consuming</h2>
++                <span className="section-label">Recommendations</span>
++                <h2 className="section-title">Content Worth Consuming</h2>
+                 <p className="text-muted-foreground">Content not found. Create a content-worth-consuming.md file in the content directory.</p>
+               </div>
+             )}
+@@ -1360,9 +1381,10 @@
+ 
+     return (
+       <div className="pt-2" id="section-photos">
+-        <h2 className="text-4xl font-bold mb-4">photos</h2>
+-        <p className="text-lg text-muted-foreground mb-10">images I keep returning to.</p>
+-        <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
++        <span className="section-label">A moving collection</span>
++        <h2 className="section-title">photos i love</h2>
++        <p className="section-lede">images I keep returning to.</p>
++        <div className="grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2">
+           {artworks.map((artwork) => (
+             <figure key={artwork.title} className="group">
+               <div className="overflow-hidden bg-muted/20">
+--- a/components/about-renderer.tsx	2026-09-20 07:55:25.000000000 +0000
++++ b/components/about-renderer.tsx	2026-09-20 15:14:17.088218835 +0000
+@@ -18,14 +18,34 @@
+   '13': 'link-codecamp',
+ }
+ 
++/* Sections that get their own slot below, in this order. Anything else in
++   about.md is rendered automatically by the generic pass, so you can add a
++   new "## heading" to the markdown and it just shows up. */
++const KNOWN = [
++  'intro',
++  'selected work',
++  'experiences',
++  "some cool things i've done in the past:",
++  'how i started:',
++  'where do i see myself in 10 years:',
++]
++
++/* Small caps eyebrow above each section — carries the hierarchy so the
++   headings themselves can stay quiet. */
++const EYEBROWS: Record<string, string> = {
++  'selected work': 'Work',
++  experiences: 'Experience',
++  "some cool things i've done in the past:": 'Elsewhere',
++}
++
+ export default function AboutRenderer({ content }: AboutRendererProps) {
+   const [showMore, setShowMore] = useState(false)
+ 
+   const parseAboutContent = (text: string) => {
+-    const sections = text.split('\n## ').filter(section => section.trim())
++    const sections = text.split('\n## ').filter((section) => section.trim())
+     const parsedSections: Record<string, string> = {}
+ 
+-    sections.forEach(section => {
++    sections.forEach((section) => {
+       const lines = section.split('\n')
+       const title = lines[0].replace('## ', '').trim()
+       const sectionContent = lines.slice(1).join('\n').trim()
+@@ -36,137 +56,144 @@
+   }
+ 
+   const parseHoverLinks = (text: string) => {
+-    let processedText = text
++    const processedText = text
+       .replace(/^###\s*/gm, '')
+       .replace(/^>\s*/gm, '')
+       .replace(/\*\*(.*?)\*\*/g, '$1')
+       .replace(/`([^`]+)`/g, '$1')
+       .replace(/\[hover-rank\]([^[]+)\[\/hover-rank\]/g, (_match, rankContent) => {
+-      return `<span class="hover-rank-toggle group/rank cursor-default"><span class="group-hover/rank:hidden">${rankContent}</span><span class="hidden group-hover/rank:inline">2.5%</span></span>`
+-    })
++        return `<span class="hover-rank-toggle group/rank cursor-default"><span class="group-hover/rank:hidden">${rankContent}</span><span class="hidden group-hover/rank:inline">2.5%</span></span>`
++      })
+ 
+-    return processedText.replace(/\[hover-(\d+)\]\s*\[([^\]]+)\]\(([^)]+)\)/g, (_match, hoverNum, title, url) => {
+-      const linkClass = hoverClassMap[hoverNum] || 'link-blue'
+-      return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="${linkClass}">${title}</a>`
+-    })
++    return processedText
++      .replace(/\[hover-(\d+)\]\s*\[([^\]]+)\]\(([^)]+)\)/g, (_match, hoverNum, title, url) => {
++        const linkClass = hoverClassMap[hoverNum] || 'link-blue'
++        return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="${linkClass}">${title}</a>`
++      })
++      .replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g, (_match, title, url) => {
++        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${title}</a>`
++      })
+   }
+ 
+-  const parseBulletPoints = (text: string, isListItem = false) => {
++  const parseBulletPoints = (text: string, isListItem = false, key?: React.Key) => {
+     const processedText = parseHoverLinks(text)
+ 
+     if (isListItem) {
+-      return (
+-        <li
+-          key={Math.random()}
+-          className="tight-list-item"
+-          dangerouslySetInnerHTML={{ __html: processedText }}
+-        />
+-      )
++      return <li key={key} className="tight-list-item" dangerouslySetInnerHTML={{ __html: processedText }} />
+     }
+ 
+     return <span dangerouslySetInnerHTML={{ __html: processedText }} />
+   }
+ 
++  /* One block renderer for every section: paragraphs stay paragraphs,
++     dash lists stay lists. No per-section special cases. */
++  const renderBlocks = (body: string) =>
++    body.split('\n\n').map((block, index) => {
++      if (block.includes('\n- ') || block.trim().startsWith('- ')) {
++        return (
++          <ul key={index} className="list-none">
++            {block
++              .split('\n- ')
++              .filter((item) => item.trim())
++              .map((item, i) => parseBulletPoints(item.replace(/^- /, '').trim(), true, i))}
++          </ul>
++        )
++      }
++      return <p key={index}>{parseBulletPoints(block)}</p>
++    })
++
++  const Section = ({ eyebrow, title, body }: { eyebrow?: string; title: string; body: string }) => (
++    <section className="section-block">
++      {eyebrow && <span className="section-label">{eyebrow}</span>}
++      <h2 className="section-title">{title}</h2>
++      {renderBlocks(body)}
++    </section>
++  )
++
+   const sections = parseAboutContent(content)
++  const extraSections = Object.keys(sections).filter((key) => !KNOWN.includes(key))
+ 
+   return (
+-    <div className="font-newsreader text-[16px] leading-[1.75] text-foreground/90">
++    <div className="portfolio-content">
++      {/* ── intro: one lede, then plain paragraphs. Nothing shouts. ── */}
+       {sections.intro && (
+-        <div className="mb-5 space-y-4">
++        <section>
+           {sections.intro.split('\n\n').map((paragraph, index) => {
+             if (index === 0) {
+               return (
+-                <h2 key={index} className="mb-2 font-newsreader text-[22px] font-normal italic leading-tight text-foreground/80">
+-                  {parseBulletPoints(paragraph)}
+-                </h2>
++                <span key={index} className="section-label">
++                  {paragraph.replace(/\*/g, '')}
++                </span>
+               )
+             }
+             if (index === 1) {
+               return (
+-                <p key={index} className="border-l border-foreground/25 pl-4 text-foreground/75">
++                <p
++                  key={index}
++                  className="mb-8 font-instrument text-[24px] italic leading-[1.35] text-foreground sm:text-[27px]"
++                >
+                   {parseBulletPoints(paragraph)}
+                 </p>
+               )
+             }
+             return <p key={index}>{parseBulletPoints(paragraph)}</p>
+           })}
+-        </div>
++        </section>
+       )}
+ 
+-      {sections["some cool things i've done in the past:"] && (
+-        <div className="mb-6">
+-          <h2 className="mb-3 border-l border-foreground/35 pl-3 font-newsreader text-[20px] leading-tight font-normal italic text-foreground">
+-            some cool things i’ve done in the past:
+-          </h2>
+-          <ul className="list-none space-y-2 text-[16px] leading-[1.75]">
+-            {sections["some cool things i've done in the past:"]
+-              .split('\n- ')
+-              .filter(item => item.trim())
+-              .map((item) => {
+-                const cleanItem = item.replace(/^- /, '').trim()
+-                return parseBulletPoints(cleanItem, true)
+-              })}
+-          </ul>
+-        </div>
++      {sections['selected work'] && (
++        <Section eyebrow={EYEBROWS['selected work']} title="selected work" body={sections['selected work']} />
+       )}
+ 
+       {sections.experiences && (
+-        <>
+-        <div className="mb-6">
+-          <h2 className="mb-3 border-l border-foreground/35 pl-3 font-newsreader text-[20px] leading-tight font-normal italic text-foreground">
+-            experiences
+-          </h2>
+-          {sections.experiences.split('\n\n').map((block, index) => {
+-            if (block.includes('\n- ') || block.startsWith('- ')) {
+-              return (
+-                <ul key={index} className="list-none space-y-2 text-[16px] leading-[1.75]">
+-                  {block
+-                    .split('\n- ')
+-                    .filter(item => item.trim())
+-                    .map((item) => parseBulletPoints(item.replace(/^- /, '').trim(), true))}
+-                </ul>
+-              )
+-            }
+-            return <p key={index} className="mb-3">{parseBulletPoints(block)}</p>
+-          })}
+-        </div>
+-        <FavoritePhotosCarousel />
+-        </>
++        <Section eyebrow={EYEBROWS.experiences} title="experience" body={sections.experiences} />
+       )}
+ 
+-      {(sections["how i started:"] || sections["where do i see myself in 10 years:"]) && (
+-        <button
+-          onClick={() => setShowMore(!showMore)}
+-          className="mb-4 text-[16px] underline decoration-foreground/30 underline-offset-4 hover:no-underline"
+-        >
+-          {showMore ? 'Show Less' : 'Read More'}
+-        </button>
++      {sections["some cool things i've done in the past:"] && (
++        <Section
++          eyebrow={EYEBROWS["some cool things i've done in the past:"]}
++          title="a few other things"
++          body={sections["some cool things i've done in the past:"]}
++        />
+       )}
+ 
+-      {showMore && (
+-        <div className="space-y-6">
+-          {sections["how i started:"] && (
+-            <div>
+-              <h2 className="mb-3 font-newsreader text-[16px] italic text-foreground/70">how i started:</h2>
+-              <p className="mb-3">{parseBulletPoints(sections["how i started:"].split('\n\n')[0])}</p>
+-              <ul className="list-none space-y-2 text-[16px]">
+-                {sections["how i started:"]
+-                  .split('\n- ')
+-                  .slice(1)
+-                  .filter(item => item.trim())
+-                  .map((item) => parseBulletPoints(item.replace(/^- /, '').trim(), true))}
+-              </ul>
+-            </div>
+-          )}
+-
+-          {sections["where do i see myself in 10 years:"] && (
+-            <div>
+-              <h2 className="mb-3 font-newsreader text-[16px] italic text-foreground/70">where do i see myself in 10 years:</h2>
+-              <p>{parseBulletPoints(sections["where do i see myself in 10 years:"])}</p>
++      {/* any new "## heading" you add to about.md lands here automatically */}
++      {extraSections.map((key) => (
++        <Section key={key} title={key.replace(/:$/, '')} body={sections[key]} />
++      ))}
++
++      {(sections['how i started:'] || sections['where do i see myself in 10 years:']) && (
++        <div className="section-block">
++          <button
++            onClick={() => setShowMore(!showMore)}
++            aria-expanded={showMore}
++            className="text-[13px] uppercase tracking-[0.18em] text-foreground/45 transition-colors hover:text-foreground"
++          >
++            {showMore ? 'Less' : 'More'}
++          </button>
++
++          {showMore && (
++            <div className="mt-10 space-y-10">
++              {sections['how i started:'] && (
++                <div>
++                  <span className="section-label">Origin</span>
++                  {renderBlocks(sections['how i started:'])}
++                </div>
++              )}
++              {sections['where do i see myself in 10 years:'] && (
++                <div>
++                  <span className="section-label">Ten years out</span>
++                  {renderBlocks(sections['where do i see myself in 10 years:'])}
++                </div>
++              )}
+             </div>
+           )}
+         </div>
+       )}
++
++      <div className="section-block">
++        <FavoritePhotosCarousel />
++      </div>
+     </div>
+   )
+ }
+--- a/components/hero-video.tsx	2026-09-20 07:55:25.000000000 +0000
++++ b/components/hero-video.tsx	2026-09-20 15:11:17.008208131 +0000
+@@ -6,133 +6,99 @@
+ const CLIPS = [
+   { src: "/hero/one-of-those-evenings.mp4", label: "Sunset Drive" },
+   { src: "/hero/one-last-check.mp4", label: "One Last Check" },
+-  { src: "/hero/everything-reacts.mp4", label: "Everything Reacts" },
+   { src: "/hero/still-counts-as-indoors.mp4", label: "Still Counts as Indoors" },
+   { src: "/hero/could-leave-anytime.mp4", label: "Could Leave Anytime" },
+   { src: "/hero/breeze-tomatoes.mp4", label: "The Tomatoes Still Need Water" },
++  { src: "/hero/time-isnt-always-meant-to-move.mp4", label: "Time Isn't Always Meant to Move" },
+ ] as const
+ 
++const MUSIC_KEY = "mani:music"
++
+ const controlClassName =
+-  "flex h-7 w-7 items-center justify-center rounded-full bg-white/[0.06] text-foreground/50 backdrop-blur-xl border border-white/[0.08] transition-all hover:bg-white/[0.12] hover:text-foreground/80"
++  "flex h-7 w-7 items-center justify-center rounded-full bg-black/25 text-foreground/55 backdrop-blur-md border border-white/[0.07] transition-colors hover:bg-black/40 hover:text-foreground/90"
+ 
+ export function HeroVideo() {
+   const videoRef = useRef<HTMLVideoElement>(null)
+-  const videoRefs = useRef<Array<HTMLVideoElement | null>>([])
+   const audioRef = useRef<HTMLAudioElement>(null)
+   const [activeClip, setActiveClip] = useState(0)
+-  const [videoMuted, setVideoMuted] = useState(false)
+-  const [musicOff, setMusicOff] = useState(false)
+-  const shouldMuteVideo = videoMuted
++  const [videoMuted, setVideoMuted] = useState(true)
++  // Sound is opt-in, never opt-out. Autoplaying audio closes tabs.
++  const [musicOn, setMusicOn] = useState(false)
++  const [reducedMotion, setReducedMotion] = useState(false)
++
++  useEffect(() => {
++    const media = window.matchMedia("(prefers-reduced-motion: reduce)")
++    setReducedMotion(media.matches)
++    const onChange = () => setReducedMotion(media.matches)
++    media.addEventListener("change", onChange)
++    return () => media.removeEventListener("change", onChange)
++  }, [])
++
++  useEffect(() => {
++    try {
++      if (window.localStorage.getItem(MUSIC_KEY) === "on") setMusicOn(true)
++    } catch {
++      /* storage unavailable, stay silent */
++    }
++  }, [])
+ 
+   useEffect(() => {
+     const video = videoRef.current
+     if (!video) return
+-
+-    const media = window.matchMedia("(prefers-reduced-motion: reduce)")
+-    video.muted = shouldMuteVideo
+-    video.volume = shouldMuteVideo ? 0 : 1
+-    if (media.matches) {
++    video.muted = videoMuted
++    if (reducedMotion) {
+       video.pause()
+       return
+     }
+-
+-    const playVideo = () => void video.play().catch(() => {})
+-    playVideo()
+-    media.addEventListener("change", playVideo)
+-    return () => media.removeEventListener("change", playVideo)
+-  }, [activeClip, shouldMuteVideo])
+-
+-  const nextClip = () => {
+-    setActiveClip((index) => (index + 1) % CLIPS.length)
+-  }
++    void video.play().catch(() => {})
++  }, [activeClip, videoMuted, reducedMotion])
+ 
+   useEffect(() => {
+     const audio = audioRef.current
+     if (!audio) return
+-
+     audio.loop = true
+-    audio.volume = 0.55
+-
+-    const playPiano = () => {
+-      if (musicOff) {
+-        audio.pause()
+-        return
+-      }
++    audio.volume = 0.45
++    if (musicOn) {
+       void audio.play().catch(() => {})
++    } else {
++      audio.pause()
+     }
+-
+-    playPiano()
+-
+-    const startOnGesture = () => {
+-      playPiano()
+-      window.removeEventListener("pointerdown", startOnGesture)
+-      window.removeEventListener("keydown", startOnGesture)
++    try {
++      window.localStorage.setItem(MUSIC_KEY, musicOn ? "on" : "off")
++    } catch {
++      /* no-op */
+     }
++  }, [musicOn])
+ 
+-    if (!musicOff) {
+-      window.addEventListener("pointerdown", startOnGesture)
+-      window.addEventListener("keydown", startOnGesture)
+-    }
+-
+-    return () => {
+-      window.removeEventListener("pointerdown", startOnGesture)
+-      window.removeEventListener("keydown", startOnGesture)
+-    }
+-  }, [musicOff])
++  const nextClip = () => setActiveClip((index) => (index + 1) % CLIPS.length)
+ 
+   return (
+-    <div className="relative w-full overflow-hidden rounded-xl">
+-      <audio ref={audioRef} src="/hero/piano.mp3" preload="auto" loop />
+-      <div className="relative aspect-[16/7] min-h-[168px] w-full max-h-[340px] sm:max-h-[400px]">
++    <figure className="relative w-full overflow-hidden rounded-[10px] m-0">
++      <audio ref={audioRef} src="/hero/piano.mp3" preload="none" loop />
++      <div className="relative aspect-[21/9] w-full max-h-[380px] bg-black/40">
+         <video
+-          key={`blur-${CLIPS[activeClip].src}`}
+-          className="pointer-events-none absolute inset-0 h-full w-full scale-110 object-cover opacity-45 blur-2xl"
++          ref={videoRef}
++          key={CLIPS[activeClip].src}
++          className="absolute inset-0 h-full w-full object-cover"
+           src={CLIPS[activeClip].src}
+-          autoPlay
+-          muted
++          poster="/hero/poster.jpg"
++          autoPlay={!reducedMotion}
++          muted={videoMuted}
+           loop
+           playsInline
+-          preload="auto"
+-          aria-hidden="true"
++          preload="metadata"
++          aria-label={CLIPS[activeClip].label}
+         />
+-        {CLIPS.map((clip, index) => {
+-          const isActive = index === activeClip
+-          const isNext = index === (activeClip + 1) % CLIPS.length
+-          const shouldRender = isActive || isNext
+-
+-          if (!shouldRender) return null
+-
+-          return (
+-            <video
+-              key={clip.src}
+-              ref={(element) => {
+-                videoRefs.current[index] = element
+-                if (isActive) videoRef.current = element
+-              }}
+-              className={`absolute inset-0 h-full w-full rounded-xl object-cover transition-opacity duration-200 ${isActive ? "opacity-100" : "pointer-events-none opacity-0"}`}
+-              autoPlay={isActive}
+-              muted={shouldMuteVideo}
+-              loop
+-              playsInline
+-              preload="auto"
+-              src={clip.src}
+-              onLoadedData={() => {
+-                if (isActive) void videoRefs.current[index]?.play().catch(() => {})
+-              }}
+-              aria-hidden={!isActive}
+-              aria-label={isActive ? clip.label : undefined}
+-            />
+-          )
+-        })}
+-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent rounded-xl" />
+-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-background/40 to-transparent rounded-b-xl" />
+ 
+-        <div className="absolute right-3 top-1/2 z-10 flex -translate-y-1/2 flex-col gap-1.5">
++        {/* single soft foot so the frame dissolves into the page */}
++        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background/70 to-transparent" />
++
++        <div className="absolute right-3 bottom-3 z-10 flex items-center gap-1.5">
+           <button
+             type="button"
+             onClick={nextClip}
+-            aria-label={`Change video. Currently showing ${CLIPS[activeClip].label}`}
+-            className={`${controlClassName} bg-white/[0.1] text-foreground/70`}
++            aria-label={`Next clip. Now playing ${CLIPS[activeClip].label}`}
++            className={controlClassName}
+             data-cuelume-toggle="tick"
+           >
+             <ChevronRight className="h-3.5 w-3.5" />
+@@ -140,23 +106,31 @@
+           <button
+             type="button"
+             onClick={() => setVideoMuted((value) => !value)}
+-            aria-label={videoMuted ? "Turn video audio on" : "Turn video audio off"}
++            aria-label={videoMuted ? "Unmute clip audio" : "Mute clip audio"}
++            aria-pressed={!videoMuted}
+             className={controlClassName}
+             data-cuelume-toggle="tick"
+           >
+-            {shouldMuteVideo ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
++            {videoMuted ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
+           </button>
+           <button
+             type="button"
+-            onClick={() => setMusicOff((value) => !value)}
+-            aria-label={musicOff ? "Turn music on" : "Turn music off"}
++            onClick={() => setMusicOn((value) => !value)}
++            aria-label={musicOn ? "Turn music off" : "Turn music on"}
++            aria-pressed={musicOn}
+             className={controlClassName}
+             data-cuelume-toggle="tick"
+           >
+-            <Music className={`h-3.5 w-3.5 ${musicOff ? "opacity-40" : ""}`} />
++            <Music className={`h-3.5 w-3.5 ${musicOn ? "" : "opacity-40"}`} />
+           </button>
+         </div>
+       </div>
+-    </div>
++      <figcaption className="mt-2.5 flex items-baseline justify-between text-[10px] uppercase tracking-[0.22em] text-foreground/35">
++        <span>{CLIPS[activeClip].label}</span>
++        <span>
++          {String(activeClip + 1).padStart(2, "0")} / {String(CLIPS.length).padStart(2, "0")}
++        </span>
++      </figcaption>
++    </figure>
+   )
+ }
+--- a/components/site-footer.tsx	2026-09-20 07:55:25.000000000 +0000
++++ b/components/site-footer.tsx	2026-09-20 15:14:34.083821960 +0000
+@@ -6,13 +6,9 @@
+   const year = new Date().getFullYear()
+ 
+   return (
+-    <footer className="mt-16 pt-8 text-center">
+-      <p className="text-[11px] uppercase tracking-[0.28em] text-muted-foreground">
+-        Last updated: {lastUpdated}
+-      </p>
+-      <p className="mt-2 text-[11px] tracking-[0.12em] text-muted-foreground/60">
+-        Mani © {year} — Don&apos;t steal my work. I&apos;ll find you.
+-      </p>
++    <footer className="mt-32 flex flex-wrap items-baseline justify-between gap-2 border-t border-foreground/8 pt-6 text-[10px] uppercase tracking-[0.22em] text-foreground/30">
++      <span>Last updated {lastUpdated}</span>
++      <span>Mani © {year}</span>
+     </footer>
+   )
+ }
+--- a/components/paper-background.tsx	2026-09-20 07:55:25.000000000 +0000
++++ b/components/paper-background.tsx	2026-09-20 15:10:57.764430171 +0000
+@@ -92,7 +92,10 @@
+     }
+ 
+     window.addEventListener("pointermove", handlePointerMove, { passive: true })
+-    window.addEventListener("pointerdown", handlePointerDown, { passive: true })
++    // Click ripple intentionally disabled — it fired on every nav click and
++    // competed with the grain. Re-enable by uncommenting the line below.
++    // window.addEventListener("pointerdown", handlePointerDown, { passive: true })
++    void handlePointerDown
+ 
+     // Gentle lerp loop
+     let rafId = 0
+@@ -207,30 +210,38 @@
+           <div
+             className="absolute inset-0 transition-colors duration-700 pointer-events-none"
+             style={{
+-              backgroundColor: "#090909",
+-              backgroundImage: `radial-gradient(90% 70% at 22% 18%, ${accentDark}1f 0%, transparent 60%), radial-gradient(100% 80% at 78% 88%, #5377A41f 0%, transparent 65%)`
++              backgroundColor: "#070707",
++              backgroundImage: `radial-gradient(120% 90% at 50% 0%, ${accentDark}12 0%, transparent 62%)`
+             }}
+           />
+-          {/* Paper Shaders GrainGradient - gentle speed, calibrated low noise (0.12) */}
+-          <div className="absolute inset-0 pointer-events-none">
++          {/* Paper Shaders GrainGradient — texture only, never competing with type */}
++          <div className="absolute inset-0 pointer-events-none opacity-[0.55]">
+             <GrainGradient
+               className="w-full h-full block"
+               minPixelRatio={1}
+               maxPixelCount={maxPixels}
+-              speed={isReducedMotion ? 0 : 0.12}
+-              scale={3.25}
++              speed={isReducedMotion ? 0 : 0.08}
++              scale={4.5}
+               rotation={0}
+               offsetX={pointerOffset.x}
+               offsetY={pointerOffset.y}
+               softness={1}
+-              intensity={0.42}
+-              noise={0.08}
++              intensity={0.18}
++              noise={0.06}
+               shape="wave"
+-              colors={[accentDark, "#5377A4", "#0B0B0B"]}
++              colors={[accentDark, "#0B0B0B"]}
+               colorBack="#00000000"
+               style={{ backgroundColor: "transparent" }}
+             />
+           </div>
++          {/* Readability scrim: keeps body copy off the texture */}
++          <div
++            className="absolute inset-0 pointer-events-none"
++            style={{
++              background:
++                "linear-gradient(180deg, rgba(7,7,7,0.25) 0%, rgba(7,7,7,0.62) 38%, rgba(7,7,7,0.78) 100%)"
++            }}
++          />
+         </>
+       ) : (
+         <>
+--- a/content/about.md	2026-09-20 07:55:25.000000000 +0000
++++ b/content/about.md	2026-09-20 15:14:30.168219613 +0000
+@@ -10,27 +10,30 @@
+ 
+ Research · Systems · Taste
+ 
+-Taste is the last craft worth keeping
++Taste is the last craft worth keeping.
+ 
+-I've always been drawn to work that's both technically hard and a little bit beautiful — the kind that sits at the intersection of research and systems. Chasing that has left me with a mix of interests, and an obsession with getting better at every one of them.
++I've always been drawn to work that's both technically hard and a little bit beautiful — the kind that sits at the intersection of research and systems. These days that looks like voice systems, inference, and LLM evaluation.
+ 
+-These days, that obsession looks like research, voice systems, inference, and building things I actually want to exist.
++Right now I'm working with Isabelle, an ML/AI PhD student at USC, on evals synthesis using interpretability: using model internals to surface hidden failure modes and guide targeted evaluations.
+ 
+-I'm currently working with Isabelle, an ML/AI PhD student at USC, on evals synthesis using interpretability — exploring how model internals can reveal hidden failure modes and guide the synthesis of targeted LLM evaluations. Her research focuses on training, reasoning, and interpretability, particularly using model internals to predict and understand failures.
++## selected work
+ 
+-## some cool things i've done in the past:
++TODO(mani) — replace these three with your real projects. Keep the shape:
++one line on what it is, one line on the hard part, then the link. The hard
++part is what makes this read like a portfolio instead of a résumé.
+ 
+-- Worked with the Google AI team on multilingual evaluation workflows and regional-bias trade-offs. We received $20K USD in support and funding.
+-- Played esports professionally — COD, 3x Immortal. I’d love to teach you.
+-- I’d love to coach s1mple one day. Just kidding.
++- **Otto** — [one line on what it does]. The hard part: [the constraint you had to design around]. [repo or demo](https://example.com)
++- **BrainLattice** — [one line on what it does]. The hard part: [the constraint you had to design around]. [repo or demo](https://example.com)
++- **Function-Gemma** — on-device fine-tuning with LiteRT-LM and LoRA. The hard part: [what made it non-obvious]. [repo or demo](https://example.com)
+ 
+ ## experiences
+ 
+-The work so far:
+-
+-- I'm currently researching voice AI systems and LLM evaluations alongside a Harvard graduate and professors from UC Berkeley.
+-- I worked with the Google AI team as part of a team of around seven people for eight months on multilingual evaluations and regional-bias trade-offs. I worked on evaluation workflows and project tooling, gathered data across states, and looked at how regional and linguistic biases showed up across AI systems.
++I'm researching voice AI systems and LLM evaluations alongside a Harvard graduate and professors from UC Berkeley.
+ 
+-- We received $20K USD in funding and support, and the last I heard, the work was being considered for a product that could reach 500K–1M users. I mostly did it because I wanted to see if I could actually build something like this.
++Before that I spent eight months on the Google AI team, one of about seven people working on multilingual evaluations and regional-bias trade-offs. I built evaluation workflows and project tooling, gathered data across states, and traced how regional and linguistic bias surfaced across systems. The work carried $20K USD in funding and support.
+ 
+ If you want to hack around on any of this, hit me up.
++
++## some cool things i've done in the past:
++
++- Played esports professionally — COD, 3x Immortal. I'd love to teach you.

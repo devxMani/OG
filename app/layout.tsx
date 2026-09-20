@@ -4,6 +4,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AccentThemeProvider } from "@/components/accent-theme-provider"
 import { PaperBackground } from "@/components/paper-background"
+import { GrainOverlay } from "@/components/grain-overlay"
 import { CuelumeProvider } from "@/components/cuelume-provider"
 import { cn } from "@/lib/utils"
 
@@ -27,9 +28,33 @@ const instrument = Instrument_Serif({
   display: "swap",
 })
 
+const SITE_URL = "https://mani-gg.vercel.app"
+const DESCRIPTION =
+  "Mani — research, systems, taste. Voice AI, LLM evaluations, and interpretability-driven evals synthesis."
+
 export const metadata = {
-  title: "Mani",
-  description: "Personal website of Mani"
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Mani — Research, Systems, Taste",
+    template: "%s — Mani",
+  },
+  description: DESCRIPTION,
+  keywords: ["Mani", "voice AI", "LLM evaluations", "interpretability", "machine learning", "portfolio"],
+  authors: [{ name: "Mani", url: SITE_URL }],
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: "Mani",
+    title: "Mani — Research, Systems, Taste",
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Mani — Research, Systems, Taste",
+    description: DESCRIPTION,
+    creator: "@devxmani",
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -45,6 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           <AccentThemeProvider>
             <PaperBackground />
+            <GrainOverlay opacity={0.14} />
             <CuelumeProvider />
             {children}
           </AccentThemeProvider>

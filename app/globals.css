@@ -52,6 +52,33 @@ body {
     text-wrap: balance;
   }
 
+  /* ── editorial type system ─────────────────────────────────────────
+     One measure, one scale, one rhythm. Restraint comes from the
+     spacing, not from the size of the headings.
+  ─────────────────────────────────────────────────────────────────── */
+  :root {
+    --measure: 72ch;
+    --rhythm: clamp(3.5rem, 9vw, 6.5rem);
+  }
+
+  .portfolio-content {
+    font-family: var(--font-newsreader), Georgia, serif;
+    font-size: 17.5px;
+    line-height: 1.78;
+    color: hsl(var(--foreground) / 0.86);
+  }
+
+  .portfolio-content p,
+  .portfolio-content li,
+  .portfolio-content blockquote {
+    font-family: var(--font-newsreader), Georgia, serif;
+    max-width: var(--measure);
+  }
+
+  .portfolio-content p + p {
+    margin-top: 1.1em;
+  }
+
   .portfolio-content h1,
   .portfolio-content h2,
   .portfolio-content h3,
@@ -59,13 +86,57 @@ body {
     font-family: var(--font-instrument), Georgia, serif;
     font-style: italic;
     font-weight: 400;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.02em;
     text-wrap: balance;
+    color: hsl(var(--foreground));
   }
 
-  .portfolio-content p,
-  .portfolio-content li {
-    font-family: var(--font-newsreader), Georgia, serif;
+  /* quiet eyebrow label — the shwn move. Replaces every text-4xl bold. */
+  .section-label {
+    font-family: var(--font-sans), Inter, system-ui, sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: hsl(var(--foreground) / 0.5);
+    display: block;
+    margin-bottom: 1.35rem;
+  }
+
+  /* the Research · Systems · Taste line — the loudest small text on the page */
+  .section-label--lead {
+    font-size: 15px;
+    letter-spacing: 0.26em;
+    color: hsl(var(--foreground) / 0.62);
+    margin-bottom: 1.75rem;
+  }
+
+  .section-title {
+    font-family: var(--font-instrument), Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1.95rem, 4vw, 2.5rem);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.6rem;
+  }
+
+  .section-lede {
+    max-width: var(--measure);
+    color: hsl(var(--foreground) / 0.6);
+    margin-bottom: 2.5rem;
+  }
+
+  /* vertical rhythm: space is the design */
+  .section-block + .section-block {
+    margin-top: var(--rhythm);
+    padding-top: var(--rhythm);
+    border-top: 1px solid hsl(var(--foreground) / 0.08);
+  }
+
+  .hairline {
+    border-top: 1px solid hsl(var(--foreground) / 0.08);
   }
 }
 
@@ -511,3 +582,138 @@ body {
     radial-gradient(circle at 50% 50%, var(--accent-color, #7ee0c5), color-mix(in oklab, var(--accent-color, #7ee0c5) 18%, #0b0c0e) 72%);
 }
 
+
+/* ==========================================================================
+   Restraint pass — links, focus, nav, motion
+   ========================================================================== */
+
+/* Links: hairline underline that firms up on hover. No colour needed. */
+.portfolio-content a:not(.no-underline) {
+  color: hsl(var(--foreground));
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: hsl(var(--foreground) / 0.28);
+  transition: text-decoration-color 180ms ease, color 180ms ease;
+}
+
+.portfolio-content a:not(.no-underline):hover {
+  text-decoration-color: hsl(var(--foreground) / 0.85);
+}
+
+/* Lists sit closer to the text they belong to */
+.portfolio-content ul {
+  max-width: var(--measure);
+}
+
+.portfolio-content .tight-list-item {
+  margin-block: 0.55em;
+}
+
+.portfolio-content .tight-list-item::before {
+  content: "—";
+  color: hsl(var(--foreground) / 0.3);
+  font-size: 0.85em;
+}
+
+/* Pull-quote / lede rule, quieter than the old solid border */
+.rule-left {
+  border-left: 1px solid hsl(var(--foreground) / 0.18);
+  padding-left: 1.1rem;
+}
+
+/* Visible keyboard focus everywhere */
+:where(a, button, [role="button"], input, select, textarea):focus-visible {
+  outline: 1px solid hsl(var(--foreground) / 0.7);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Sidebar nav: small, calm, active state is weight not colour */
+.nav-link {
+  font-size: 14px;
+  line-height: 1.9;
+  letter-spacing: 0.005em;
+  color: hsl(var(--foreground) / 0.45);
+  transition: color 180ms ease;
+}
+
+.nav-link:hover {
+  color: hsl(var(--foreground) / 0.8);
+}
+
+.nav-link[data-active="true"] {
+  color: hsl(var(--foreground));
+}
+
+/* Respect the user's motion preference across the whole site */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   Feathered video edges (shwn-style soft dissolve) + film grain
+   ========================================================================== */
+
+/* Pure CSS mask — no second video decode, no extra paint cost.
+   Two masks compose: a radial for the corners, a linear for the long edges. */
+.video-feather {
+  -webkit-mask-image:
+    radial-gradient(125% 135% at 50% 50%, #000 46%, rgba(0, 0, 0, 0.55) 72%, transparent 92%),
+    linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%);
+  mask-image:
+    radial-gradient(125% 135% at 50% 50%, #000 46%, rgba(0, 0, 0, 0.55) 72%, transparent 92%),
+    linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+/* Softer variant for the footer field, which sits behind text */
+.video-feather--soft {
+  -webkit-mask-image: radial-gradient(110% 150% at 50% 45%, #000 28%, rgba(0, 0, 0, 0.4) 62%, transparent 88%);
+  mask-image: radial-gradient(110% 150% at 50% 45%, #000 28%, rgba(0, 0, 0, 0.4) 62%, transparent 88%);
+}
+
+/* Film grain: one 140px tile painted once, then nudged in 8 steps.
+   Costs a single repeating background instead of a full-screen canvas redraw. */
+.film-grain {
+  position: fixed;
+  inset: -140px;
+  z-index: 9999;
+  pointer-events: none;
+  background-repeat: repeat;
+  background-size: 140px 140px;
+  opacity: 0.13;
+  will-change: transform;
+  animation: grain-shift 1s steps(1) infinite;
+}
+
+@keyframes grain-shift {
+  0%   { transform: translate3d(0, 0, 0); }
+  12%  { transform: translate3d(-18px, 9px, 0); }
+  25%  { transform: translate3d(11px, -22px, 0); }
+  37%  { transform: translate3d(-27px, -13px, 0); }
+  50%  { transform: translate3d(19px, 17px, 0); }
+  62%  { transform: translate3d(-9px, 26px, 0); }
+  75%  { transform: translate3d(24px, -8px, 0); }
+  87%  { transform: translate3d(-14px, -25px, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .film-grain {
+    animation: none;
+  }
+}
+
+/* Sidebar: more air between links */
+.nav-link {
+  padding-block: 0.3rem;
+}

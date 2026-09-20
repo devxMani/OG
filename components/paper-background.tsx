@@ -92,7 +92,10 @@ export function PaperBackground() {
     }
 
     window.addEventListener("pointermove", handlePointerMove, { passive: true })
-    window.addEventListener("pointerdown", handlePointerDown, { passive: true })
+    // Click ripple intentionally disabled — it fired on every nav click and
+    // competed with the grain. Re-enable by uncommenting the line below.
+    // window.addEventListener("pointerdown", handlePointerDown, { passive: true })
+    void handlePointerDown
 
     // Gentle lerp loop
     let rafId = 0
@@ -207,30 +210,38 @@ export function PaperBackground() {
           <div
             className="absolute inset-0 transition-colors duration-700 pointer-events-none"
             style={{
-              backgroundColor: "#090909",
-              backgroundImage: `radial-gradient(90% 70% at 22% 18%, ${accentDark}1f 0%, transparent 60%), radial-gradient(100% 80% at 78% 88%, #5377A41f 0%, transparent 65%)`
+              backgroundColor: "#070707",
+              backgroundImage: `radial-gradient(120% 90% at 50% 0%, ${accentDark}12 0%, transparent 62%)`
             }}
           />
-          {/* Paper Shaders GrainGradient - gentle speed, calibrated low noise (0.12) */}
-          <div className="absolute inset-0 pointer-events-none">
+          {/* Paper Shaders GrainGradient — texture only, never competing with type */}
+          <div className="absolute inset-0 pointer-events-none opacity-[0.8]">
             <GrainGradient
               className="w-full h-full block"
               minPixelRatio={1}
               maxPixelCount={maxPixels}
-              speed={isReducedMotion ? 0 : 0.12}
-              scale={3.25}
+              speed={isReducedMotion ? 0 : 0.08}
+              scale={3.8}
               rotation={0}
               offsetX={pointerOffset.x}
               offsetY={pointerOffset.y}
               softness={1}
-              intensity={0.42}
-              noise={0.08}
+              intensity={0.32}
+              noise={0.11}
               shape="wave"
-              colors={[accentDark, "#5377A4", "#0B0B0B"]}
+              colors={[accentDark, "#0B0B0B"]}
               colorBack="#00000000"
               style={{ backgroundColor: "transparent" }}
             />
           </div>
+          {/* Readability scrim: keeps body copy off the texture */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(7,7,7,0.18) 0%, rgba(7,7,7,0.5) 40%, rgba(7,7,7,0.68) 100%)"
+            }}
+          />
         </>
       ) : (
         <>

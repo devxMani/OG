@@ -18,7 +18,6 @@ import ContentWorthConsumingRenderer from "@/components/content-worth-consuming-
 import { Bookshelf } from "@/components/bookshelf"
 import type { Book } from "@/lib/books"
 import CommandPalette from "@/components/command-palette"
-import { SiteFooter } from "@/components/site-footer"
 import KeyboardHint from "@/components/keyboard-hint"
 import HeroBanner from "@/components/hero-banner"
 import { HeroVideo } from "@/components/hero-video"
@@ -176,7 +175,7 @@ export default function ClientHome({
      render
   ────────────────────────────────── */
   return (
-    <div className="min-h-screen bg-transparent text-foreground flex flex-col items-center pt-16 pb-12 px-4 sm:px-6 md:pt-6 lg:px-8 relative selection:bg-white/20">
+    <div className="min-h-screen bg-transparent text-foreground flex flex-col items-center pt-20 pb-40 px-5 sm:px-8 md:pt-16 lg:px-8 relative selection:bg-white/20">
       <div className="w-full flex flex-col items-center relative z-10">
         {/* ───────────── mobile top bar ───────────── */}
         <div className="md:hidden fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
@@ -263,35 +262,53 @@ export default function ClientHome({
         <AccentControls />
 
         {/* Hero Video */}
-        <div className="max-w-6xl w-full mb-8 md:mb-10">
+        <div className="w-full max-w-[74rem] mb-16 md:mb-24">
           <HeroVideo />
         </div>
 
-        <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-[180px_minmax(0,1fr)] gap-10 md:gap-12 font-newsreader text-[16px] items-start">
-          <nav className="hidden md:block self-start select-none pt-1">
-            <HookSidebar
-              items={NAV_ITEMS.map((item) => item.label)}
-              value={activeNavIndex}
-              onChange={(index) => {
-                const next = NAV_ITEMS[index]
-                if (next) selectSection(next.key)
-              }}
-              color={navAccent}
-              className="font-newsreader text-[15px] tracking-[0.01em]"
-            />
-            <nav aria-label="Social links" className="mt-8 flex items-center gap-3 border-t border-foreground/10 pt-4 text-muted-foreground">
-              <a href="https://x.com/" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground" aria-label="X / Twitter">x</a>
-              <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground" aria-label="GitHub">github</a>
-              <a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground" aria-label="LinkedIn">linkedin</a>
-              <a href="mailto:your@email.com" className="transition-colors hover:text-foreground" aria-label="Email">email</a>
+        <div className="w-full max-w-[74rem] grid grid-cols-1 md:grid-cols-[208px_minmax(0,1fr)] gap-12 md:gap-24 items-start">
+          <nav className="hidden md:block self-start select-none md:sticky md:top-16">
+            <ul className="font-newsreader space-y-1.5">
+              {NAV_ITEMS.map((item) => {
+                const isActive = item.key === activeSection && !activeTensorForest && !activeApocalypseHacks
+                return (
+                  <li key={item.key}>
+                    <button
+                      type="button"
+                      onClick={() => selectSection(item.key)}
+                      data-active={isActive}
+                      data-cuelume-press="tick"
+                      aria-current={isActive ? "page" : undefined}
+                      className="nav-link block w-full text-left text-[15px]"
+                    >
+                      <span
+                        className="inline-block transition-transform duration-200"
+                        style={isActive ? { transform: "translateX(6px)" } : undefined}
+                      >
+                        {item.label}
+                      </span>
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+
+            {/* TODO(mani): swap these four for your real handles */}
+            <nav
+              aria-label="Social links"
+              className="mt-12 flex flex-col gap-3 border-t border-foreground/10 pt-6 text-[14px] text-foreground/40"
+            >
+              <a href="https://x.com/devxmani" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground">x</a>
+              <a href="https://github.com/devxmani" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground">github</a>
+              <a href="https://www.linkedin.com/in/devxmani" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground">linkedin</a>
+              <a href="mailto:hello@devxmani.tech" className="transition-colors hover:text-foreground">email</a>
             </nav>
           </nav>
-          <div className="portfolio-content text-base leading-relaxed min-w-0">
+          <div className="portfolio-content min-w-0">
             {activeTensorForest ? renderTensorForestContent() : 
              activeApocalypseHacks ? renderApocalypseHacksContent() : 
              renderSectionContent(activeSection)}
 
-            <SiteFooter lastUpdated={lastUpdated} />
           </div>
 
 
@@ -646,7 +663,7 @@ export default function ClientHome({
 
     const renderWithHeading = (title: string, content: React.ReactNode) => (
       <div className="pt-2">
-        <h2 className={cn("text-4xl font-bold mb-8", boldHeadings.includes(title) && "font-bold")}>
+        <h2 className={cn("section-title", boldHeadings.includes(title) && "section-title")}>
           {title}
         </h2>
         {content}
@@ -657,15 +674,15 @@ export default function ClientHome({
       case "about":
         return (
           <div id="section-about" className="scroll-mt-8">
-            {/* Name and Social Icons */}
-            <div className="relative mb-2 min-h-[3.25rem]">
-              <h1 className="flex items-baseline gap-3 whitespace-nowrap font-instrument text-[30px] leading-none font-normal italic tracking-tight sm:text-[36px]">
+            {/* Name + portrait */}
+            <div className="mb-10 flex items-start justify-between gap-8">
+              <h1 className="font-instrument text-[42px] leading-none font-normal italic tracking-tight sm:text-[52px]">
                 <span className="inline-block transition-opacity duration-200" aria-live="polite">
                   {introGreeting}
-                </span>
+                </span>{" "}
                 <span>Mani</span>
               </h1>
-              <div className="absolute right-4 top-0 w-20 sm:w-24">
+              <div className="mr-2 w-24 shrink-0 sm:mr-10 sm:w-28">
                 <GridReveal
                   src="/mani-profile.jpeg"
                   alt="Portrait of Mani"
@@ -673,7 +690,6 @@ export default function ClientHome({
                   estimatedDuration={2600}
                   className="rounded-sm"
                 />
-
               </div>
             </div>
             
@@ -689,8 +705,9 @@ export default function ClientHome({
       case "fieldnotes":
         return (
           <div className="pt-2" id="section-blogs">
-            <h2 className="text-4xl font-bold mb-4">blogs & fieldnotes</h2>
-            <p className="text-lg text-muted-foreground mb-8">
+            <span className="section-label">Writing</span>
+            <h2 className="section-title">blogs &amp; fieldnotes</h2>
+            <p className="section-lede">
               thoughts, observations, and learnings from my journey
             </p>
             
@@ -771,12 +788,14 @@ export default function ClientHome({
           <div className="pt-2" id="section-content">
             {contentWorthConsuming ? (
               <div className="mb-16">
-                <h2 className="text-4xl font-bold mb-8">{contentWorthConsuming.title}</h2>
+                <span className="section-label">Recommendations</span>
+                <h2 className="section-title">{contentWorthConsuming.title}</h2>
                 <ContentWorthConsumingRenderer content={contentWorthConsuming.content} />
               </div>
             ) : (
               <div className="mb-16">
-                <h2 className="text-4xl font-bold mb-8">Content Worth Consuming</h2>
+                <span className="section-label">Recommendations</span>
+                <h2 className="section-title">Content Worth Consuming</h2>
                 <p className="text-muted-foreground">Content not found. Create a content-worth-consuming.md file in the content directory.</p>
               </div>
             )}
@@ -1360,9 +1379,10 @@ export default function ClientHome({
 
     return (
       <div className="pt-2" id="section-photos">
-        <h2 className="text-4xl font-bold mb-4">photos</h2>
-        <p className="text-lg text-muted-foreground mb-10">images I keep returning to.</p>
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
+        <span className="section-label">A moving collection</span>
+        <h2 className="section-title">photos i love</h2>
+        <p className="section-lede">images I keep returning to.</p>
+        <div className="grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2">
           {artworks.map((artwork) => (
             <figure key={artwork.title} className="group">
               <div className="overflow-hidden bg-muted/20">
@@ -1385,4 +1405,3 @@ export default function ClientHome({
     )
   }
 }
-

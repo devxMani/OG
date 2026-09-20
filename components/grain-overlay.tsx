@@ -1,49 +1,54 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useState } from "react"
 
-export function GrainOverlay() {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+const TILE = 140
+
+/**
+ * Film grain, the cheap way.
+ *
+ * The old version repainted a full-viewport ImageData buffer (~8M writes on a
+ * 1440p screen) on mount and again on every resize. This paints ONE 140x140
+ * noise tile to an offscreen canvas, hands it to CSS as a repeating
+ * background, and lets a steps() animation jitter it. After the first frame it
+ * costs nothing: no canvas in the DOM, no JS on resize, no per-frame work.
+ */
+export function GrainOverlay({ opacity = 0.13 }: { opacity?: number }) {
+  const [tile, setTile] = useState<string | null>(null)
 
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-
+    const canvas = document.createElement("canvas")
+    canvas.width = TILE
+    canvas.height = TILE
     const ctx = canvas.getContext("2d")
     if (!ctx) return
 
-    const draw = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
+    const image = ctx.createImageData(TILE, TILE)
+    const data = image.data
 
-      const image = ctx.createImageData(canvas.width, canvas.height)
-      const data = image.data
-
-      for (let i = 0; i < data.length; i += 4) {
-        const value = (Math.random() * 255) | 0
-        data[i] = value
-        data[i + 1] = value
-        data[i + 2] = value
-        data[i + 3] = 255
-      }
-
-      ctx.putImageData(image, 0, 0)
+    for (let i = 0; i < data.length; i += 4) {
+      // Monochrome noise biased toward mid-grey, so it reads as film texture
+      // rather than salt-and-pepper speckle.
+      const value = 110 + ((Math.random() * 145) | 0)
+      data[i] = value
+      data[i + 1] = value
+      data[i + 2] = value
+      data[i + 3] = 255
     }
 
-    draw()
-    window.addEventListener("resize", draw)
-
-    return () => {
-      window.removeEventListener("resize", draw)
-    }
+    ctx.putImageData(image, 0, 0)
+    setTile(canvas.toDataURL("image/png"))
   }, [])
 
+  if (!tile) return null
+
   return (
-    <canvas
-      ref={canvasRef}
+    <div
       aria-hidden
-      className="pointer-events-none fixed inset-0 z-[9999]"
-      style={{ opacity: 0.055 }}
+      className="film-grain mix-blend-soft-light"
+      style={{ backgroundImage: `url(${tile})`, opacity }}
     />
   )
 }
+
+export default GrainOverlay

@@ -18,14 +18,34 @@ const hoverClassMap: Record<string, string> = {
   '13': 'link-codecamp',
 }
 
+/* Sections that get their own slot below, in this order. Anything else in
+   about.md is rendered automatically by the generic pass, so you can add a
+   new "## heading" to the markdown and it just shows up. */
+const KNOWN = [
+  'intro',
+  'selected work',
+  'experiences',
+  "some cool things i've done in the past:",
+  'how i started:',
+  'where do i see myself in 10 years:',
+]
+
+/* Small caps eyebrow above each section — carries the hierarchy so the
+   headings themselves can stay quiet. */
+const EYEBROWS: Record<string, string> = {
+  'selected work': 'Work',
+  experiences: 'Experience',
+  "some cool things i've done in the past:": 'Elsewhere',
+}
+
 export default function AboutRenderer({ content }: AboutRendererProps) {
   const [showMore, setShowMore] = useState(false)
 
   const parseAboutContent = (text: string) => {
-    const sections = text.split('\n## ').filter(section => section.trim())
+    const sections = text.split('\n## ').filter((section) => section.trim())
     const parsedSections: Record<string, string> = {}
 
-    sections.forEach(section => {
+    sections.forEach((section) => {
       const lines = section.split('\n')
       const title = lines[0].replace('## ', '').trim()
       const sectionContent = lines.slice(1).join('\n').trim()
@@ -36,137 +56,144 @@ export default function AboutRenderer({ content }: AboutRendererProps) {
   }
 
   const parseHoverLinks = (text: string) => {
-    let processedText = text
+    const processedText = text
       .replace(/^###\s*/gm, '')
       .replace(/^>\s*/gm, '')
       .replace(/\*\*(.*?)\*\*/g, '$1')
       .replace(/`([^`]+)`/g, '$1')
       .replace(/\[hover-rank\]([^[]+)\[\/hover-rank\]/g, (_match, rankContent) => {
-      return `<span class="hover-rank-toggle group/rank cursor-default"><span class="group-hover/rank:hidden">${rankContent}</span><span class="hidden group-hover/rank:inline">2.5%</span></span>`
-    })
+        return `<span class="hover-rank-toggle group/rank cursor-default"><span class="group-hover/rank:hidden">${rankContent}</span><span class="hidden group-hover/rank:inline">2.5%</span></span>`
+      })
 
-    return processedText.replace(/\[hover-(\d+)\]\s*\[([^\]]+)\]\(([^)]+)\)/g, (_match, hoverNum, title, url) => {
-      const linkClass = hoverClassMap[hoverNum] || 'link-blue'
-      return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="${linkClass}">${title}</a>`
-    })
+    return processedText
+      .replace(/\[hover-(\d+)\]\s*\[([^\]]+)\]\(([^)]+)\)/g, (_match, hoverNum, title, url) => {
+        const linkClass = hoverClassMap[hoverNum] || 'link-blue'
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="${linkClass}">${title}</a>`
+      })
+      .replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g, (_match, title, url) => {
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${title}</a>`
+      })
   }
 
-  const parseBulletPoints = (text: string, isListItem = false) => {
+  const parseBulletPoints = (text: string, isListItem = false, key?: React.Key) => {
     const processedText = parseHoverLinks(text)
 
     if (isListItem) {
-      return (
-        <li
-          key={Math.random()}
-          className="tight-list-item"
-          dangerouslySetInnerHTML={{ __html: processedText }}
-        />
-      )
+      return <li key={key} className="tight-list-item" dangerouslySetInnerHTML={{ __html: processedText }} />
     }
 
     return <span dangerouslySetInnerHTML={{ __html: processedText }} />
   }
 
+  /* One block renderer for every section: paragraphs stay paragraphs,
+     dash lists stay lists. No per-section special cases. */
+  const renderBlocks = (body: string) =>
+    body.split('\n\n').map((block, index) => {
+      if (block.includes('\n- ') || block.trim().startsWith('- ')) {
+        return (
+          <ul key={index} className="list-none">
+            {block
+              .split('\n- ')
+              .filter((item) => item.trim())
+              .map((item, i) => parseBulletPoints(item.replace(/^- /, '').trim(), true, i))}
+          </ul>
+        )
+      }
+      return <p key={index}>{parseBulletPoints(block)}</p>
+    })
+
+  const Section = ({ eyebrow, title, body }: { eyebrow?: string; title: string; body: string }) => (
+    <section className="section-block">
+      {eyebrow && <span className="section-label">{eyebrow}</span>}
+      <h2 className="section-title">{title}</h2>
+      {renderBlocks(body)}
+    </section>
+  )
+
   const sections = parseAboutContent(content)
+  const extraSections = Object.keys(sections).filter((key) => !KNOWN.includes(key))
 
   return (
-    <div className="font-newsreader text-[16px] leading-[1.75] text-foreground/90">
+    <div className="portfolio-content">
+      {/* ── intro: one lede, then plain paragraphs. Nothing shouts. ── */}
       {sections.intro && (
-        <div className="mb-5 space-y-4">
+        <section>
           {sections.intro.split('\n\n').map((paragraph, index) => {
             if (index === 0) {
               return (
-                <h2 key={index} className="mb-2 font-newsreader text-[22px] font-normal italic leading-tight text-foreground/80">
-                  {parseBulletPoints(paragraph)}
-                </h2>
+                <span key={index} className="section-label section-label--lead">
+                  {paragraph.replace(/\*/g, '')}
+                </span>
               )
             }
             if (index === 1) {
               return (
-                <p key={index} className="border-l border-foreground/25 pl-4 text-foreground/75">
+                <p
+                  key={index}
+                  className="mb-8 font-instrument text-[24px] italic leading-[1.35] text-foreground sm:text-[27px]"
+                >
                   {parseBulletPoints(paragraph)}
                 </p>
               )
             }
             return <p key={index}>{parseBulletPoints(paragraph)}</p>
           })}
-        </div>
+        </section>
       )}
 
-      {sections["some cool things i've done in the past:"] && (
-        <div className="mb-6">
-          <h2 className="mb-3 border-l border-foreground/35 pl-3 font-newsreader text-[20px] leading-tight font-normal italic text-foreground">
-            some cool things i’ve done in the past:
-          </h2>
-          <ul className="list-none space-y-2 text-[16px] leading-[1.75]">
-            {sections["some cool things i've done in the past:"]
-              .split('\n- ')
-              .filter(item => item.trim())
-              .map((item) => {
-                const cleanItem = item.replace(/^- /, '').trim()
-                return parseBulletPoints(cleanItem, true)
-              })}
-          </ul>
-        </div>
+      {sections['selected work'] && (
+        <Section eyebrow={EYEBROWS['selected work']} title="selected work" body={sections['selected work']} />
       )}
 
       {sections.experiences && (
-        <>
-        <div className="mb-6">
-          <h2 className="mb-3 border-l border-foreground/35 pl-3 font-newsreader text-[20px] leading-tight font-normal italic text-foreground">
-            experiences
-          </h2>
-          {sections.experiences.split('\n\n').map((block, index) => {
-            if (block.includes('\n- ') || block.startsWith('- ')) {
-              return (
-                <ul key={index} className="list-none space-y-2 text-[16px] leading-[1.75]">
-                  {block
-                    .split('\n- ')
-                    .filter(item => item.trim())
-                    .map((item) => parseBulletPoints(item.replace(/^- /, '').trim(), true))}
-                </ul>
-              )
-            }
-            return <p key={index} className="mb-3">{parseBulletPoints(block)}</p>
-          })}
+        <Section eyebrow={EYEBROWS.experiences} title="experience" body={sections.experiences} />
+      )}
+
+      {sections["some cool things i've done in the past:"] && (
+        <Section
+          eyebrow={EYEBROWS["some cool things i've done in the past:"]}
+          title="a few other things"
+          body={sections["some cool things i've done in the past:"]}
+        />
+      )}
+
+      {/* any new "## heading" you add to about.md lands here automatically */}
+      {extraSections.map((key) => (
+        <Section key={key} title={key.replace(/:$/, '')} body={sections[key]} />
+      ))}
+
+      {(sections['how i started:'] || sections['where do i see myself in 10 years:']) && (
+        <div className="section-block">
+          <button
+            onClick={() => setShowMore(!showMore)}
+            aria-expanded={showMore}
+            className="text-[13px] uppercase tracking-[0.18em] text-foreground/45 transition-colors hover:text-foreground"
+          >
+            {showMore ? 'Less' : 'More'}
+          </button>
+
+          {showMore && (
+            <div className="mt-10 space-y-10">
+              {sections['how i started:'] && (
+                <div>
+                  <span className="section-label">Origin</span>
+                  {renderBlocks(sections['how i started:'])}
+                </div>
+              )}
+              {sections['where do i see myself in 10 years:'] && (
+                <div>
+                  <span className="section-label">Ten years out</span>
+                  {renderBlocks(sections['where do i see myself in 10 years:'])}
+                </div>
+              )}
+            </div>
+          )}
         </div>
+      )}
+
+      <div className="section-block">
         <FavoritePhotosCarousel />
-        </>
-      )}
-
-      {(sections["how i started:"] || sections["where do i see myself in 10 years:"]) && (
-        <button
-          onClick={() => setShowMore(!showMore)}
-          className="mb-4 text-[16px] underline decoration-foreground/30 underline-offset-4 hover:no-underline"
-        >
-          {showMore ? 'Show Less' : 'Read More'}
-        </button>
-      )}
-
-      {showMore && (
-        <div className="space-y-6">
-          {sections["how i started:"] && (
-            <div>
-              <h2 className="mb-3 font-newsreader text-[16px] italic text-foreground/70">how i started:</h2>
-              <p className="mb-3">{parseBulletPoints(sections["how i started:"].split('\n\n')[0])}</p>
-              <ul className="list-none space-y-2 text-[16px]">
-                {sections["how i started:"]
-                  .split('\n- ')
-                  .slice(1)
-                  .filter(item => item.trim())
-                  .map((item) => parseBulletPoints(item.replace(/^- /, '').trim(), true))}
-              </ul>
-            </div>
-          )}
-
-          {sections["where do i see myself in 10 years:"] && (
-            <div>
-              <h2 className="mb-3 font-newsreader text-[16px] italic text-foreground/70">where do i see myself in 10 years:</h2>
-              <p>{parseBulletPoints(sections["where do i see myself in 10 years:"])}</p>
-            </div>
-          )}
-        </div>
-      )}
+      </div>
     </div>
   )
 }
