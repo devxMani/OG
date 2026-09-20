@@ -84,6 +84,17 @@ export function HeroVideo() {
     <div className="relative w-full overflow-hidden rounded-xl">
       <audio ref={audioRef} src="/hero/piano.mp3" preload="auto" loop />
       <div className="relative aspect-[16/7] min-h-[168px] w-full max-h-[340px] sm:max-h-[400px]">
+        <video
+          key={`blur-${CLIPS[activeClip].src}`}
+          className="pointer-events-none absolute inset-0 h-full w-full scale-110 object-cover opacity-45 blur-2xl"
+          src={CLIPS[activeClip].src}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          aria-hidden="true"
+        />
         {CLIPS.map((clip, index) => {
           const isActive = index === activeClip
           const isNext = index === (activeClip + 1) % CLIPS.length
