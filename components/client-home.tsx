@@ -1347,10 +1347,15 @@ export default function ClientHome({
     const displayPhotos = getDisplayPhotos();
 
     const artworks = [
+      { title: "Monks in a monastery courtyard", maker: "Franz Ludwig Catel", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-2e29Do9yHyFR5htg2wh1BatKt8BdDE.png" },
+      { title: "Grazing in the upper valley", maker: "Tommaso Cascella", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-1MrUdq13746fjevelJSiCHGdPPWcQw.png" },
       { title: "The Fleeting Hour", maker: "Jim Buckels", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-H9PdXCRY8vRVNqpgdPs1KulKV9rm9s.png" },
       { title: "Architect's Afternoon", maker: "Iwo Zaniewski", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-ZW4L1fssw6yQozIRc5rdNeYcGHnGqU.png" },
       { title: "Two on a Bridge", maker: "Igor Shcherbakov", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-fLW9jE5c4GwVCghT0XniyUDyJcbmWO.png" },
       { title: "Paris of the Future — Moebius 2000", maker: "Jean Giraud (Moebius)", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-fUmc5kVWXYqbAl2K1zeCPJEdDvPyWT.png" },
+      { title: "Lake of Tears", maker: "Ilya Glazunov", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Ilya_Glazunov._Lake_of_tears.jpg/1200px-Ilya_Glazunov._Lake_of_tears.jpg" },
+      { title: "October", maker: "Très Riches Heures, Limbourg Brothers", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Les_Tr%C3%A8s_Riches_Heures_du_Duc_de_Berry_octobre.jpg/1200px-Les_Tr%C3%A8s_Riches_Heures_du_Duc_de_Berry_octobre.jpg" },
+      { title: "View of Delft", maker: "Johannes Vermeer, 1661", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Vermeer-view-of-delft.jpg/1200px-Vermeer-view-of-delft.jpg" },
     ]
 
     return (

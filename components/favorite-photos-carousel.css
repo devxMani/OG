@@ -1,6 +1,7 @@
 .favorite-photos-track {
-  animation: favorite-photos-marquee 42s linear infinite;
+  animation: favorite-photos-marquee 28s linear infinite;
   will-change: transform;
+  width: max-content;
 }
 
 .favorite-photos-track.is-paused {
@@ -12,6 +13,12 @@
     transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translate3d(-33.333333%, 0, 0);
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@media (max-width: 640px) {
+  .favorite-photos-track {
+    animation-duration: 24s;
   }
 }

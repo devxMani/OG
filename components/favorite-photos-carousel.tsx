@@ -13,6 +13,9 @@ const providedArtworks: FavoriteArtwork[] = [
   { title: "Architect's Afternoon", maker: "Iwo Zaniewski", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-ZW4L1fssw6yQozIRc5rdNeYcGHnGqU.png" },
   { title: "Two on a Bridge", maker: "Igor Shcherbakov", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-fLW9jE5c4GwVCghT0XniyUDyJcbmWO.png" },
   { title: "Paris of the Future", maker: "Jean Giraud (Moebius)", image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-fUmc5kVWXYqbAl2K1zeCPJEdDvPyWT.png" },
+  { title: "Lake of Tears", maker: "Ilya Glazunov", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Ilya_Glazunov._Lake_of_tears.jpg/1200px-Ilya_Glazunov._Lake_of_tears.jpg" },
+  { title: "October", maker: "Très Riches Heures, Limbourg Brothers", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Les_Tr%C3%A8s_Riches_Heures_du_Duc_de_Berry_octobre.jpg/1200px-Les_Tr%C3%A8s_Riches_Heures_du_Duc_de_Berry_octobre.jpg" },
+  { title: "View of Delft", maker: "Johannes Vermeer, 1661", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Vermeer-view-of-delft.jpg/1200px-Vermeer-view-of-delft.jpg" },
 ]
 
 export default function FavoritePhotosCarousel({ artworks = [] }: { artworks?: FavoriteArtwork[] }) {
@@ -21,8 +24,27 @@ export default function FavoritePhotosCarousel({ artworks = [] }: { artworks?: F
       .filter((artwork) => !["image-dJN6tgJXQwm37VfKPQ0O0ZEYuf2dqb", "image-37pN1ee8fFaWhKhSguCiEFpP86ab3k", "image-rcPyH46EKMi15hGa3oskv5jGDkK2Ba"].some((asset) => artwork.image.includes(asset)))
       .map((artwork) => [artwork.image, artwork])).values(),
   )
-  const [, setPaused] = useState(false)
-  const [activeIndex, setActiveIndex] = useState<number | null>(1)
+
+  const marqueeItems = [
+    favorites[0],
+    favorites[1],
+    favorites[2],
+    favorites[6],
+    favorites[8],
+    favorites[0],
+    favorites[1],
+    favorites[2],
+    favorites[6],
+    favorites[8],
+  ].filter(Boolean) as FavoriteArtwork[]
+
+  const textCard: FavoriteArtwork = {
+    title: "Lake of Tears",
+    maker: "by Ilya Glazunov",
+    image: favorites[6]?.image ?? providedArtworks[6].image,
+  }
+
+  const [isPaused, setIsPaused] = useState(false)
   const [lightboxArtwork, setLightboxArtwork] = useState<FavoriteArtwork | null>(null)
 
   return (
@@ -34,24 +56,44 @@ export default function FavoritePhotosCarousel({ artworks = [] }: { artworks?: F
         </div>
         <span className="hidden text-xs text-muted-foreground sm:block">hover to linger</span>
       </div>
+
       <div className="relative -mx-4 overflow-hidden px-4 sm:-mx-8 sm:px-8">
-        <motion.div className="flex w-full items-center justify-center gap-1 overflow-hidden px-1">
-          {favorites.map((artwork, index) => {
-            const isActive = activeIndex === index
+        <motion.div
+          className={`favorite-photos-track ${isPaused ? "is-paused" : ""} flex items-center gap-1`}
+          initial={false}
+        >
+          {marqueeItems.map((artwork, index) => {
+            const isTextCard = index === 3 || index === 8
+            if (isTextCard) {
+              return (
+                <motion.button
+                  type="button"
+                  key={`${artwork.image}-${index}-text`}
+                  className="group relative flex h-56 w-[13rem] shrink-0 items-center justify-center overflow-hidden rounded-[1.5rem] border border-white/10 bg-black/20 px-4 text-center shadow-[0_18px_36px_-26px_rgba(0,0,0,0.9)] backdrop-blur-[2px] sm:h-64 sm:w-[14rem]"
+                  onMouseEnter={() => setIsPaused(true)}
+                  onMouseLeave={() => setIsPaused(false)}
+                  onClick={() => setLightboxArtwork(textCard)}
+                >
+                  <div className="text-center text-[#edf8ff]">
+                    <div className="font-newsreader text-[1.5rem] italic leading-[1.1] text-foreground">Lake of Tears</div>
+                    <div className="mt-2 text-[0.95rem] text-foreground/75">by Ilya Glazunov</div>
+                    <div className="mt-6 text-[1.5rem] italic leading-[1.1] text-foreground">October</div>
+                    <div className="mt-2 text-[0.95rem] text-foreground/75">by Trés Riches Heures, Limbourg Brothers</div>
+                    <div className="mt-6 text-[1.5rem] italic leading-[1.1] text-foreground">View of Delft</div>
+                    <div className="mt-2 text-[0.95rem] text-foreground/75">by Johannes Vermeer, 1661</div>
+                  </div>
+                </motion.button>
+              )
+            }
+
             return (
               <motion.figure
-                key={artwork.image}
-                className="group relative h-56 min-w-0 cursor-pointer overflow-hidden rounded-2xl sm:h-64"
+                key={`${artwork.image}-${index}`}
+                className="group relative h-56 w-[8.5rem] shrink-0 cursor-pointer overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/5 shadow-[0_18px_36px_-26px_rgba(0,0,0,0.9)] sm:h-64 sm:w-[9.5rem]"
                 initial={false}
-                animate={{ width: isActive ? "24rem" : "5rem", flex: isActive ? "1 1 24rem" : "0 1 5rem" }}
-                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                onHoverStart={() => { setActiveIndex(index); setPaused(true) }}
-                onHoverEnd={() => { setActiveIndex(null); setPaused(false) }}
-                onClick={() => {
-                  setActiveIndex(index)
-                  setPaused(true)
-                  setLightboxArtwork(artwork)
-                }}
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
+                onClick={() => setLightboxArtwork(artwork)}
               >
                 <img src={artwork.image} alt={`${artwork.title} by ${artwork.maker}`} className="h-full w-full object-cover" loading="lazy" />
                 <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-4 pt-12 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
@@ -63,17 +105,14 @@ export default function FavoritePhotosCarousel({ artworks = [] }: { artworks?: F
           })}
         </motion.div>
       </div>
+
       {lightboxArtwork && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-6 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
           aria-label={`${lightboxArtwork.title} by ${lightboxArtwork.maker}`}
-          onClick={() => {
-            setLightboxArtwork(null)
-            setSelected(null)
-            setPaused(false)
-          }}
+          onClick={() => setLightboxArtwork(null)}
         >
           <figure className="relative max-h-[90vh] max-w-[92vw] overflow-hidden rounded-2xl bg-black shadow-2xl" onClick={(event) => event.stopPropagation()}>
             <img src={lightboxArtwork.image} alt={`${lightboxArtwork.title} by ${lightboxArtwork.maker}`} className="max-h-[78vh] max-w-[88vw] object-contain" />
@@ -81,7 +120,7 @@ export default function FavoritePhotosCarousel({ artworks = [] }: { artworks?: F
               <p className="text-base">{lightboxArtwork.title}</p>
               <p className="text-sm text-white/65">{lightboxArtwork.maker}</p>
             </figcaption>
-            <button type="button" className="absolute right-3 top-3 rounded-full bg-black/60 px-3 py-1 text-lg text-white" aria-label="Close photo" onClick={() => { setLightboxArtwork(null); setSelected(null); setPaused(false) }}>×</button>
+            <button type="button" className="absolute right-3 top-3 rounded-full bg-black/60 px-3 py-1 text-lg text-white" aria-label="Close photo" onClick={() => setLightboxArtwork(null)}>×</button>
           </figure>
         </div>
       )}
