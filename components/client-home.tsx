@@ -3,6 +3,7 @@
 import type React from "react"
 import { useEffect, useState } from "react"
 import FavoritePhotosCarousel from "@/components/favorite-photos-carousel"
+import { ScrollProgressIndicator } from "@/components/scroll-progress-indicator"
 import { HookSidebar } from "@/components/ui/hook-sidebar"
 import Link from "next/link"
 import { AccentControls } from "@/components/accent-controls"
@@ -289,6 +290,10 @@ export default function ClientHome({
 
 
         </div>
+
+        <ScrollProgressIndicator
+          sections={NAV_ITEMS.map((item) => ({ id: `section-${item.key === "fieldnotes" ? "blogs" : item.key === "inspirations" ? "philosophy" : item.key}`, label: item.label }))}
+        />
 
         {/* Command Palette */}
         <CommandPalette
@@ -645,7 +650,7 @@ export default function ClientHome({
     switch (section) {
       case "about":
         return (
-          <div>
+          <div id="section-about" className="scroll-mt-8">
             {/* Name and Social Icons */}
             <div className="relative mb-2 min-h-[3.25rem]">
               <h1 className="flex items-baseline gap-3 whitespace-nowrap font-instrument text-[30px] leading-none font-normal italic tracking-tight sm:text-[36px]">
@@ -986,7 +991,7 @@ export default function ClientHome({
 
   /* ────────────────────────────────
      render photos content
-  ────────────────────────────────── */
+  ─────────────────────────────────��� */
   function renderPhotosContent() {
     
     // Polaroid photos
