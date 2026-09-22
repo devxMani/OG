@@ -57,13 +57,13 @@ body {
      spacing, not from the size of the headings.
   ─────────────────────────────────────────────────────────────────── */
   :root {
-    --measure: 72ch;
+    --measure: 64ch;
     --rhythm: clamp(3.5rem, 9vw, 6.5rem);
   }
 
   .portfolio-content {
     font-family: var(--font-newsreader), Georgia, serif;
-    font-size: 17.5px;
+    font-size: 17px;
     line-height: 1.78;
     color: hsl(var(--foreground) / 0.86);
   }
@@ -94,32 +94,24 @@ body {
   /* quiet eyebrow label — the shwn move. Replaces every text-4xl bold. */
   .section-label {
     font-family: var(--font-sans), Inter, system-ui, sans-serif;
-    font-size: 12px;
+    font-size: 10px;
     font-style: normal;
     font-weight: 500;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: hsl(var(--foreground) / 0.5);
+    color: hsl(var(--foreground) / 0.42);
     display: block;
-    margin-bottom: 1.35rem;
-  }
-
-  /* the Research · Systems · Taste line — the loudest small text on the page */
-  .section-label--lead {
-    font-size: 15px;
-    letter-spacing: 0.26em;
-    color: hsl(var(--foreground) / 0.62);
-    margin-bottom: 1.75rem;
+    margin-bottom: 1.25rem;
   }
 
   .section-title {
     font-family: var(--font-instrument), Georgia, serif;
     font-style: italic;
     font-weight: 400;
-    font-size: clamp(1.95rem, 4vw, 2.5rem);
-    line-height: 1.12;
+    font-size: clamp(1.5rem, 3.4vw, 1.9rem);
+    line-height: 1.15;
     letter-spacing: -0.02em;
-    margin-bottom: 1.6rem;
+    margin-bottom: 1.5rem;
   }
 
   .section-lede {
@@ -656,64 +648,4 @@ body {
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
-}
-
-/* ==========================================================================
-   Feathered video edges (shwn-style soft dissolve) + film grain
-   ========================================================================== */
-
-/* Pure CSS mask — no second video decode, no extra paint cost.
-   Two masks compose: a radial for the corners, a linear for the long edges. */
-.video-feather {
-  -webkit-mask-image:
-    radial-gradient(125% 135% at 50% 50%, #000 46%, rgba(0, 0, 0, 0.55) 72%, transparent 92%),
-    linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%);
-  mask-image:
-    radial-gradient(125% 135% at 50% 50%, #000 46%, rgba(0, 0, 0, 0.55) 72%, transparent 92%),
-    linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%);
-  -webkit-mask-composite: source-in;
-  mask-composite: intersect;
-}
-
-/* Softer variant for the footer field, which sits behind text */
-.video-feather--soft {
-  -webkit-mask-image: radial-gradient(110% 150% at 50% 45%, #000 28%, rgba(0, 0, 0, 0.4) 62%, transparent 88%);
-  mask-image: radial-gradient(110% 150% at 50% 45%, #000 28%, rgba(0, 0, 0, 0.4) 62%, transparent 88%);
-}
-
-/* Film grain: one 140px tile painted once, then nudged in 8 steps.
-   Costs a single repeating background instead of a full-screen canvas redraw. */
-.film-grain {
-  position: fixed;
-  inset: -140px;
-  z-index: 9999;
-  pointer-events: none;
-  background-repeat: repeat;
-  background-size: 140px 140px;
-  opacity: 0.13;
-  will-change: transform;
-  animation: grain-shift 1s steps(1) infinite;
-}
-
-@keyframes grain-shift {
-  0%   { transform: translate3d(0, 0, 0); }
-  12%  { transform: translate3d(-18px, 9px, 0); }
-  25%  { transform: translate3d(11px, -22px, 0); }
-  37%  { transform: translate3d(-27px, -13px, 0); }
-  50%  { transform: translate3d(19px, 17px, 0); }
-  62%  { transform: translate3d(-9px, 26px, 0); }
-  75%  { transform: translate3d(24px, -8px, 0); }
-  87%  { transform: translate3d(-14px, -25px, 0); }
-  100% { transform: translate3d(0, 0, 0); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .film-grain {
-    animation: none;
-  }
-}
-
-/* Sidebar: more air between links */
-.nav-link {
-  padding-block: 0.3rem;
 }

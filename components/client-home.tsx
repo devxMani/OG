@@ -3,7 +3,6 @@
 import type React from "react"
 import { useEffect, useState } from "react"
 import FavoritePhotosCarousel from "@/components/favorite-photos-carousel"
-import { ScrollProgressIndicator } from "@/components/scroll-progress-indicator"
 import { HookSidebar } from "@/components/ui/hook-sidebar"
 import Link from "next/link"
 import { AccentControls } from "@/components/accent-controls"
@@ -18,6 +17,7 @@ import ContentWorthConsumingRenderer from "@/components/content-worth-consuming-
 import { Bookshelf } from "@/components/bookshelf"
 import type { Book } from "@/lib/books"
 import CommandPalette from "@/components/command-palette"
+import { SiteFooter } from "@/components/site-footer"
 import KeyboardHint from "@/components/keyboard-hint"
 import HeroBanner from "@/components/hero-banner"
 import { HeroVideo } from "@/components/hero-video"
@@ -262,13 +262,13 @@ export default function ClientHome({
         <AccentControls />
 
         {/* Hero Video */}
-        <div className="w-full max-w-[74rem] mb-16 md:mb-24">
+        <div className="w-full max-w-[56rem] mb-16 md:mb-24">
           <HeroVideo />
         </div>
 
-        <div className="w-full max-w-[74rem] grid grid-cols-1 md:grid-cols-[208px_minmax(0,1fr)] gap-12 md:gap-24 items-start">
+        <div className="w-full max-w-[56rem] grid grid-cols-1 md:grid-cols-[152px_minmax(0,1fr)] gap-12 md:gap-20 items-start">
           <nav className="hidden md:block self-start select-none md:sticky md:top-16">
-            <ul className="font-newsreader space-y-1.5">
+            <ul className="font-newsreader">
               {NAV_ITEMS.map((item) => {
                 const isActive = item.key === activeSection && !activeTensorForest && !activeApocalypseHacks
                 return (
@@ -279,7 +279,7 @@ export default function ClientHome({
                       data-active={isActive}
                       data-cuelume-press="tick"
                       aria-current={isActive ? "page" : undefined}
-                      className="nav-link block w-full text-left text-[15px]"
+                      className="nav-link block w-full text-left"
                     >
                       <span
                         className="inline-block transition-transform duration-200"
@@ -292,11 +292,9 @@ export default function ClientHome({
                 )
               })}
             </ul>
-
-            {/* TODO(mani): swap these four for your real handles */}
             <nav
               aria-label="Social links"
-              className="mt-12 flex flex-col gap-3 border-t border-foreground/10 pt-6 text-[14px] text-foreground/40"
+              className="mt-10 flex flex-col gap-1.5 border-t border-foreground/10 pt-5 text-[13px] text-foreground/40"
             >
               <a href="https://x.com/devxmani" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground">x</a>
               <a href="https://github.com/devxmani" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground">github</a>
@@ -309,14 +307,12 @@ export default function ClientHome({
              activeApocalypseHacks ? renderApocalypseHacksContent() : 
              renderSectionContent(activeSection)}
 
+            <SiteFooter lastUpdated={lastUpdated} />
           </div>
 
 
         </div>
 
-        <ScrollProgressIndicator
-          sections={NAV_ITEMS.map((item) => ({ id: `section-${item.key === "fieldnotes" ? "blogs" : item.key === "inspirations" ? "philosophy" : item.key}`, label: item.label }))}
-        />
 
         {/* Command Palette */}
         <CommandPalette
@@ -663,7 +659,7 @@ export default function ClientHome({
 
     const renderWithHeading = (title: string, content: React.ReactNode) => (
       <div className="pt-2">
-        <h2 className={cn("section-title", boldHeadings.includes(title) && "section-title")}>
+        <h2 className={cn("text-4xl font-bold mb-8", boldHeadings.includes(title) && "font-bold")}>
           {title}
         </h2>
         {content}
@@ -674,15 +670,15 @@ export default function ClientHome({
       case "about":
         return (
           <div id="section-about" className="scroll-mt-8">
-            {/* Name + portrait */}
-            <div className="mb-10 flex items-start justify-between gap-8">
-              <h1 className="font-instrument text-[42px] leading-none font-normal italic tracking-tight sm:text-[52px]">
+            {/* Name and Social Icons */}
+            <div className="relative mb-2 min-h-[3.25rem]">
+              <h1 className="flex items-baseline gap-3 whitespace-nowrap font-instrument text-[30px] leading-none font-normal italic tracking-tight sm:text-[36px]">
                 <span className="inline-block transition-opacity duration-200" aria-live="polite">
                   {introGreeting}
-                </span>{" "}
+                </span>
                 <span>Mani</span>
               </h1>
-              <div className="mr-2 w-24 shrink-0 sm:mr-10 sm:w-28">
+              <div className="absolute right-0 top-0 w-24 sm:w-28">
                 <GridReveal
                   src="/mani-profile.jpeg"
                   alt="Portrait of Mani"
@@ -690,6 +686,7 @@ export default function ClientHome({
                   estimatedDuration={2600}
                   className="rounded-sm"
                 />
+
               </div>
             </div>
             
@@ -705,9 +702,8 @@ export default function ClientHome({
       case "fieldnotes":
         return (
           <div className="pt-2" id="section-blogs">
-            <span className="section-label">Writing</span>
-            <h2 className="section-title">blogs &amp; fieldnotes</h2>
-            <p className="section-lede">
+            <h2 className="text-4xl font-bold mb-4">blogs & fieldnotes</h2>
+            <p className="text-lg text-muted-foreground mb-8">
               thoughts, observations, and learnings from my journey
             </p>
             
@@ -788,14 +784,12 @@ export default function ClientHome({
           <div className="pt-2" id="section-content">
             {contentWorthConsuming ? (
               <div className="mb-16">
-                <span className="section-label">Recommendations</span>
-                <h2 className="section-title">{contentWorthConsuming.title}</h2>
+                <h2 className="text-4xl font-bold mb-8">{contentWorthConsuming.title}</h2>
                 <ContentWorthConsumingRenderer content={contentWorthConsuming.content} />
               </div>
             ) : (
               <div className="mb-16">
-                <span className="section-label">Recommendations</span>
-                <h2 className="section-title">Content Worth Consuming</h2>
+                <h2 className="text-4xl font-bold mb-8">Content Worth Consuming</h2>
                 <p className="text-muted-foreground">Content not found. Create a content-worth-consuming.md file in the content directory.</p>
               </div>
             )}
@@ -1379,10 +1373,9 @@ export default function ClientHome({
 
     return (
       <div className="pt-2" id="section-photos">
-        <span className="section-label">A moving collection</span>
-        <h2 className="section-title">photos i love</h2>
-        <p className="section-lede">images I keep returning to.</p>
-        <div className="grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2">
+        <h2 className="text-4xl font-bold mb-4">photos</h2>
+        <p className="text-lg text-muted-foreground mb-10">images I keep returning to.</p>
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
           {artworks.map((artwork) => (
             <figure key={artwork.title} className="group">
               <div className="overflow-hidden bg-muted/20">

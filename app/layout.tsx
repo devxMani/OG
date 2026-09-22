@@ -4,7 +4,6 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AccentThemeProvider } from "@/components/accent-theme-provider"
 import { PaperBackground } from "@/components/paper-background"
-import { GrainOverlay } from "@/components/grain-overlay"
 import { CuelumeProvider } from "@/components/cuelume-provider"
 import { cn } from "@/lib/utils"
 
@@ -70,7 +69,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           <AccentThemeProvider>
             <PaperBackground />
-            <GrainOverlay opacity={0.14} />
             <CuelumeProvider />
             {children}
           </AccentThemeProvider>

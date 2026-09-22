@@ -18,9 +18,6 @@ const hoverClassMap: Record<string, string> = {
   '13': 'link-codecamp',
 }
 
-/* Sections that get their own slot below, in this order. Anything else in
-   about.md is rendered automatically by the generic pass, so you can add a
-   new "## heading" to the markdown and it just shows up. */
 const KNOWN = [
   'intro',
   'selected work',
@@ -30,150 +27,153 @@ const KNOWN = [
   'where do i see myself in 10 years:',
 ]
 
-/* Small caps eyebrow above each section — carries the hierarchy so the
-   headings themselves can stay quiet. */
-const EYEBROWS: Record<string, string> = {
-  'selected work': 'Work',
-  experiences: 'Experience',
-  "some cool things i've done in the past:": 'Elsewhere',
-}
-
 export default function AboutRenderer({ content }: AboutRendererProps) {
   const [showMore, setShowMore] = useState(false)
 
   const parseAboutContent = (text: string) => {
-    const sections = text.split('\n## ').filter((section) => section.trim())
-    const parsedSections: Record<string, string> = {}
-
+    const sections = text.split('\n## ').filter((s) => s.trim())
+    const parsed: Record<string, string> = {}
     sections.forEach((section) => {
       const lines = section.split('\n')
       const title = lines[0].replace('## ', '').trim()
-      const sectionContent = lines.slice(1).join('\n').trim()
-      parsedSections[title] = sectionContent
+      parsed[title] = lines.slice(1).join('\n').trim()
     })
-
-    return parsedSections
+    return parsed
   }
 
   const parseHoverLinks = (text: string) => {
-    const processedText = text
+    const processed = text
       .replace(/^###\s*/gm, '')
       .replace(/^>\s*/gm, '')
       .replace(/\*\*(.*?)\*\*/g, '$1')
       .replace(/`([^`]+)`/g, '$1')
-      .replace(/\[hover-rank\]([^[]+)\[\/hover-rank\]/g, (_match, rankContent) => {
-        return `<span class="hover-rank-toggle group/rank cursor-default"><span class="group-hover/rank:hidden">${rankContent}</span><span class="hidden group-hover/rank:inline">2.5%</span></span>`
+      .replace(/\[hover-rank\]([^[]+)\[\/hover-rank\]/g, (_m, r) =>
+        `<span class="hover-rank-toggle group/rank cursor-default"><span class="group-hover/rank:hidden">${r}</span><span class="hidden group-hover/rank:inline">2.5%</span></span>`
+      )
+    return processed
+      .replace(/\[hover-(\d+)\]\s*\[([^\]]+)\]\(([^)]+)\)/g, (_m, num, title, url) => {
+        const cls = hoverClassMap[num] || 'link-blue'
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="${cls}">${title}</a>`
       })
-
-    return processedText
-      .replace(/\[hover-(\d+)\]\s*\[([^\]]+)\]\(([^)]+)\)/g, (_match, hoverNum, title, url) => {
-        const linkClass = hoverClassMap[hoverNum] || 'link-blue'
-        return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="${linkClass}">${title}</a>`
-      })
-      .replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g, (_match, title, url) => {
-        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${title}</a>`
-      })
+      .replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g, (_m, title, url) =>
+        `<a href="${url}" target="_blank" rel="noopener noreferrer">${title}</a>`
+      )
   }
 
+  // List items use the "–" dash bullet from globals.css .tight-list-item
   const parseBulletPoints = (text: string, isListItem = false, key?: React.Key) => {
-    const processedText = parseHoverLinks(text)
-
+    const html = parseHoverLinks(text)
     if (isListItem) {
-      return <li key={key} className="tight-list-item" dangerouslySetInnerHTML={{ __html: processedText }} />
+      return <li key={key} className="tight-list-item" dangerouslySetInnerHTML={{ __html: html }} />
     }
-
-    return <span dangerouslySetInnerHTML={{ __html: processedText }} />
+    return <span dangerouslySetInnerHTML={{ __html: html }} />
   }
 
-  /* One block renderer for every section: paragraphs stay paragraphs,
-     dash lists stay lists. No per-section special cases. */
   const renderBlocks = (body: string) =>
-    body.split('\n\n').map((block, index) => {
+    body.split('\n\n').map((block, i) => {
       if (block.includes('\n- ') || block.trim().startsWith('- ')) {
         return (
-          <ul key={index} className="list-none">
+          <ul key={i} className="list-none mt-3 space-y-3">
             {block
               .split('\n- ')
               .filter((item) => item.trim())
-              .map((item, i) => parseBulletPoints(item.replace(/^- /, '').trim(), true, i))}
+              .map((item, j) => parseBulletPoints(item.replace(/^- /, '').trim(), true, j))}
           </ul>
         )
       }
-      return <p key={index}>{parseBulletPoints(block)}</p>
+      return <p key={i} className="mt-3">{parseBulletPoints(block)}</p>
     })
 
-  const Section = ({ eyebrow, title, body }: { eyebrow?: string; title: string; body: string }) => (
-    <section className="section-block">
-      {eyebrow && <span className="section-label">{eyebrow}</span>}
-      <h2 className="section-title">{title}</h2>
-      {renderBlocks(body)}
-    </section>
-  )
-
   const sections = parseAboutContent(content)
-  const extraSections = Object.keys(sections).filter((key) => !KNOWN.includes(key))
+  const extraSections = Object.keys(sections).filter((k) => !KNOWN.includes(k))
 
   return (
     <div className="portfolio-content">
-      {/* ── intro: one lede, then plain paragraphs. Nothing shouts. ── */}
+
+      {/* ── intro ── */}
       {sections.intro && (
         <section>
           {sections.intro.split('\n\n').map((paragraph, index) => {
             if (index === 0) {
+              // eyebrow e.g. "RESEARCH · SYSTEMS · TASTE"
               return (
-                <span key={index} className="section-label section-label--lead">
+                <span key={index} className="section-label">
                   {paragraph.replace(/\*/g, '')}
                 </span>
               )
             }
             if (index === 1) {
+              // big italic lede headline
               return (
                 <p
                   key={index}
-                  className="mb-8 font-instrument text-[24px] italic leading-[1.35] text-foreground sm:text-[27px]"
+                  className="mb-6 font-instrument text-[23px] italic leading-[1.3] text-foreground sm:text-[26px]"
                 >
                   {parseBulletPoints(paragraph)}
                 </p>
               )
             }
-            return <p key={index}>{parseBulletPoints(paragraph)}</p>
+            // remaining intro paragraphs — tighter colour, slightly smaller
+            return (
+              <p key={index} className="mb-3 text-[15px] leading-relaxed text-foreground/72">
+                {parseBulletPoints(paragraph)}
+              </p>
+            )
           })}
         </section>
       )}
 
+      {/* ── selected work ── */}
       {sections['selected work'] && (
-        <Section eyebrow={EYEBROWS['selected work']} title="selected work" body={sections['selected work']} />
+        <section className="mt-8 pt-8 border-t border-foreground/[0.07]">
+          <span className="section-label">Work</span>
+          <h2 className="section-title">selected work</h2>
+          {renderBlocks(sections['selected work'])}
+        </section>
       )}
 
+      {/* ── experience — no eyebrow, dash bullets ── */}
       {sections.experiences && (
-        <Section eyebrow={EYEBROWS.experiences} title="experience" body={sections.experiences} />
+        <section className="mt-8 pt-8 border-t border-foreground/[0.07]">
+          {/* no eyebrow label */}
+          <h2 className="section-title">experience</h2>
+          {renderBlocks(sections.experiences)}
+        </section>
       )}
 
+      {/*
+        ── a few other things ──
+        No "ELSEWHERE" eyebrow per user request.
+        Dash bullets via .tight-list-item.
+      */}
       {sections["some cool things i've done in the past:"] && (
-        <Section
-          eyebrow={EYEBROWS["some cool things i've done in the past:"]}
-          title="a few other things"
-          body={sections["some cool things i've done in the past:"]}
-        />
+        <section className="mt-8 pt-8 border-t border-foreground/[0.07]">
+          {/* eyebrow intentionally removed */}
+          <h2 className="section-title">a few other things</h2>
+          {renderBlocks(sections["some cool things i've done in the past:"])}
+        </section>
       )}
 
-      {/* any new "## heading" you add to about.md lands here automatically */}
+      {/* ── any extra ## sections auto-render ── */}
       {extraSections.map((key) => (
-        <Section key={key} title={key.replace(/:$/, '')} body={sections[key]} />
+        <section key={key} className="mt-8 pt-8 border-t border-foreground/[0.07]">
+          <h2 className="section-title">{key.replace(/:$/, '')}</h2>
+          {renderBlocks(sections[key])}
+        </section>
       ))}
 
+      {/* ── expandable: origin / ten years ── */}
       {(sections['how i started:'] || sections['where do i see myself in 10 years:']) && (
-        <div className="section-block">
+        <div className="mt-8 pt-8 border-t border-foreground/[0.07]">
           <button
             onClick={() => setShowMore(!showMore)}
             aria-expanded={showMore}
-            className="text-[13px] uppercase tracking-[0.18em] text-foreground/45 transition-colors hover:text-foreground"
+            className="text-[12px] uppercase tracking-[0.18em] text-foreground/40 transition-colors hover:text-foreground"
           >
             {showMore ? 'Less' : 'More'}
           </button>
-
           {showMore && (
-            <div className="mt-10 space-y-10">
+            <div className="mt-8 space-y-8">
               {sections['how i started:'] && (
                 <div>
                   <span className="section-label">Origin</span>
@@ -191,7 +191,8 @@ export default function AboutRenderer({ content }: AboutRendererProps) {
         </div>
       )}
 
-      <div className="section-block">
+      {/* ── photos carousel ── */}
+      <div className="mt-10">
         <FavoritePhotosCarousel />
       </div>
     </div>
