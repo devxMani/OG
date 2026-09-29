@@ -34,14 +34,15 @@ export default function WindowShutter() {
   }, [open, topLimit, y])
 
   return (
-    <section aria-label="A small window into the experience" className="my-10 border-y border-foreground/[0.07] py-7">
-      <div className="mb-4 flex items-baseline justify-between gap-4">
-        <p className="font-newsreader text-sm italic text-foreground/75">a small window into the work</p>
-        <button type="button" onClick={toggle} className="font-newsreader text-xs text-muted-foreground transition-colors hover:text-foreground">
-          {open ? "close window" : "open window"}
-        </button>
-      </div>
-      <div className="relative mx-auto aspect-[2.35/1] w-full max-w-[620px] overflow-hidden rounded-[2.2rem] bg-foreground/[0.04] shadow-[0_12px_40px_-28px_rgba(0,0,0,0.8)]">
+    <section aria-label="A small window into the experience" className="relative my-8 border-y border-foreground/[0.07] py-6">
+      <motion.div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-10 bg-black"
+        animate={{ opacity: open ? 0.02 : 0.12 }}
+        transition={{ duration: 0.55, ease: "easeOut" }}
+      />
+      <p className="mb-3 text-center font-newsreader text-sm italic text-foreground/65">a small window into the work</p>
+      <div className="relative mx-auto aspect-[1.28/1] w-full max-w-[300px] overflow-hidden rounded-[2.2rem] bg-foreground/[0.04] shadow-[0_12px_40px_-28px_rgba(0,0,0,0.8)]">
         <motion.div className="absolute inset-[7%] overflow-hidden rounded-[1.5rem]" style={{ filter: imageBrightness }}>
           <video autoPlay loop muted playsInline className="h-full w-full object-cover" aria-label="A train moving past a window">
             <source src="/image/window-shutter/train-video-day.webm" type="video/webm" />
@@ -49,7 +50,7 @@ export default function WindowShutter() {
         </motion.div>
         <Image src="/image/window-shutter/window-inner-frame.webp" alt="" fill sizes="(max-width: 768px) 100vw, 620px" className="pointer-events-none object-fill" />
         <div ref={shutterRef} className="absolute inset-[9%] overflow-hidden rounded-[1.5rem]">
-          <motion.div className="absolute inset-0 cursor-grab active:cursor-grabbing" style={{ y }} drag="y" dragConstraints={{ top: topLimit, bottom: 0 }} dragElastic={0} dragMomentum={false} onDragEnd={(_, info) => {
+          <motion.div className="absolute inset-0 cursor-grab active:cursor-grabbing" style={{ y }} drag="y" dragConstraints={{ top: topLimit, bottom: 0 }} dragElastic={0} dragMomentum={false} onTap={toggle} onDragEnd={(_, info) => {
             if (Math.abs(info.offset.y) > height * 0.35 || info.velocity.y < -500) {
               setOpen(true)
               animate(y, topLimit, { type: "tween", duration: 0.55 })
@@ -63,7 +64,6 @@ export default function WindowShutter() {
         </div>
         <Image src="/image/window-shutter/window-outer-frame.webp" alt="" fill sizes="(max-width: 768px) 100vw, 620px" className="pointer-events-none object-fill" />
       </div>
-      <p className="mt-3 text-center font-newsreader text-xs text-muted-foreground">drag the shutter or tap the handle</p>
     </section>
   )
 }
