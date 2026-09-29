@@ -10,7 +10,7 @@ export default function WindowShutter() {
   const shutterRef = useRef<HTMLDivElement>(null)
   const y = useMotionValue(0)
   const [height, setHeight] = useState(0)
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(false)
 
   useEffect(() => {
     if (!shutterRef.current) return
