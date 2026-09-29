@@ -150,18 +150,7 @@ export function HeroVideo() {
       <audio ref={onMyWayRef} src="/hero/on-my-way.mp4" preload="none" loop />
       <audio ref={pianoRef}   src="/hero/piano.mp3"     preload="none" loop />
 
-      <div className="relative aspect-[21/9] w-full max-h-[380px] bg-black/40">
-
-        {/* blurred ambient layer */}
-        {!reducedMotion && (
-          <video
-            key={`blur-${CLIPS[activeClip].src}`}
-            className="pointer-events-none absolute inset-0 h-full w-full scale-110 object-cover opacity-30 blur-2xl"
-            src={CLIPS[activeClip].src}
-            autoPlay muted loop playsInline preload="none"
-            aria-hidden="true"
-          />
-        )}
+      <div className="relative aspect-[21/9] w-full max-h-[380px] bg-black overflow-hidden rounded-[10px]">
 
         {/* main clips */}
         {CLIPS.map((clip, index) => {
@@ -192,8 +181,7 @@ export function HeroVideo() {
           )
         })}
 
-        {/* gradient foot */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background/70 to-transparent" />
+
 
         {/* controls — bottom right */}
         <div className="absolute bottom-3 right-3 z-10 flex items-center gap-1.5">

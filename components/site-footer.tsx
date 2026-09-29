@@ -28,18 +28,18 @@ function LiveClock() {
 export function SiteFooter({ lastUpdated }: SiteFooterProps) {
   return (
     <footer className="mt-16 pt-6 border-t border-foreground/[0.05]">
-      {/* matches reference: "peace out" left, clock right, both very dim */}
+      {/* matches reference: "peace out" left, clock right */}
       <div className="flex items-center justify-between">
-        <span className="text-[13px] text-foreground/25 font-newsreader italic">
+        <span className="text-[13px] text-foreground/60 font-newsreader italic">
           peace out
         </span>
-        <span className="text-[12px] text-foreground/22 font-mono tabular-nums">
+        <span className="text-[12px] text-foreground/50 font-mono tabular-nums">
           <LiveClock />
         </span>
       </div>
 
-      {/* last updated — one step dimmer */}
-      <p className="mt-2 text-[10px] uppercase tracking-[0.2em] text-foreground/15">
+      {/* last updated */}
+      <p className="mt-2 text-[10px] uppercase tracking-[0.2em] text-foreground/40">
         last updated {lastUpdated}
       </p>
     </footer>
