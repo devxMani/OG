@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import FavoritePhotosCarousel from '@/components/favorite-photos-carousel'
+import WindowShutter from '@/components/window-shutter'
 
 interface AboutRendererProps {
   content: string
@@ -133,16 +134,19 @@ export default function AboutRenderer({ content }: AboutRendererProps) {
       )}
 
       {/* ── experience — no eyebrow, dash bullets ── */}
-      {sections.experiences && (
-        <section className="mt-8 pt-8 border-t border-foreground/[0.07]">
+  {sections.experiences && (
+  <>
+  <WindowShutter />
+  <section className="mt-8 pt-8 border-t border-foreground/[0.07]">
           {/* no eyebrow label */}
           <h2 className="section-title">experience</h2>
           {renderBlocks(sections.experiences)}
-        </section>
-      )}
+  </section>
+  </>
+  )}
 
-      {/*
-        ── a few other things ──
+  {/*
+  ── a few other things ──
         No "ELSEWHERE" eyebrow per user request.
         Dash bullets via .tight-list-item.
       */}
