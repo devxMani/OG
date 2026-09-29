@@ -73,7 +73,7 @@ export default function AboutRenderer({ content }: AboutRendererProps) {
     body.split('\n\n').map((block, i) => {
       if (block.includes('\n- ') || block.trim().startsWith('- ')) {
         return (
-          <ul key={i} className="list-none mt-3 space-y-3">
+          <ul key={i} className="mt-3 list-none space-y-3 text-[length:inherit]">
             {block
               .split('\n- ')
               .filter((item) => item.trim())
@@ -81,7 +81,7 @@ export default function AboutRenderer({ content }: AboutRendererProps) {
           </ul>
         )
       }
-      return <p key={i} className="mt-3">{parseBulletPoints(block)}</p>
+      return <p key={i} className="mt-3 text-[length:inherit]">{parseBulletPoints(block)}</p>
     })
 
   const sections = parseAboutContent(content)
@@ -115,7 +115,7 @@ export default function AboutRenderer({ content }: AboutRendererProps) {
             }
             // remaining intro paragraphs — tighter colour, slightly smaller
             return (
-              <p key={index} className="mb-3 text-[15px] leading-relaxed text-foreground/72">
+              <p key={index} className="mb-3 leading-relaxed text-foreground/72">
                 {parseBulletPoints(paragraph)}
               </p>
             )
