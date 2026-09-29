@@ -34,15 +34,16 @@ export default function WindowShutter() {
   }, [open, topLimit, y])
 
   return (
-    <section aria-label="A small window into the experience" className="relative my-8 border-y border-foreground/[0.07] py-6">
+    <section aria-label="A small window into the experience" className="relative my-6 overflow-hidden py-2 sm:my-8">
       <motion.div
         aria-hidden="true"
-        className="pointer-events-none fixed inset-0 z-10 bg-black"
-        animate={{ opacity: open ? 0.02 : 0.12 }}
+        className="pointer-events-none absolute inset-0 bg-black"
+        animate={{ opacity: open ? 0.01 : 0.08 }}
         transition={{ duration: 0.55, ease: "easeOut" }}
       />
-      <p className="mb-3 text-center font-newsreader text-sm italic text-foreground/65">a small window into the work</p>
-      <div className="relative mx-auto aspect-[1.28/1] w-full max-w-[300px] overflow-hidden rounded-[2.2rem] bg-foreground/[0.04] shadow-[0_12px_40px_-28px_rgba(0,0,0,0.8)]">
+      <div className="relative z-[1] mx-auto flex w-full max-w-[360px] flex-col items-center">
+        <p className="mb-3 font-newsreader text-sm italic text-foreground/65">a small window into the work</p>
+        <div className="relative aspect-[1.28/1] w-full max-w-[270px] overflow-hidden rounded-[2.2rem] bg-foreground/[0.04] shadow-[0_12px_40px_-28px_rgba(0,0,0,0.8)]">
         <motion.div className="absolute inset-[7%] overflow-hidden rounded-[1.5rem]" style={{ filter: imageBrightness }}>
           <video autoPlay loop muted playsInline className="h-full w-full object-cover" aria-label="A train moving past a window">
             <source src="/image/window-shutter/train-video-day.webm" type="video/webm" />
@@ -63,6 +64,7 @@ export default function WindowShutter() {
           </motion.div>
         </div>
         <Image src="/image/window-shutter/window-outer-frame.webp" alt="" fill sizes="(max-width: 768px) 100vw, 620px" className="pointer-events-none object-fill" />
+        </div>
       </div>
     </section>
   )
